@@ -29,6 +29,11 @@ navItems.forEach(function (item) {
 
     window.scrollTo(0, 0);
 
+    /* Kör kalender-testet ENDAST när Kalender öppnas */
+    if (pageId === "calendarPage") {
+      testSportAdminCalendar();
+    }
+
   });
 
 });
@@ -48,5 +53,58 @@ if (challengeButton) {
     challengeButton.style.background = "#333";
 
   });
+
+}
+
+
+/* =========================
+   SPORTADMIN KALENDER TEST
+========================= */
+
+async function testSportAdminCalendar() {
+
+  const calendarList = document.getElementById("calendarList");
+
+  if (!calendarList) return;
+
+  calendarList.innerHTML = `
+    <div class="calendar-loading">
+      Hämtar kalender från SportAdmin...
+    </div>
+  `;
+
+  const sportAdminUrl =
+    "https://portalweb.sportadmin.se/webcal?id=0d53fe29-f39f-461d-bbd9-f376c64bc7f1";
+
+  try {
+
+    const response = await fetch(sportAdminUrl);
+
+    if (!response.ok) {
+      throw new Error("SportAdmin svarade med fel");
+    }
+
+    const data = await response.text();
+
+    /* Vi visar bara ett testresultat just nu */
+    calendarList.innerHTML = `
+      <div class="calendar-loading">
+        SportAdmin-kalendern kunde läsas! 🔥
+      </div>
+    `;
+
+    console.log(data);
+
+  } catch (error) {
+
+    console.error("SportAdmin-fel:", error);
+
+    calendarList.innerHTML = `
+      <div class="calendar-loading error">
+        Direktkoppling till SportAdmin blockeras av webbläsaren.
+      </div>
+    `;
+
+  }
 
 }
