@@ -679,10 +679,13 @@ loadNextActivityHome();
    SUPABASE - SENASTE NYTT
 ========================= */
 
+/* =========================
+   SUPABASE - SENASTE NYTT
+========================= */
+
 const SUPABASE_URL = "https://ndbwnsiqcnxppikdrwvd.supabase.co";
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kYnduc2lxY254cHBpa2Ryd3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNjIwNTIsImV4cCI6MjEwMzgzODA1Mn0.ohJ9vdvgBXIGMsmH3wCiK7n0-PDWGp_Mt895UDTQoxA";
-
+const SUPABASE_ANON_KEY = "DIN_ANON_KEY_HÄR";
 
 async function loadLatestNews() {
 
@@ -691,29 +694,25 @@ async function loadLatestNews() {
 
   if (!newsContainer) return;
 
-
   try {
 
     const response = await fetch(
-  `${SUPABASE_URL}/rest/v1/news?select=*&order=id.desc&limit=1`,
-  {
-    headers: {
-      "apikey": SUPABASE_ANON_KEY,
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-    }
-  }
-);
-
-console.log("Nyhetsstatus:", response.status);
+      `${SUPABASE_URL}/rest/v1/news?select=*&order=id.desc&limit=1`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Kunde inte hämta nyheter");
     }
 
-
     const news = await response.json();
-    console.log("Nyhetsdata:", news);
 
+    console.log("Nyhetsdata:", news);
 
     if (news.length === 0) {
 
@@ -723,21 +722,19 @@ console.log("Nyhetsstatus:", response.status);
       `;
 
       return;
-
     }
-
 
     const latest = news[0];
 
-
     newsContainer.innerHTML = `
+      <div class="news-date">
+        SENAST
+      </div>
 
       <strong>${latest.title}</strong>
 
       <p>${latest.content}</p>
-
     `;
-
 
   } catch (error) {
 
@@ -752,7 +749,5 @@ console.log("Nyhetsstatus:", response.status);
 
 }
 
-
 /* Ladda senaste nyheten när sidan öppnas */
-
 loadLatestNews();
