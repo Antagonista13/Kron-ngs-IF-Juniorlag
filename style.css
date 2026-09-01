@@ -1,0 +1,271 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f3f4f6;
+  color: #1f2937;
+  padding-bottom: 90px;
+}
+
+
+/* HEADER */
+
+.hero {
+  background: linear-gradient(135deg, #0b3d2e, #116149);
+  color: white;
+  padding: 24px 20px 35px;
+}
+
+.hero-content {
+  max-width: 700px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  width: 55px;
+  height: 55px;
+  background: white;
+  color: #0b3d2e;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+.hero p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  letter-spacing: 3px;
+  opacity: 0.8;
+}
+
+
+/* CONTAINER */
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
+
+
+/* WELCOME */
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.welcome h2 {
+  margin-bottom: 5px;
+}
+
+.welcome p {
+  margin-top: 0;
+  color: #6b7280;
+}
+
+
+/* CARDS */
+
+.card {
+  background: white;
+  border-radius: 20px;
+
+  padding: 20px;
+
+  margin-bottom: 18px;
+
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 15px;
+}
+
+.card-title h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+
+/* ACTIVITY */
+
+.activity {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.activity-icon {
+  width: 50px;
+  height: 50px;
+
+  background: #e8f5ef;
+
+  border-radius: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+}
+
+.activity strong {
+  font-size: 17px;
+}
+
+.activity p {
+  margin: 5px 0 0;
+  color: #6b7280;
+}
+
+
+/* FOCUS */
+
+.focus {
+  background: linear-gradient(135deg, #132c24, #245b43);
+  color: white;
+}
+
+.focus h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.focus-words {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.focus-words span {
+  opacity: 0.5;
+  margin: 0 6px;
+}
+
+
+/* CHALLENGE */
+
+.challenge h2 {
+  margin-top: 0;
+}
+
+.challenge p {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+button {
+  width: 100%;
+
+  border: none;
+
+  background: #0b5d3b;
+  color: white;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  margin-top: 10px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+
+/* NEWS */
+
+.news-item p {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+
+/* BOTTOM NAV */
+
+.bottom-nav {
+
+  position: fixed;
+
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background: white;
+
+  display: flex;
+
+  justify-content: space-around;
+
+  padding: 10px 5px 12px;
+
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+
+}
+
+.nav-item {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 3px;
+
+  color: #9ca3af;
+
+  font-size: 20px;
+
+}
+
+.nav-item small {
+  font-size: 10px;
+}
+
+.nav-item.active {
+  color: #0b5d3b;
+}
+
+
+/* DESKTOP */
+
+@media (min-width: 700px) {
+
+  .container {
+    padding: 30px;
+  }
+
+  .bottom-nav {
+    max-width: 700px;
+    margin: auto;
+    border-radius: 20px 20px 0 0;
+  }
+
+}
