@@ -661,15 +661,9 @@ title = title.replace(
     );
 
 
-    homeActivity.innerHTML = `
-  <strong>
-    Kalendern kunde inte laddas
-  </strong>
-
-  <p>
-    Försök igen senare.
-  </p>
-`;
+   homeActivity.innerHTML =
+  "<strong>Kalendern kunde inte laddas</strong>" +
+  "<p>Försök igen senare.</p>";
 
   }
 
