@@ -1,9 +1,44 @@
-const challengeButton = document.getElementById("challengeButton");
+const navItems = document.querySelectorAll(".nav-item");
+const pages = document.querySelectorAll(".page");
 
-challengeButton.addEventListener("click", () => {
+navItems.forEach((item) => {
 
-  challengeButton.textContent = "UTMANING KLAR! 🔥";
+  item.addEventListener("click", () => {
 
-  challengeButton.style.background = "#1f7a4f";
+    const pageId = item.dataset.page;
+
+    pages.forEach((page) => {
+      page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    navItems.forEach((nav) => {
+      nav.classList.remove("active");
+    });
+
+    item.classList.add("active");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  });
 
 });
+
+
+const challengeButton = document.getElementById("challengeButton");
+
+if (challengeButton) {
+
+  challengeButton.addEventListener("click", () => {
+
+    challengeButton.textContent = "UTMANING KLAR! 🔥";
+
+    challengeButton.style.background = "#333";
+
+  });
+
+}
