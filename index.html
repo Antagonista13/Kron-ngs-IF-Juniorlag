@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html lang="sv">
+
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#000000">
 
   <title>Kronängs IF Juniorlag</title>
 
   <link rel="stylesheet" href="style.css">
+
 </head>
 
+
 <body>
+
+  <!-- HEADER -->
 
   <header class="hero">
 
     <div class="hero-content">
 
       <div class="logo">
-      <img src="20260605_154224349_iOS.jpg" alt="Kronängs IF logotyp">
+
+        <img
+          src="20260605_154224349_iOS.jpg"
+          alt="Kronängs IF logotyp"
+        >
+
       </div>
 
       <div>
+
         <h1>KRONÄNGS IF</h1>
+
         <p>JUNIORLAG</p>
+
       </div>
 
     </div>
@@ -29,129 +45,456 @@
   </header>
 
 
+  <!-- APP -->
+
   <main class="container">
 
-    <!-- VÄLKOMMEN -->
 
-    <section class="welcome">
+    <!-- ========================= -->
+    <!-- HEM -->
+    <!-- ========================= -->
 
-      <h2>Välkommen tillbaka!</h2>
+    <section class="page active" id="homePage">
 
-      <p>
-        Här hittar du allt som händer kring laget.
-      </p>
+      <section class="welcome">
 
-    </section>
-
-
-    <!-- NÄSTA AKTIVITET -->
-
-    <section class="card next-activity">
-
-      <div class="card-title">
-
-        <span>📅</span>
-
-        <h3>Nästa aktivitet</h3>
-
-      </div>
-
-      <div class="activity">
-
-        <div class="activity-icon">
-          ⚽
-        </div>
-
-        <div>
-
-          <strong>Träning</strong>
-
-          <p>Tisdag 18.00 – 19.30</p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- VECKANS FOKUS -->
-
-    <section class="card focus">
-
-      <div class="card-title">
-
-        <span>🔥</span>
-
-        <h3>Veckans fokus</h3>
-
-      </div>
-
-      <h2>Bolltapp → Direkt återerövring</h2>
-
-      <p class="focus-words">
-
-        PRESS
-        <span>•</span>
-        HJÄLP
-        <span>•</span>
-        KRYMP
-
-      </p>
-
-    </section>
-
-
-    <!-- VECKANS UTMANING -->
-
-    <section class="card challenge">
-
-      <div class="card-title">
-
-        <span>🧠</span>
-
-        <h3>Veckans utmaning</h3>
-
-      </div>
-
-      <h2>1000 TOUCHES</h2>
-
-      <p>
-        Träna bollkontroll 10 minuter vid tre tillfällen denna vecka.
-      </p>
-
-      <button id="challengeButton">
-
-        JAG ÄR KLAR ✓
-
-      </button>
-
-    </section>
-
-
-    <!-- SENASTE NYTT -->
-
-    <section class="card news">
-
-      <div class="card-title">
-
-        <span>📢</span>
-
-        <h3>Senaste nytt</h3>
-
-      </div>
-
-      <div class="news-item">
-
-        <strong>Grym träning!</strong>
+        <h2>Välkommen tillbaka!</h2>
 
         <p>
-          Bra energi och fantastisk inställning under gårdagens träning.
+          Här hittar du allt som händer kring laget.
         </p>
 
-      </div>
+      </section>
+
+
+      <section class="card">
+
+        <div class="card-title">
+
+          <span>📅</span>
+
+          <h3>Nästa aktivitet</h3>
+
+        </div>
+
+        <div class="activity">
+
+          <div class="activity-icon">
+            ⚽
+          </div>
+
+          <div>
+
+            <strong>Träning</strong>
+
+            <p>Tisdag 18.00 – 19.30</p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="card focus">
+
+        <div class="card-title">
+
+          <span>🔥</span>
+
+          <h3>Veckans fokus</h3>
+
+        </div>
+
+        <h2>Bolltapp → Direkt återerövring</h2>
+
+        <p class="focus-words">
+
+          PRESS
+          <span>•</span>
+          HJÄLP
+          <span>•</span>
+          KRYMP
+
+        </p>
+
+      </section>
+
+
+      <section class="card challenge">
+
+        <div class="card-title">
+
+          <span>🧠</span>
+
+          <h3>Veckans utmaning</h3>
+
+        </div>
+
+        <h2>1000 TOUCHES</h2>
+
+        <p>
+          Träna bollkontroll 10 minuter vid tre tillfällen denna vecka.
+        </p>
+
+        <button id="challengeButton">
+          JAG ÄR KLAR ✓
+        </button>
+
+      </section>
+
+
+      <section class="card news">
+
+        <div class="card-title">
+
+          <span>📢</span>
+
+          <h3>Senaste nytt</h3>
+
+        </div>
+
+        <div class="news-item">
+
+          <strong>Grym träning!</strong>
+
+          <p>
+            Bra energi och fantastisk inställning under gårdagens träning.
+          </p>
+
+        </div>
+
+      </section>
 
     </section>
+
+
+    <!-- ========================= -->
+    <!-- KALENDER -->
+    <!-- ========================= -->
+
+    <section class="page" id="calendarPage">
+
+      <section class="page-heading">
+
+        <h2>Kalender</h2>
+
+        <p>
+          Kommande aktiviteter för laget.
+        </p>
+
+      </section>
+
+
+      <section class="calendar-list" id="calendarList">
+
+
+        <div class="calendar-item">
+
+          <div class="date-box">
+
+            <strong>03</strong>
+
+            <span>SEP</span>
+
+          </div>
+
+          <div class="calendar-info">
+
+            <span class="activity-type">TRÄNING</span>
+
+            <h3>Träning</h3>
+
+            <p>18.00 – 19.30</p>
+
+          </div>
+
+        </div>
+
+
+        <div class="calendar-item">
+
+          <div class="date-box">
+
+            <strong>05</strong>
+
+            <span>SEP</span>
+
+          </div>
+
+          <div class="calendar-info">
+
+            <span class="activity-type">TRÄNING</span>
+
+            <h3>Träning</h3>
+
+            <p>18.00 – 19.30</p>
+
+          </div>
+
+        </div>
+
+
+        <div class="calendar-item match">
+
+          <div class="date-box">
+
+            <strong>08</strong>
+
+            <span>SEP</span>
+
+          </div>
+
+          <div class="calendar-info">
+
+            <span class="activity-type">MATCH</span>
+
+            <h3>Kronängs IF – Motståndare</h3>
+
+            <p>Samling 13.00</p>
+
+          </div>
+
+        </div>
+
+
+      </section>
+
+
+      <section class="calendar-source">
+
+        <p>
+
+          Kalendern kommer att synkroniseras med SportAdmin.
+
+        </p>
+
+      </section>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- UTVECKLING -->
+    <!-- ========================= -->
+
+    <section class="page" id="developmentPage">
+
+      <section class="page-heading">
+
+        <h2>Din utveckling</h2>
+
+        <p>
+          Träna smart. Utvecklas varje dag.
+        </p>
+
+      </section>
+
+
+      <section class="development-grid">
+
+
+        <div class="development-card">
+
+          <div class="development-icon">
+            ⚽
+          </div>
+
+          <h3>Teknik</h3>
+
+          <p>
+            Första touch, passningar, driva boll och avslut.
+          </p>
+
+        </div>
+
+
+        <div class="development-card">
+
+          <div class="development-icon">
+            🧠
+          </div>
+
+          <h3>Spelförståelse</h3>
+
+          <p>
+            Press, omställningar och smarta beslut.
+          </p>
+
+        </div>
+
+
+        <div class="development-card">
+
+          <div class="development-icon">
+            ⚡
+          </div>
+
+          <h3>Fys</h3>
+
+          <p>
+            Snabbhet, styrka och rörlighet.
+          </p>
+
+        </div>
+
+
+        <div class="development-card">
+
+          <div class="development-icon">
+            🔥
+          </div>
+
+          <h3>Mentalitet</h3>
+
+          <p>
+            Självförtroende, fokus och inställning.
+          </p>
+
+        </div>
+
+
+      </section>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- LAGET -->
+    <!-- ========================= -->
+
+    <section class="page" id="teamPage">
+
+      <section class="page-heading">
+
+        <h2>Laget</h2>
+
+        <p>
+          Information och gemenskap.
+        </p>
+
+      </section>
+
+
+      <section class="card team-post">
+
+        <div class="post-header">
+
+          <strong>KRONÄNGS IF JUNIORLAG</strong>
+
+          <span>Idag</span>
+
+        </div>
+
+        <h3>Grym träning! 🔥</h3>
+
+        <p>
+          Fantastisk energi och riktigt bra inställning under träningen.
+          Fortsätt komma ihåg vårt fokus:
+        </p>
+
+        <div class="quote">
+
+          BOLLTAPP → PRESS → HJÄLP → KRYMP
+
+        </div>
+
+      </section>
+
+
+      <section class="card team-post">
+
+        <div class="post-header">
+
+          <strong>VECKANS PÅMINNELSE</strong>
+
+          <span>Den här veckan</span>
+
+        </div>
+
+        <p>
+
+          Kom i tid, hjälp varandra och gör alltid ditt bästa.
+
+        </p>
+
+      </section>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- PROFIL -->
+    <!-- ========================= -->
+
+    <section class="page" id="profilePage">
+
+      <section class="profile-header">
+
+        <div class="profile-avatar">
+          👤
+        </div>
+
+        <h2>Min profil</h2>
+
+        <p>
+          Din utveckling börjar med dig.
+        </p>
+
+      </section>
+
+
+      <section class="card">
+
+        <h3>Mitt fokus just nu</h3>
+
+        <p class="profile-focus">
+
+          Bli bättre på att reagera direkt efter bolltapp.
+
+        </p>
+
+      </section>
+
+
+      <section class="profile-stats">
+
+
+        <div class="stat-card">
+
+          <strong>0</strong>
+
+          <span>Utmaningar</span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <strong>0</strong>
+
+          <span>Reflektioner</span>
+
+        </div>
+
+
+      </section>
+
+
+      <section class="card">
+
+        <h3>Mitt mål</h3>
+
+        <p>
+
+          Sätt ett mål för din egen utveckling.
+
+        </p>
+
+      </section>
+
+    </section>
+
 
   </main>
 
@@ -160,40 +503,51 @@
 
   <nav class="bottom-nav">
 
-    <div class="nav-item active">
+
+    <button class="nav-item active" data-page="homePage">
 
       <span>🏠</span>
+
       <small>Hem</small>
 
-    </div>
+    </button>
 
-    <div class="nav-item">
+
+    <button class="nav-item" data-page="calendarPage">
 
       <span>📅</span>
+
       <small>Kalender</small>
 
-    </div>
+    </button>
 
-    <div class="nav-item">
+
+    <button class="nav-item" data-page="developmentPage">
 
       <span>⚽</span>
+
       <small>Utveckling</small>
 
-    </div>
+    </button>
 
-    <div class="nav-item">
+
+    <button class="nav-item" data-page="teamPage">
 
       <span>💬</span>
+
       <small>Laget</small>
 
-    </div>
+    </button>
 
-    <div class="nav-item">
+
+    <button class="nav-item" data-page="profilePage">
 
       <span>👤</span>
+
       <small>Profil</small>
 
-    </div>
+    </button>
+
 
   </nav>
 
@@ -201,4 +555,5 @@
   <script src="script.js"></script>
 
 </body>
+
 </html>
