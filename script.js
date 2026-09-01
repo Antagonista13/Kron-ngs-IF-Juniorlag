@@ -180,60 +180,124 @@ async function testSportAdminCalendar() {
 
 
     // Skapa HTML för aktiviteterna
-    calendarList.innerHTML = upcomingActivities
-      .map(function(activity) {
+calendarList.innerHTML = upcomingActivities
+  .map(function(activity) {
 
-        const dateText =
-          activity.date.toLocaleDateString(
-            "sv-SE",
-            {
-              weekday: "short",
-              day: "numeric",
-              month: "short"
-            }
-          );
-
-
-        const timeText =
-          activity.date.toLocaleTimeString(
-            "sv-SE",
-            {
-              hour: "2-digit",
-              minute: "2-digit"
-            }
-          );
+    const dateText =
+      activity.date.toLocaleDateString(
+        "sv-SE",
+        {
+          weekday: "short",
+          day: "numeric",
+          month: "short"
+        }
+      ).toUpperCase();
 
 
-        return `
-          <div class="calendar-event">
+    const timeText =
+      activity.date.toLocaleTimeString(
+        "sv-SE",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
 
-            <div class="calendar-date">
-              ${dateText}
-            </div>
 
-            <div class="calendar-info">
+    // Identifiera typ av aktivitet
+    const title = activity.summary || "Aktivitet";
 
-              <strong>
-                ${activity.summary || "Aktivitet"}
-              </strong>
+    let activityType = "ÖVRIGT";
+    let activityIcon = "📋";
+    let typeClass = "other";
 
-              <div>
-                ${timeText}
-              </div>
+    if (title.toLowerCase().includes("match")) {
+      activityType = "MATCH";
+      activityIcon = "⚽";
+      typeClass = "match";
+    }
 
-              ${
-                activity.location
-                  ? `<div>${activity.location}</div>`
-                  : ""
-              }
+    else if (title.toLowerCase().includes("träning")) {
+      activityType = "TRÄNING";
+      activityIcon = "🏃";
+      typeClass = "training";
+    }
 
-            </div>
 
+    // Försök hitta samlingstid i beskrivningen
+    let meetingTime = "";
+
+    const meetingMatch =
+      activity.description.match(
+        /Samling:\s*([0-9]{1,2}:[0-9]{2})/i
+      );
+
+    if (meetingMatch) {
+      meetingTime = meetingMatch[1];
+    }
+
+
+    // Rensa matchtiteln lite snyggare
+    let displayTitle = title;
+
+    if (activityType === "MATCH") {
+
+      displayTitle = title
+        .replace(/^Match:\s*/i, "")
+        .replace(/\s*\([^)]*\)\s*$/, "");
+
+    }
+
+
+    return `
+      <div class="calendar-card ${typeClass}">
+
+        <div class="calendar-card-date">
+          ${dateText}
+        </div>
+
+        <div class="calendar-card-type">
+          <span>${activityIcon}</span>
+          ${activityType}
+        </div>
+
+        <div class="calendar-card-title">
+          ${displayTitle}
+        </div>
+
+        <div class="calendar-card-details">
+
+          <div>
+            🕒 ${timeText}
           </div>
-        `;
 
-      })
-      .join("");
+          ${
+            meetingTime
+              ? `
+                <div>
+                  👥 Samling ${meetingTime}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            activity.location
+              ? `
+                <div>
+                  📍 ${activity.location}
+                </div>
+              `
+              : ""
+          }
+
+        </div>
+
+      </div>
+    `;
+
+  })
+  .join("");
 
   } catch (error) {
 
