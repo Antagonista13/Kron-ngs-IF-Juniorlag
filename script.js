@@ -74,7 +74,7 @@ async function testSportAdminCalendar() {
   `;
 
   const sportAdminUrl =
-    https://kronangs-kalender.h-bergqvist.workers.dev/
+  "https://kronangs-kalender.h-bergqvist.workers.dev/";
 
   try {
 
