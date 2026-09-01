@@ -615,3 +615,46 @@ button {
 #nextActivityHome p {
   margin: 4px 0 0;
 }
+/* =========================
+   NÄSTA AKTIVITET - STARTSIDA
+========================= */
+
+#nextActivityHome {
+  align-items: flex-start;
+}
+
+#nextActivityHome .activity-icon {
+  min-width: 58px;
+  height: 58px;
+  font-size: 27px;
+}
+
+.next-activity-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.next-activity-type {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: #777;
+  margin-bottom: 5px;
+}
+
+#nextActivityHome strong {
+  font-size: 17px;
+  line-height: 1.35;
+  display: block;
+}
+
+#nextActivityHome p {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+#nextActivityHome .activity-location {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #666;
+}
