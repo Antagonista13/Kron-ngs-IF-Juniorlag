@@ -74,7 +74,7 @@ async function testSportAdminCalendar() {
   `;
 
   const sportAdminUrl =
-    "https://portalweb.sportadmin.se/webcal?id=0d53fe29-f39f-461d-bbd9-f376c64bc7f1";
+    https://kronangs-kalender.h-bergqvist.workers.dev/
 
   try {
 
