@@ -62,13 +62,14 @@ if (challengeButton) {
 ========================= */
 
 async function testSportAdminCalendar() {
+
   const calendarList = document.getElementById("calendarList");
 
   if (!calendarList) return;
 
   calendarList.innerHTML = `
     <div class="calendar-loading">
-      Hämtar kalender från SportAdmin...
+      Hämtar aktiviteter från SportAdmin...
     </div>
   `;
 
@@ -76,151 +77,161 @@ async function testSportAdminCalendar() {
     "https://kronangs-kalender.h-bergqvist.workers.dev/";
 
   try {
+
     const response = await fetch(sportAdminUrl);
 
     if (!response.ok) {
-      throw new Error("SportAdmin svarade med fel");
+      throw new Error("Kunde inte hämta kalendern");
     }
 
     const icsText = await response.text();
 
-    // Hantera radbrytningar i ICS-filen
-    const cleanedIcs = icsText.replace(/\r?\n[ \t]/g, "");
-
-    // Hitta alla kalenderhändelser
-    const eventBlocks = cleanedIcs.match(
+    // Dela upp kalendern i enskilda aktiviteter
+    const events = icsText.match(
       /BEGIN:VEVENT[\s\S]*?END:VEVENT/g
     ) || [];
 
-    const activities = eventBlocks.map(eventBlock => {
+    const activities = events.map(function(event) {
 
+      // Hämtar ett värde från en kalenderhändelse
       function getValue(field) {
+
         const regex = new RegExp(
           "^" + field + "[^:]*:(.*)$",
           "m"
         );
 
-        const match = eventBlock.match(regex);
+        const match = event.match(regex);
 
-        if (!match) return "";
-
-        return match[1]
-          .replace(/\\n/g, " ")
-          .replace(/\\,/g, ",")
-          .replace(/\\;/g, ";")
-          .trim();
+        return match ? match[1].trim() : "";
       }
 
-      const dateValue = getValue("DTSTART");
+
+      const start = getValue("DTSTART");
       const summary = getValue("SUMMARY");
       const location = getValue("LOCATION");
       const description = getValue("DESCRIPTION");
 
-      let date;
 
-      if (/^\d{8}$/.test(dateValue)) {
-        // Heldagshändelse
-        const year = dateValue.substring(0, 4);
-        const month = dateValue.substring(4, 6);
-        const day = dateValue.substring(6, 8);
+      let date = null;
 
-        date = new Date(`${year}-${month}-${day}T00:00:00`);
+      // SportAdmin-format:
+      // 20260905T110000
 
-      } else if (/^\d{8}T\d{6}Z$/.test(dateValue)) {
-        // UTC-tid
-        const year = dateValue.substring(0, 4);
-        const month = dateValue.substring(4, 6);
-        const day = dateValue.substring(6, 8);
-        const hour = dateValue.substring(9, 11);
-        const minute = dateValue.substring(11, 13);
-        const second = dateValue.substring(13, 15);
+      const dateMatch = start.match(
+        /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/
+      );
+
+      if (dateMatch) {
 
         date = new Date(
-          `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
+          Number(dateMatch[1]),
+          Number(dateMatch[2]) - 1,
+          Number(dateMatch[3]),
+          Number(dateMatch[4]),
+          Number(dateMatch[5])
         );
 
-      } else if (/^\d{8}T\d{6}$/.test(dateValue)) {
-        // Lokal tid
-        const year = dateValue.substring(0, 4);
-        const month = dateValue.substring(4, 6);
-        const day = dateValue.substring(6, 8);
-        const hour = dateValue.substring(9, 11);
-        const minute = dateValue.substring(11, 13);
-        const second = dateValue.substring(13, 15);
-
-        date = new Date(
-          `${year}-${month}-${day}T${hour}:${minute}:${second}`
-        );
       }
 
+
       return {
-        date,
-        summary,
-        location,
-        description
+        date: date,
+        summary: summary,
+        location: location,
+        description: description
       };
+
     });
 
-    // Ta bort gamla eller trasiga aktiviteter
+
+    // Dagens datum
     const today = new Date();
+
     today.setHours(0, 0, 0, 0);
 
+
+    // Filtrera bort gamla aktiviteter
     const upcomingActivities = activities
-      .filter(activity =>
-        activity.date &&
-        !isNaN(activity.date) &&
-        activity.date >= today
-      )
-      .sort((a, b) => a.date - b.date)
+      .filter(function(activity) {
+
+        return activity.date &&
+          activity.date >= today;
+
+      })
+      .sort(function(a, b) {
+
+        return a.date - b.date;
+
+      })
       .slice(0, 10);
 
+
     if (upcomingActivities.length === 0) {
+
       calendarList.innerHTML = `
         <div class="calendar-loading">
           Inga kommande aktiviteter hittades.
         </div>
       `;
+
       return;
     }
 
-    // Skapa kalenderlistan
+
+    // Skapa HTML för aktiviteterna
     calendarList.innerHTML = upcomingActivities
-      .map(activity => {
+      .map(function(activity) {
 
-        const dateText = activity.date.toLocaleDateString(
-          "sv-SE",
-          {
-            weekday: "short",
-            day: "numeric",
-            month: "short"
-          }
-        );
+        const dateText =
+          activity.date.toLocaleDateString(
+            "sv-SE",
+            {
+              weekday: "short",
+              day: "numeric",
+              month: "short"
+            }
+          );
 
-        const timeText = activity.date.toLocaleTimeString(
-          "sv-SE",
-          {
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
+
+        const timeText =
+          activity.date.toLocaleTimeString(
+            "sv-SE",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          );
+
 
         return `
           <div class="calendar-event">
+
             <div class="calendar-date">
               ${dateText}
             </div>
 
             <div class="calendar-info">
-              <strong>${activity.summary || "Aktivitet"}</strong>
-              <div>${timeText}</div>
+
+              <strong>
+                ${activity.summary || "Aktivitet"}
+              </strong>
+
+              <div>
+                ${timeText}
+              </div>
+
               ${
                 activity.location
                   ? `<div>${activity.location}</div>`
                   : ""
               }
+
             </div>
+
           </div>
         `;
+
       })
       .join("");
 
@@ -233,5 +244,7 @@ async function testSportAdminCalendar() {
         Kunde inte läsa kalendern från SportAdmin.
       </div>
     `;
+
   }
+
 }
