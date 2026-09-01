@@ -752,3 +752,36 @@ async function loadLatestNews() {
 
 /* Ladda senaste nyheten när sidan öppnas */
 loadLatestNews();
+/* =========================
+   NAVIGERING MELLAN SIDOR
+========================= */
+
+const navItems = document.querySelectorAll(".nav-item");
+const pages = document.querySelectorAll(".page");
+
+navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+
+        const pageId = item.dataset.page;
+
+        // Ta bort aktiv markering från alla knappar
+        navItems.forEach((nav) => {
+            nav.classList.remove("active");
+        });
+
+        // Markera den klickade knappen
+        item.classList.add("active");
+
+        // Dölj alla sidor
+        pages.forEach((page) => {
+            page.classList.remove("active");
+        });
+
+        // Visa rätt sida
+        const selectedPage = document.getElementById(pageId);
+
+        if (selectedPage) {
+            selectedPage.classList.add("active");
+        }
+    });
+});
