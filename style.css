@@ -484,3 +484,65 @@ button {
 }
 
 }
+/* =========================
+   SPORTADMIN KALENDER
+========================= */
+
+.calendar-card {
+  background: #ffffff;
+  color: #111111;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border-left: 6px solid #111111;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-card-date {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.calendar-card-type {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.calendar-card-title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.calendar-card-details {
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.8;
+}
+
+/* MATCH */
+
+.calendar-card.match {
+  border-left-width: 8px;
+}
+
+.calendar-card.match .calendar-card-type {
+  font-weight: 900;
+}
+
+/* TRÄNING */
+
+.calendar-card.training {
+  border-left-style: solid;
+}
+
+/* ÖVRIGA AKTIVITETER */
+
+.calendar-card.other {
+  opacity: 0.9;
+}
