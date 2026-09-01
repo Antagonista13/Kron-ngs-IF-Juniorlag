@@ -470,5 +470,17 @@ button {
 .calendar-loading.error {
   color: #8b0000;
 }
+  .calendar-loading {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  text-align: center;
+  color: #555;
+  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
+}
+
+.calendar-loading.error {
+  color: #8b0000;
+}
 
 }
