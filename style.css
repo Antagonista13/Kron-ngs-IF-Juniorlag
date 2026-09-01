@@ -596,3 +596,22 @@ button {
 .calendar-card.next-activity .calendar-card-title {
   font-size: 22px;
 }
+/* =========================
+   NÄSTA AKTIVITET STARTSIDA
+========================= */
+
+.activity-location {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+#nextActivityHome strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+#nextActivityHome p {
+  margin: 4px 0 0;
+}
