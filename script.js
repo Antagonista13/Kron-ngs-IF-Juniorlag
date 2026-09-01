@@ -756,7 +756,6 @@ loadLatestNews();
    NAVIGERING MELLAN SIDOR
 ========================= */
 
-const pages = document.querySelectorAll(".page");
 
 navItems.forEach((item) => {
     item.addEventListener("click", () => {
