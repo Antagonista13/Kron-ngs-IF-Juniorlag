@@ -695,14 +695,15 @@ async function loadLatestNews() {
   try {
 
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/news?select=*&order=id.desc&limit=1`,
-      {
-        headers: {
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      }
-    );
+  SUPABASE_URL +
+  "/rest/v1/news?select=*&order=id.desc&limit=1",
+  {
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    }
+  }
+);
 
     if (!response.ok) {
       throw new Error("Kunde inte hämta nyheter");
