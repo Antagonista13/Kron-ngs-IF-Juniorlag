@@ -1,5 +1,7 @@
 const navItems = document.querySelectorAll(".nav-item");
 const pages = document.querySelectorAll(".page");
+console.log("Antal navigeringsknappar:", navItems.length);
+console.log("Antal sidor:", pages.length);
 
 /* =========================
    NAVIGATION
