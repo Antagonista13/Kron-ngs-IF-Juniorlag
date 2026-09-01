@@ -429,3 +429,213 @@ async function loadNextActivityHome() {
       await fetch(sportAdminUrl);
 
     if (!response.ok) {
+      throw new Error("Kunde inte hämta kalendern");
+    }
+
+    const icsText = await response.text();
+
+    const events =
+      icsText.match(
+        /BEGIN:VEVENT[\s\S]*?END:VEVENT/g
+      ) || [];
+
+
+    const activities = events.map(function(event) {
+
+      function getValue(field) {
+
+        const regex = new RegExp(
+          "^" + field + "[^:]*:(.*)$",
+          "m"
+        );
+
+        const match = event.match(regex);
+
+        return match
+          ? match[1].trim()
+          : "";
+
+      }
+
+
+      const start =
+        getValue("DTSTART");
+
+      const summary =
+        getValue("SUMMARY");
+
+      const location =
+        getValue("LOCATION");
+
+
+      let date = null;
+
+      const dateMatch =
+        start.match(
+          /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/
+        );
+
+
+      if (dateMatch) {
+
+        date = new Date(
+          Number(dateMatch[1]),
+          Number(dateMatch[2]) - 1,
+          Number(dateMatch[3]),
+          Number(dateMatch[4]),
+          Number(dateMatch[5])
+        );
+
+      }
+
+
+      return {
+        date: date,
+        summary: summary,
+        location: location
+      };
+
+    });
+
+
+    const today = new Date();
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const upcomingActivities =
+      activities
+        .filter(function(activity) {
+
+          return (
+            activity.date &&
+            activity.date >= today
+          );
+
+        })
+        .sort(function(a, b) {
+
+          return a.date - b.date;
+
+        });
+
+
+    const nextActivity =
+      upcomingActivities[0];
+
+
+    if (!nextActivity) {
+
+      homeActivity.innerHTML = `
+        <strong>
+          Ingen kommande aktivitet
+        </strong>
+
+        <p>
+          Kalendern uppdateras automatiskt.
+        </p>
+      `;
+
+      return;
+
+    }
+
+
+    const dateText =
+      nextActivity.date.toLocaleDateString(
+        "sv-SE",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long"
+        }
+      );
+
+
+    const timeText =
+      nextActivity.date.toLocaleTimeString(
+        "sv-SE",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+
+    let title =
+      nextActivity.summary ||
+      "Aktivitet";
+
+
+    // Rensa bort "Match:" från matchtitlar
+
+    title = title.replace(
+      /^Match:\s*/i,
+      ""
+    );
+
+
+    homeActivity.innerHTML = `
+
+      <div>
+
+        <strong>
+          ${title}
+        </strong>
+
+        <p>
+          ${dateText}
+          ·
+          ${timeText}
+        </p>
+
+        ${
+          nextActivity.location
+            ? `
+              <div class="activity-location">
+                📍 ${nextActivity.location}
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+
+  } catch (error) {
+
+    console.error(
+      "Fel vid hämtning av nästa aktivitet:",
+      error
+    );
+
+
+    homeActivity.innerHTML = `
+
+      <strong>
+        Kalendern kunde inte laddas
+      </strong>
+
+      <p>
+        Försök igen senare.
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================
+   STARTA STARTSIDANS KALENDER
+========================= */
+
+loadNextActivityHome();
