@@ -100,3 +100,6 @@ async function loadSportAdminCalendar() {
 document
   .querySelector('[data-page="calendarPage"]')
   .addEventListener("click", loadSportAdminCalendar);
+
+const sportAdminUrl =
+  "https://portalweb.sportadmin.se/webcal?id=0d53fe29-f39f-461d-bbd9-f376c64bc7f1";
