@@ -650,8 +650,6 @@ title = title.replace(
 
 `;
 
-    `;
-
 
   } catch (error) {
 
@@ -685,7 +683,7 @@ loadNextActivityHome();
 
 const SUPABASE_URL = "https://ndbwnsiqcnxppikdrwvd.supabase.co";
 
-const SUPABASE_ANON_KEY = "DIN_ANON_KEY_HÄR";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kYnduc2lxY254cHBpa2Ryd3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNjIwNTIsImV4cCI6MjEwMzgzODA1Mn0.ohJ9vdvgBXIGMsmH3wCiK7n0-PDWGp_Mt895UDTQoxA";
 
 async function loadLatestNews() {
 
