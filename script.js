@@ -393,7 +393,6 @@ calendarHTML += remainingActivities
 // Lägg in allt på sidan
 
 calendarList.innerHTML = calendarHTML;
-  .join("");
 
   } catch (error) {
 
