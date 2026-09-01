@@ -568,43 +568,87 @@ async function loadNextActivityHome() {
 
 
     let title =
-      nextActivity.summary ||
-      "Aktivitet";
+  nextActivity.summary ||
+  "Aktivitet";
 
 
-    // Rensa bort "Match:" från matchtitlar
+let activityType = "AKTIVITET";
+let activityIcon = "📅";
 
-    title = title.replace(
-      /^Match:\s*/i,
-      ""
-    );
+
+if (title.toLowerCase().includes("match")) {
+
+  activityType = "MATCH";
+  activityIcon = "⚽";
+
+}
+
+else if (title.toLowerCase().includes("träning")) {
+
+  activityType = "TRÄNING";
+  activityIcon = "🏃";
+
+}
+
+else if (title.toLowerCase().includes("domar")) {
+
+  activityType = "UPPDRAG";
+  activityIcon = "🟨";
+
+}
+
+else if (
+  title.toLowerCase().includes("arrangör") ||
+  title.toLowerCase().includes("arrangor")
+) {
+
+  activityType = "ARRANGEMANG";
+  activityIcon = "📋";
+
+}
+
+
+// Rensa bort "Match:" från matchtitlar
+
+title = title.replace(
+  /^Match:\s*/i,
+  ""
+);
 
 
     homeActivity.innerHTML = `
 
-      <div>
+  <div class="activity-icon">
+    ${activityIcon}
+  </div>
 
-        <strong>
-          ${title}
-        </strong>
+  <div class="next-activity-info">
 
-        <p>
-          ${dateText}
-          ·
-          ${timeText}
-        </p>
+    <div class="next-activity-type">
+      ${activityType}
+    </div>
 
-        ${
-          nextActivity.location
-            ? `
-              <div class="activity-location">
-                📍 ${nextActivity.location}
-              </div>
-            `
-            : ""
-        }
+    <strong>
+      ${title}
+    </strong>
 
-      </div>
+    <p>
+      ${dateText} · ${timeText}
+    </p>
+
+    ${
+      nextActivity.location
+        ? `
+          <div class="activity-location">
+            📍 ${nextActivity.location}
+          </div>
+        `
+        : ""
+    }
+
+  </div>
+
+`;
 
     `;
 
