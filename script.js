@@ -179,124 +179,220 @@ async function testSportAdminCalendar() {
     }
 
 
-    // Skapa HTML för aktiviteterna
-calendarList.innerHTML = upcomingActivities
-  .map(function(activity) {
+   // =====================================
+// HJÄLPFUNKTION FÖR ATT SKAPA AKTIVITET
+// =====================================
 
-    const dateText =
-      activity.date.toLocaleDateString(
-        "sv-SE",
-        {
-          weekday: "short",
-          day: "numeric",
-          month: "short"
-        }
-      ).toUpperCase();
+function createActivityCard(activity, isNext = false) {
 
-
-    const timeText =
-      activity.date.toLocaleTimeString(
-        "sv-SE",
-        {
-          hour: "2-digit",
-          minute: "2-digit"
-        }
-      );
+  const dateText =
+    activity.date.toLocaleDateString(
+      "sv-SE",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }
+    );
 
 
-    // Identifiera typ av aktivitet
-    const title = activity.summary || "Aktivitet";
-
-    let activityType = "ÖVRIGT";
-    let activityIcon = "📋";
-    let typeClass = "other";
-
-    if (title.toLowerCase().includes("match")) {
-      activityType = "MATCH";
-      activityIcon = "⚽";
-      typeClass = "match";
-    }
-
-    else if (title.toLowerCase().includes("träning")) {
-      activityType = "TRÄNING";
-      activityIcon = "🏃";
-      typeClass = "training";
-    }
+  const timeText =
+    activity.date.toLocaleTimeString(
+      "sv-SE",
+      {
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
 
 
-    // Försök hitta samlingstid i beskrivningen
-    let meetingTime = "";
+  // Identifiera typ av aktivitet
+  const title = activity.summary || "Aktivitet";
 
-    const meetingMatch =
-      activity.description.match(
-        /Samling:\s*([0-9]{1,2}:[0-9]{2})/i
-      );
-
-    if (meetingMatch) {
-      meetingTime = meetingMatch[1];
-    }
+  let activityType = "ÖVRIGT";
+  let activityIcon = "📋";
+  let typeClass = "other";
 
 
-    // Rensa matchtiteln lite snyggare
-    let displayTitle = title;
+  if (title.toLowerCase().includes("match")) {
 
-    if (activityType === "MATCH") {
+    activityType = "MATCH";
+    activityIcon = "⚽";
+    typeClass = "match";
 
-      displayTitle = title
-        .replace(/^Match:\s*/i, "")
-        .replace(/\s*\([^)]*\)\s*$/, "");
+  }
 
-    }
+  else if (title.toLowerCase().includes("träning")) {
+
+    activityType = "TRÄNING";
+    activityIcon = "🏃";
+    typeClass = "training";
+
+  }
 
 
-    return `
-      <div class="calendar-card ${typeClass}">
+  // Försök hitta samlingstid
+  let meetingTime = "";
 
-        <div class="calendar-card-date">
-          ${dateText}
-        </div>
+  const meetingMatch =
+    activity.description.match(
+      /Samling:\s*([0-9]{1,2}:[0-9]{2})/i
+    );
 
-        <div class="calendar-card-type">
-          <span>${activityIcon}</span>
-          ${activityType}
-        </div>
 
-        <div class="calendar-card-title">
-          ${displayTitle}
-        </div>
+  if (meetingMatch) {
 
-        <div class="calendar-card-details">
+    meetingTime = meetingMatch[1];
 
-          <div>
-            🕒 ${timeText}
-          </div>
+  }
 
-          ${
-            meetingTime
-              ? `
-                <div>
-                  👥 Samling ${meetingTime}
-                </div>
-              `
-              : ""
-          }
 
-          ${
-            activity.location
-              ? `
-                <div>
-                  📍 ${activity.location}
-                </div>
-              `
-              : ""
-          }
+  // Rensa matchtiteln
+  let displayTitle = title;
 
-        </div>
+  if (activityType === "MATCH") {
+
+    displayTitle = title
+      .replace(/^Match:\s*/i, "")
+      .replace(/\s*\([^)]*\)\s*$/, "");
+
+  }
+
+
+  return `
+
+    <div class="calendar-card ${typeClass} ${isNext ? "next-activity" : ""}">
+
+      ${
+        isNext
+          ? `
+            <div class="next-activity-label">
+              ⭐ NÄSTA AKTIVITET
+            </div>
+          `
+          : ""
+      }
+
+      <div class="calendar-card-date">
+
+        ${dateText.toUpperCase()}
 
       </div>
-    `;
+
+
+      <div class="calendar-card-type">
+
+        <span>${activityIcon}</span>
+        ${activityType}
+
+      </div>
+
+
+      <div class="calendar-card-title">
+
+        ${displayTitle}
+
+      </div>
+
+
+      <div class="calendar-card-details">
+
+        <div>
+          🕒 ${timeText}
+        </div>
+
+
+        ${
+          meetingTime
+            ? `
+              <div>
+                👥 Samling: ${meetingTime}
+              </div>
+            `
+            : ""
+        }
+
+
+        ${
+          activity.location
+            ? `
+              <div>
+                📍 ${activity.location}
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================
+// VISA NÄSTA AKTIVITET
+// =====================================
+
+const nextActivity = upcomingActivities[0];
+
+
+// =====================================
+// ÖVRIGA KOMMANDE AKTIVITETER
+// =====================================
+
+const remainingActivities =
+  upcomingActivities.slice(1);
+
+
+let calendarHTML = "";
+
+
+// Nästa aktivitet
+
+if (nextActivity) {
+
+  calendarHTML += createActivityCard(
+    nextActivity,
+    true
+  );
+
+}
+
+
+// Rubrik för resterande aktiviteter
+
+if (remainingActivities.length > 0) {
+
+  calendarHTML += `
+
+    <div class="calendar-section-title">
+
+      KOMMANDE AKTIVITETER
+
+    </div>
+
+  `;
+
+}
+
+
+// Övriga aktiviteter
+
+calendarHTML += remainingActivities
+  .map(function(activity) {
+
+    return createActivityCard(activity);
 
   })
+  .join("");
+
+
+// Lägg in allt på sidan
+
+calendarList.innerHTML = calendarHTML;
   .join("");
 
   } catch (error) {
