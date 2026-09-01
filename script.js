@@ -1,19 +1,25 @@
 const navItems = document.querySelectorAll(".nav-item");
 const pages = document.querySelectorAll(".page");
 
-navItems.forEach((item) => {
+/* =========================
+   NAVIGATION
+========================= */
 
-  item.addEventListener("click", () => {
-
+navItems.forEach(function (item) {
+  item.addEventListener("click", function () {
     const pageId = item.dataset.page;
 
-    pages.forEach((page) => {
+    pages.forEach(function (page) {
       page.classList.remove("active");
     });
 
-    document.getElementById(pageId).classList.add("active");
+    const selectedPage = document.getElementById(pageId);
 
-    navItems.forEach((nav) => {
+    if (selectedPage) {
+      selectedPage.classList.add("active");
+    }
+
+    navItems.forEach(function (nav) {
       nav.classList.remove("active");
     });
 
@@ -24,23 +30,25 @@ navItems.forEach((item) => {
       behavior: "smooth"
     });
 
+    /* Ladda SportAdmin-kalender när kalendern öppnas */
+    if (pageId === "calendarPage") {
+      loadSportAdminCalendar();
+    }
   });
-
 });
 
+
+/* =========================
+   VECKANS UTMANING
+========================= */
 
 const challengeButton = document.getElementById("challengeButton");
 
 if (challengeButton) {
-
-  challengeButton.addEventListener("click", () => {
-
+  challengeButton.addEventListener("click", function () {
     challengeButton.textContent = "UTMANING KLAR! 🔥";
-
     challengeButton.style.background = "#333";
-
   });
-
 }
 
 
@@ -53,17 +61,19 @@ const sportAdminUrl =
 
 
 async function loadSportAdminCalendar() {
-
   const calendarList = document.getElementById("calendarList");
 
+  if (!calendarList) {
+    return;
+  }
+
+  calendarList.innerHTML = `
+    <div class="calendar-loading">
+      Hämtar aktiviteter från SportAdmin...
+    </div>
+  `;
+
   try {
-
-    calendarList.innerHTML = `
-      <div class="calendar-loading">
-        Hämtar aktiviteter från SportAdmin...
-      </div>
-    `;
-
     const response = await fetch(sportAdminUrl);
 
     if (!response.ok) {
@@ -81,7 +91,6 @@ async function loadSportAdminCalendar() {
     `;
 
   } catch (error) {
-
     console.error(error);
 
     calendarList.innerHTML = `
@@ -89,16 +98,5 @@ async function loadSportAdminCalendar() {
         Kunde inte hämta kalendern direkt från SportAdmin.
       </div>
     `;
-
   }
-
 }
-
-
-/* LADDA KALENDERN NÄR MAN ÖPPNAR SIDAN */
-
-document
-  .querySelector('[data-page="calendarPage"]')
-  .addEventListener("click", loadSportAdminCalendar);
-
-
