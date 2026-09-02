@@ -22,10 +22,13 @@ function setupKronangDevelopment() {
 },
     },
     {
-      title: "Spelförståelse",
-      selfField: "game_understanding_self",
-      reflectionField: "game_understanding_reflection",
-      coachField: "game_understanding_coach"
+      {
+  title: "Spelförståelse",
+  selfField: "game_understanding_self",
+  reflectionField: "game_understanding_reflection",
+  coachField: "game_understanding_coach",
+  coachCommentField: "game_understanding_coach_comment"
+},
     },
     {
       title: "Fys",
