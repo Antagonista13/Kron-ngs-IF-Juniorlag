@@ -1,10 +1,14 @@
-function buildFocusSummaryViewModel(focus, feedback) {
+function getFocusAreaLabel(area) {
   const areaLabels = { technique: "Teknik", game_understanding: "Spelförståelse", physical: "Fys", mentality: "Mentalitet" };
+  return areaLabels[area] || "";
+}
+
+function buildFocusSummaryViewModel(focus, feedback) {
   const statusLabels = { active: "Aktivt", following_up: "Följs upp", follow_up_complete: "Uppföljning klar" };
   if (!focus) return { empty: true, areaLabel: "", focusText: "Du har inget fokus ännu.", attentionText: "", statusLabel: "", coachFeedback: "", canComplete: false };
   return {
     empty: false,
-    areaLabel: areaLabels[focus.development_area] || "",
+    areaLabel: getFocusAreaLabel(focus.development_area),
     focusText: focus.focus_text || "",
     attentionText: focus.attention_text || "",
     statusLabel: statusLabels[focus.follow_up_status] || "",
@@ -15,6 +19,28 @@ function buildFocusSummaryViewModel(focus, feedback) {
 
 function buildCompleteFocusRequest(focusId, reflection) {
   return { p_focus_id: focusId, p_end_reflection: (reflection || "").trim() };
+}
+
+function buildFocusHistoryViewModel(focuses, feedbackByFocus) {
+  return (focuses || []).map(function (focus) {
+    const feedback = feedbackByFocus && feedbackByFocus[focus.id];
+    return {
+      id: focus.id,
+      areaLabel: getFocusAreaLabel(focus.development_area),
+      focusText: focus.focus_text || "",
+      attentionText: focus.attention_text || "",
+      reflection: focus.player_reflection || "",
+      coachFeedback: feedback ? (feedback.comment || "") : "",
+      endedAt: focus.ended_at || ""
+    };
+  });
+}
+
+function formatFocusHistoryDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("sv-SE", { year: "numeric", month: "long", day: "numeric" }).format(date);
 }
 
 function setupKronangFocusSummary() {
@@ -31,7 +57,17 @@ function setupKronangFocusSummary() {
     developmentGrid.parentElement.insertBefore(summary, developmentGrid);
   }
 
+  let history = document.getElementById("developmentFocusHistory");
+  if (!history) {
+    history = document.createElement("section");
+    history.id = "developmentFocusHistory";
+    history.className = "card development-focus-history";
+    history.hidden = true;
+    developmentGrid.parentElement.insertBefore(history, developmentGrid);
+  }
+
   function clearSummary() { summary.replaceChildren(); summary.hidden = true; }
+  function clearHistory() { history.replaceChildren(); history.hidden = true; }
 
   function renderFocus(focus, feedback) {
     const model = buildFocusSummaryViewModel(focus, feedback);
@@ -64,7 +100,7 @@ function setupKronangFocusSummary() {
     const existing=summary.querySelector("#focusCompletionForm"); if(existing) existing.remove();
     const form=document.createElement("div"); form.id="focusCompletionForm";
     const question=document.createElement("strong"); question.textContent="Vad har blivit bättre sedan du började arbeta med detta fokus?";
-    const textarea=document.createElement("textarea"); textarea.rows=4; textarea.placeholder="Skriv din reflektion...";
+    const textarea=document.createElement("textarea"); textarea.rows=4; textarea.maxLength=2000; textarea.placeholder="Skriv din reflektion...";
     const save=document.createElement("button"); save.type="button"; save.textContent="SPARA OCH AVSLUTA FOKUS"; save.className="primary-button";
     const cancel=document.createElement("button"); cancel.type="button"; cancel.textContent="AVBRYT";
     const message=document.createElement("p");
@@ -75,10 +111,74 @@ function setupKronangFocusSummary() {
       const { error }=await window.kronangSupabase.rpc("complete_my_development_focus", request);
       if(error){ console.error("Kunde inte avsluta fokus:", error); message.textContent="Fokuset kunde inte avslutas."; save.disabled=false; return; }
       message.textContent="FOKUS AVSLUTAT!";
-      setTimeout(loadFocusSummary, 500);
+      setTimeout(async function () { await loadFocusSummary(); await loadFocusHistory(); }, 1200);
     });
     cancel.addEventListener("click", function(){ renderFocus(focus, feedback); });
     form.append(question, textarea, save, cancel, message); summary.appendChild(form);
+  }
+
+  function renderFocusHistory(focuses, feedbackByFocus) {
+    const model = buildFocusHistoryViewModel(focuses, feedbackByFocus);
+    const heading = document.createElement("h3");
+    heading.textContent = "Fokushistorik";
+    history.replaceChildren(heading);
+
+    if (model.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Du har inga avslutade fokus ännu.";
+      history.appendChild(empty);
+      history.hidden = false;
+      return;
+    }
+
+    const toggleButton = document.createElement("button");
+    const list = document.createElement("div");
+    toggleButton.type = "button";
+    toggleButton.textContent = "VISA FOKUSHISTORIK";
+    list.hidden = true;
+    history.append(toggleButton, list);
+
+    model.forEach(function (item) {
+      const article = document.createElement("article");
+      const area = document.createElement("strong");
+      const title = document.createElement("h3");
+      const date = document.createElement("p");
+      area.textContent = item.areaLabel;
+      title.textContent = item.focusText;
+      date.textContent = item.endedAt ? "Avslutat " + formatFocusHistoryDate(item.endedAt) : "Avslutat fokus";
+      article.append(area, title, date);
+
+      if (item.attentionText) {
+        const attentionHeading = document.createElement("strong");
+        const attention = document.createElement("p");
+        attentionHeading.textContent = "Det här skulle jag tänka på";
+        attention.textContent = item.attentionText;
+        article.append(attentionHeading, attention);
+      }
+
+      const reflectionHeading = document.createElement("strong");
+      const reflection = document.createElement("p");
+      reflectionHeading.textContent = "Min reflektion";
+      reflection.textContent = item.reflection || "Ingen reflektion sparad.";
+      article.append(reflectionHeading, reflection);
+
+      if (item.coachFeedback) {
+        const feedbackHeading = document.createElement("strong");
+        const feedback = document.createElement("p");
+        feedbackHeading.textContent = "Tränarens återkoppling";
+        feedback.textContent = item.coachFeedback;
+        article.append(feedbackHeading, feedback);
+      }
+
+      list.appendChild(article);
+    });
+
+    toggleButton.addEventListener("click", function () {
+      list.hidden = !list.hidden;
+      toggleButton.textContent = list.hidden ? "VISA FOKUSHISTORIK" : "DÖLJ FOKUSHISTORIK";
+    });
+
+    history.hidden = false;
   }
 
   async function loadFocusSummary() {
@@ -98,11 +198,45 @@ function setupKronangFocusSummary() {
     renderFocus(focus,feedback);
   }
 
-  window.kronangSupabase.auth.onAuthStateChange(function(_event,session){ if(session) loadFocusSummary(); else clearSummary(); });
+  async function loadFocusHistory() {
+    if (!window.kronangSupabase) return;
+    const { data: sessionData }=await window.kronangSupabase.auth.getSession();
+    const user=sessionData.session ? sessionData.session.user : null;
+    if(!user){ clearHistory(); return; }
+    const { data: profile, error: profileError }=await window.kronangSupabase.from("profiles").select("role").eq("id",user.id).maybeSingle();
+    if(profileError || !profile || profile.role!=="player"){ clearHistory(); return; }
+
+    const { data: focuses, error: focusesError }=await window.kronangSupabase
+      .from("development_focuses")
+      .select("id, development_area, focus_text, attention_text, player_reflection, ended_at")
+      .eq("lifecycle_status","ended")
+      .order("ended_at",{ascending:false});
+
+    if(focusesError){ console.error("Kunde inte hämta fokushistorik:",focusesError); clearHistory(); return; }
+
+    const feedbackByFocus={};
+    if(focuses && focuses.length>0){
+      const ids=focuses.map(function(focus){ return focus.id; });
+      const { data: feedbackRows, error: feedbackError }=await window.kronangSupabase
+        .from("development_focus_coach_feedback")
+        .select("focus_id, comment, created_at")
+        .in("focus_id",ids)
+        .order("created_at",{ascending:false});
+      if(feedbackError){
+        console.error("Kunde inte hämta återkoppling till fokushistorik:",feedbackError);
+      } else {
+        (feedbackRows||[]).forEach(function(row){ if(!feedbackByFocus[row.focus_id]) feedbackByFocus[row.focus_id]=row; });
+      }
+    }
+    renderFocusHistory(focuses||[],feedbackByFocus);
+  }
+
+  window.kronangSupabase.auth.onAuthStateChange(function(_event,session){ if(session){ loadFocusSummary(); loadFocusHistory(); } else { clearSummary(); clearHistory(); } });
   loadFocusSummary();
+  loadFocusHistory();
 }
 
 function waitForKronangFocusSummary(){ if(window.kronangSupabase){ setupKronangFocusSummary(); return; } setTimeout(waitForKronangFocusSummary,100); }
 function loadGoalCreateScript(){ if(document.querySelector('script[data-goal-create-script]')) return; const script=document.createElement("script"); script.src="goal-create.js?v=2"; script.setAttribute("data-goal-create-script","true"); document.body.appendChild(script); }
-if(typeof module!=="undefined" && module.exports) module.exports={ buildFocusSummaryViewModel, buildCompleteFocusRequest };
+if(typeof module!=="undefined" && module.exports) module.exports={ buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusHistoryViewModel, formatFocusHistoryDate };
 if(typeof window!=="undefined" && typeof document!=="undefined"){ waitForKronangFocusSummary(); loadGoalCreateScript(); }
