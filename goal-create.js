@@ -6,6 +6,27 @@ function buildGoalCreateRequest(title, description, successDescription) {
   };
 }
 
+function rememberDevelopmentPage(storage) {
+  if (!storage || typeof storage.setItem !== "function") return false;
+  storage.setItem("kronangReturnPage", "developmentPage");
+  return true;
+}
+
+function restoreDevelopmentPage(storage, doc) {
+  if (!storage || !doc || typeof storage.getItem !== "function") return false;
+  if (storage.getItem("kronangReturnPage") !== "developmentPage") return false;
+
+  const button = doc.querySelector('[data-page="developmentPage"]');
+  if (!button) return false;
+
+  if (typeof storage.removeItem === "function") {
+    storage.removeItem("kronangReturnPage");
+  }
+
+  button.click();
+  return true;
+}
+
 function setupGoalCreate() {
   if (!window.kronangSupabase) return false;
 
@@ -150,6 +171,7 @@ function setupGoalCreate() {
         return;
       }
 
+      rememberDevelopmentPage(window.sessionStorage);
       window.location.reload();
     });
   }
@@ -163,10 +185,17 @@ function waitForGoalCreate() {
   setTimeout(waitForGoalCreate, 100);
 }
 
+function waitForDevelopmentRestore() {
+  if (!window.sessionStorage || window.sessionStorage.getItem("kronangReturnPage") !== "developmentPage") return;
+  if (restoreDevelopmentPage(window.sessionStorage, document)) return;
+  setTimeout(waitForDevelopmentRestore, 100);
+}
+
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildGoalCreateRequest };
+  module.exports = { buildGoalCreateRequest, rememberDevelopmentPage, restoreDevelopmentPage };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   setTimeout(waitForGoalCreate, 300);
+  setTimeout(waitForDevelopmentRestore, 500);
 }
