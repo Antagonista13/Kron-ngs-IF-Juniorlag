@@ -77,6 +77,7 @@ function setupCoachPlayerContext() {
 
     if (selectedContext.focusStatus) {
       const status = document.createElement("p");
+      status.setAttribute("data-coach-focus-status", "true");
       status.textContent = "Status: " + selectedContext.focusStatus;
       section.appendChild(status);
     }
