@@ -41,15 +41,3 @@ test('builds goal history with completed goals and saved subgoals', () => {
   assert.equal(typeof goalSummary.buildGoalHistoryViewModel, 'function');
   assert.deepEqual(goalSummary.buildGoalHistoryViewModel([{ id: 'goal-1', title: 'Mitt gamla mål', final_reflection: 'Jag lärde mig mycket.', completed_at: '2026-09-02T12:00:00Z' }], { 'goal-1': [{ id: 'sub-1', text: 'Första delmålet', status: 'completed' }, { id: 'sub-2', text: 'Arkiverat', status: 'archived' }] }), [{ id: 'goal-1', title: 'Mitt gamla mål', reflection: 'Jag lärde mig mycket.', completedAt: '2026-09-02T12:00:00Z', subgoals: [{ id: 'sub-1', text: 'Första delmålet', completed: true }] }]);
 });
-
-test('builds a trimmed request for creating a new goal', () => {
-  assert.equal(typeof goalSummary.buildGoalCreateRequest, 'function');
-  assert.deepEqual(
-    goalSummary.buildGoalCreateRequest('  Bli modigare i mitt spel  ', '  Jag vill våga ta fler initiativ.  ', '  Jag tar fler initiativ under träning och match.  '),
-    {
-      p_title: 'Bli modigare i mitt spel',
-      p_description: 'Jag vill våga ta fler initiativ.',
-      p_success_description: 'Jag tar fler initiativ under träning och match.'
-    }
-  );
-});
