@@ -25,6 +25,33 @@ function buildGoalCompletionViewModel(goal, subgoals) {
   };
 }
 
+function buildGoalHistoryViewModel(goals, subgoalsByGoal) {
+  return (goals || []).map(function (goal) {
+    return {
+      id: goal.id,
+      title: goal.title || "",
+      reflection: goal.final_reflection || "",
+      completedAt: goal.completed_at || "",
+      subgoals: ((subgoalsByGoal && subgoalsByGoal[goal.id]) || [])
+        .filter(function (subgoal) { return subgoal.status !== "archived"; })
+        .map(function (subgoal) {
+          return {
+            id: subgoal.id,
+            text: subgoal.text || "",
+            completed: subgoal.status === "completed"
+          };
+        })
+    };
+  });
+}
+
+function formatGoalHistoryDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("sv-SE", { year: "numeric", month: "long", day: "numeric" }).format(date);
+}
+
 function setupKronangGoalSummary() {
   const developmentPage = document.getElementById("developmentPage");
   const developmentGrid = developmentPage ? developmentPage.querySelector(".development-grid") : null;
@@ -39,7 +66,17 @@ function setupKronangGoalSummary() {
     developmentGrid.parentElement.insertBefore(summary, developmentGrid);
   }
 
+  let history = document.getElementById("developmentGoalHistory");
+  if (!history) {
+    history = document.createElement("section");
+    history.id = "developmentGoalHistory";
+    history.className = "card development-goal-history";
+    history.hidden = true;
+    developmentGrid.parentElement.insertBefore(history, developmentGrid);
+  }
+
   function clearSummary() { summary.replaceChildren(); summary.hidden = true; }
+  function clearHistory() { history.replaceChildren(); history.hidden = true; }
 
   function showGoalCompleted() {
     const heading = document.createElement("h2");
@@ -51,7 +88,10 @@ function setupKronangGoalSummary() {
     closeButton.textContent = "STÄNG";
     summary.replaceChildren(heading, text, closeButton);
     summary.hidden = false;
-    closeButton.addEventListener("click", function () { loadGoalSummary(); });
+    closeButton.addEventListener("click", async function () {
+      await loadGoalSummary();
+      await loadGoalHistory();
+    });
   }
 
   function renderCompletion(goal, subgoals) {
@@ -200,6 +240,67 @@ function setupKronangGoalSummary() {
     summary.hidden = false;
   }
 
+  function renderGoalHistory(goals, subgoalsByGoal) {
+    const model = buildGoalHistoryViewModel(goals, subgoalsByGoal);
+    const heading = document.createElement("h3");
+    heading.textContent = "Målhistorik";
+    history.replaceChildren(heading);
+
+    if (model.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Du har inga avslutade mål ännu.";
+      history.appendChild(empty);
+      history.hidden = false;
+      return;
+    }
+
+    const toggleButton = document.createElement("button");
+    const list = document.createElement("div");
+    toggleButton.type = "button";
+    toggleButton.textContent = "VISA MÅLHISTORIK";
+    list.hidden = true;
+    history.appendChild(toggleButton);
+    history.appendChild(list);
+
+    model.forEach(function (item) {
+      const article = document.createElement("article");
+      const title = document.createElement("h3");
+      const date = document.createElement("p");
+      title.textContent = item.title;
+      date.textContent = item.completedAt ? "Avslutat " + formatGoalHistoryDate(item.completedAt) : "Avslutat mål";
+      article.appendChild(title);
+      article.appendChild(date);
+
+      if (item.subgoals.length > 0) {
+        const subHeading = document.createElement("strong");
+        const subList = document.createElement("ul");
+        subHeading.textContent = "Delmål";
+        item.subgoals.forEach(function (subgoal) {
+          const li = document.createElement("li");
+          li.textContent = (subgoal.completed ? "✓ " : "– ") + subgoal.text;
+          subList.appendChild(li);
+        });
+        article.appendChild(subHeading);
+        article.appendChild(subList);
+      }
+
+      const reflectionHeading = document.createElement("strong");
+      const reflection = document.createElement("p");
+      reflectionHeading.textContent = "Min slutreflektion";
+      reflection.textContent = item.reflection || "Ingen slutreflektion sparad.";
+      article.appendChild(reflectionHeading);
+      article.appendChild(reflection);
+      list.appendChild(article);
+    });
+
+    toggleButton.addEventListener("click", function () {
+      list.hidden = !list.hidden;
+      toggleButton.textContent = list.hidden ? "VISA MÅLHISTORIK" : "DÖLJ MÅLHISTORIK";
+    });
+
+    history.hidden = false;
+  }
+
   async function loadGoalSummary() {
     if (!window.kronangSupabase) return;
     const { data: sessionData } = await window.kronangSupabase.auth.getSession();
@@ -217,13 +318,67 @@ function setupKronangGoalSummary() {
     renderGoal(goal, subgoals);
   }
 
-  window.kronangSupabase.auth.onAuthStateChange(function (_event, session) { if (session) loadGoalSummary(); else clearSummary(); });
+  async function loadGoalHistory() {
+    if (!window.kronangSupabase) return;
+    const { data: sessionData } = await window.kronangSupabase.auth.getSession();
+    const user = sessionData.session ? sessionData.session.user : null;
+    if (!user) { clearHistory(); return; }
+
+    const { data: profile, error: profileError } = await window.kronangSupabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (profileError || !profile || profile.role !== "player") { clearHistory(); return; }
+
+    const { data: goals, error: goalsError } = await window.kronangSupabase
+      .from("development_goals")
+      .select("id, title, final_reflection, completed_at")
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false });
+
+    if (goalsError) {
+      console.error("Målhistorikfel:", goalsError);
+      clearHistory();
+      return;
+    }
+
+    const completedGoals = goals || [];
+    const subgoalsByGoal = {};
+    const goalIds = completedGoals.map(function (goal) { return goal.id; });
+
+    if (goalIds.length > 0) {
+      const { data: subgoals, error: subgoalsError } = await window.kronangSupabase
+        .from("development_subgoals")
+        .select("id, goal_id, text, status, sort_order")
+        .in("goal_id", goalIds)
+        .order("sort_order", { ascending: true });
+
+      if (subgoalsError) {
+        console.error("Historikfel för delmål:", subgoalsError);
+      } else {
+        (subgoals || []).forEach(function (subgoal) {
+          if (!subgoalsByGoal[subgoal.goal_id]) subgoalsByGoal[subgoal.goal_id] = [];
+          subgoalsByGoal[subgoal.goal_id].push(subgoal);
+        });
+      }
+    }
+
+    renderGoalHistory(completedGoals, subgoalsByGoal);
+  }
+
+  window.kronangSupabase.auth.onAuthStateChange(function (_event, session) {
+    if (session) {
+      loadGoalSummary();
+      loadGoalHistory();
+    } else {
+      clearSummary();
+      clearHistory();
+    }
+  });
   loadGoalSummary();
+  loadGoalHistory();
 }
 
 function waitForKronangGoalSummary() { if (window.kronangSupabase) { setupKronangGoalSummary(); return; } setTimeout(waitForKronangGoalSummary, 100); }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildGoalSummaryViewModel, buildSubgoalSummaryViewModel, buildSubgoalToggleRequest, buildSubgoalCreateRequest, buildSubgoalArchiveRequest, buildGoalCompleteRequest, buildGoalCompletionViewModel };
+  module.exports = { buildGoalSummaryViewModel, buildSubgoalSummaryViewModel, buildSubgoalToggleRequest, buildSubgoalCreateRequest, buildSubgoalArchiveRequest, buildGoalCompleteRequest, buildGoalCompletionViewModel, buildGoalHistoryViewModel };
 }
 if (typeof window !== "undefined" && typeof document !== "undefined") waitForKronangGoalSummary();
