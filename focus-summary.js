@@ -170,10 +170,19 @@ function waitForKronangFocusSummary() {
   setTimeout(waitForKronangFocusSummary, 100);
 }
 
+function loadGoalCreateScript() {
+  if (document.querySelector('script[data-goal-create-script]')) return;
+  const script = document.createElement("script");
+  script.src = "goal-create.js?v=1";
+  script.setAttribute("data-goal-create-script", "true");
+  document.body.appendChild(script);
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { buildFocusSummaryViewModel };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   waitForKronangFocusSummary();
+  loadGoalCreateScript();
 }
