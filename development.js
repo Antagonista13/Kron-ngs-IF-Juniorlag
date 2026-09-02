@@ -175,10 +175,18 @@ function setupKronangDevelopment() {
         ></textarea>
 
         <p>Tränarens bedömning</p>
+<strong>
+  ${formatRating(coachRating)}
+</strong>
 
-        <strong>
-          ${formatRating(coachRating)}
-        </strong>
+<p>Tränarens kommentar</p>
+<p class="coach-comment-display">
+  ${
+    assessment
+      ? assessment[area.coachCommentField] || "Ingen kommentar ännu."
+      : "Ingen kommentar ännu."
+  }
+</p>
       `;
 
       const textarea =
