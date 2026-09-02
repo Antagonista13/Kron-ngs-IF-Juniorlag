@@ -10,7 +10,8 @@ function setupKronangLogout() {
 
   logoutSection.innerHTML = `
     <h3>Mitt konto</h3>
-    <p id="loggedInEmail">Inloggad som hämtas...</p>
+    <p id="loggedInPlayer">Spelarprofil hämtas...</p>
+    <p id="loggedInEmail">Inloggning hämtas...</p>
     <p>Logga ut från juniorlagsappen på den här enheten.</p>
     <button id="logoutButton" type="button">LOGGA UT</button>
   `;
@@ -18,15 +19,40 @@ function setupKronangLogout() {
   profilePage.appendChild(logoutSection);
 
   const logoutButton = document.getElementById("logoutButton");
+  const loggedInPlayer = document.getElementById("loggedInPlayer");
   const loggedInEmail = document.getElementById("loggedInEmail");
 
-  window.kronangSupabase.auth.getSession().then(function ({ data }) {
-    if (data.session && data.session.user && data.session.user.email) {
+  window.kronangSupabase.auth.getSession().then(async function ({ data }) {
+    if (!data.session || !data.session.user) {
+      loggedInPlayer.textContent = "Ingen aktiv spelarprofil.";
+      loggedInEmail.textContent = "Ingen aktiv inloggning.";
+      return;
+    }
+
+    const user = data.session.user;
+
+    if (user.email) {
       loggedInEmail.textContent =
-        "Inloggad som: " + data.session.user.email;
-    } else {
-      loggedInEmail.textContent =
-        "Ingen aktiv inloggning.";
+        "Inloggad som: " + user.email;
+    }
+
+    const { data: profile, error } =
+      await window.kronangSupabase
+        .from("profiles")
+        .select("full_name, role, team")
+        .eq("id", user.id)
+        .single();
+
+    if (error) {
+      console.error("Profilfel:", error);
+      loggedInPlayer.textContent =
+        "Spelarprofil kunde inte hämtas.";
+      return;
+    }
+
+    if (profile) {
+      loggedInPlayer.textContent =
+        "Spelare: " + profile.full_name;
     }
   });
 
