@@ -15,26 +15,32 @@ function setupKronangDevelopment() {
     {
       title: "Teknik",
       selfField: "technique_self",
+      reflectionField: "technique_reflection",
       coachField: "technique_coach"
     },
     {
       title: "Spelförståelse",
       selfField: "game_understanding_self",
+      reflectionField: "game_understanding_reflection",
       coachField: "game_understanding_coach"
     },
     {
       title: "Fys",
       selfField: "physical_self",
+      reflectionField: "physical_reflection",
       coachField: "physical_coach"
     },
     {
       title: "Mentalitet",
       selfField: "mentality_self",
+      reflectionField: "mentality_reflection",
       coachField: "mentality_coach"
     }
   ];
 
   const selfRatings = [null, null, null, null];
+
+  const selfReflections = ["", "", "", ""];
 
   function formatRating(value) {
     if (value === null || value === undefined) {
@@ -94,6 +100,13 @@ function setupKronangDevelopment() {
           ? assessment[area.selfField]
           : null;
 
+      const reflection =
+        selfReflections[index] !== ""
+          ? selfReflections[index]
+          : assessment
+          ? assessment[area.reflectionField] || ""
+          : "";
+
       const coachRating =
         assessment
           ? assessment[area.coachField]
@@ -118,12 +131,28 @@ function setupKronangDevelopment() {
 
         ${renderSelfRating(selfRating, index)}
 
+        <p>Din reflektion</p>
+
+        <textarea
+          class="self-reflection"
+          data-area="${index}"
+          rows="3"
+          placeholder="Skriv kort om hur du upplever din utveckling..."
+        ></textarea>
+
         <p>Tränarens bedömning</p>
 
         <strong>
           ${formatRating(coachRating)}
         </strong>
       `;
+
+      const textarea =
+        card.querySelector(".self-reflection");
+
+      if (textarea) {
+        textarea.value = reflection;
+      }
     });
   }
 
@@ -243,6 +272,24 @@ function setupKronangDevelopment() {
           }
         });
       });
+    }
+  );
+
+  developmentGrid.addEventListener(
+    "input",
+    function (event) {
+      const textarea =
+        event.target.closest(".self-reflection");
+
+      if (!textarea) {
+        return;
+      }
+
+      const areaIndex =
+        Number(textarea.dataset.area);
+
+      selfReflections[areaIndex] =
+        textarea.value;
     }
   );
 
