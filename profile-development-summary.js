@@ -1,3 +1,6 @@
+const PROFILE_FOCUS_CARD_ID = "profileFocusCard";
+const PROFILE_GOAL_CARD_ID = "profileGoalCard";
+
 function buildProfileDevelopmentSummary(goal, subgoals, focus) {
   const areaLabels = {
     technique: "Teknik",
@@ -34,11 +37,9 @@ function setupProfileDevelopmentSummary() {
   const profilePage = document.getElementById("profilePage");
   if (!profilePage || !window.kronangSupabase) return;
 
-  const cards = profilePage.querySelectorAll(".card");
-  if (cards.length < 2) return;
-
-  const focusCard = cards[0];
-  const goalCard = cards[cards.length - 1];
+  const focusCard = document.getElementById(PROFILE_FOCUS_CARD_ID);
+  const goalCard = document.getElementById(PROFILE_GOAL_CARD_ID);
+  if (!focusCard || !goalCard) return;
 
   function goToDevelopment() {
     const button = document.querySelector('.nav-item[data-page="developmentPage"]');
@@ -101,49 +102,26 @@ function setupProfileDevelopmentSummary() {
     if (!user) return;
 
     const { data: profile, error: profileError } = await window.kronangSupabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
-
+      .from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (profileError || !profile || profile.role !== "player") return;
 
     const { data: goal, error: goalError } = await window.kronangSupabase
-      .from("development_goals")
-      .select("id, title")
-      .eq("status", "active")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (goalError) {
-      console.error("Profilfel för mål:", goalError);
-      return;
-    }
+      .from("development_goals").select("id, title").eq("status", "active")
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (goalError) { console.error("Profilfel för mål:", goalError); return; }
 
     let subgoals = [];
     if (goal) {
       const { data, error } = await window.kronangSupabase
-        .from("development_subgoals")
-        .select("status")
-        .eq("goal_id", goal.id);
-
+        .from("development_subgoals").select("status").eq("goal_id", goal.id);
       if (error) console.error("Profilfel för delmål:", error);
       else subgoals = data || [];
     }
 
     const { data: focus, error: focusError } = await window.kronangSupabase
-      .from("development_focuses")
-      .select("development_area, focus_text, follow_up_status")
-      .eq("lifecycle_status", "active")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (focusError) {
-      console.error("Profilfel för fokus:", focusError);
-      return;
-    }
+      .from("development_focuses").select("development_area, focus_text, follow_up_status")
+      .eq("lifecycle_status", "active").order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (focusError) { console.error("Profilfel för fokus:", focusError); return; }
 
     renderSummary(buildProfileDevelopmentSummary(goal, subgoals, focus));
   }
@@ -151,20 +129,16 @@ function setupProfileDevelopmentSummary() {
   window.kronangSupabase.auth.onAuthStateChange(function (_event, session) {
     if (session) loadSummary();
   });
-
   loadSummary();
 }
 
 function waitForProfileDevelopmentSummary() {
-  if (window.kronangSupabase) {
-    setupProfileDevelopmentSummary();
-    return;
-  }
+  if (window.kronangSupabase) { setupProfileDevelopmentSummary(); return; }
   setTimeout(waitForProfileDevelopmentSummary, 100);
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildProfileDevelopmentSummary };
+  module.exports = { buildProfileDevelopmentSummary, PROFILE_FOCUS_CARD_ID, PROFILE_GOAL_CARD_ID };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
