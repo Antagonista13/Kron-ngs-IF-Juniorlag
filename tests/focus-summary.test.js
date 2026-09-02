@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildFocusSummaryViewModel } = require('../focus-summary.js');
+const { buildFocusSummaryViewModel, buildCompleteFocusRequest } = require('../focus-summary.js');
 
 test('builds a Swedish read-only focus summary with latest coach feedback', () => {
   const model = buildFocusSummaryViewModel({
@@ -18,7 +18,25 @@ test('builds a Swedish read-only focus summary with latest coach feedback', () =
     focusText: 'Läsa spelet snabbare',
     attentionText: 'Titta upp innan mottagning',
     statusLabel: 'Följs upp',
-    coachFeedback: 'Bra utveckling. Fortsätt att titta upp innan du får bollen.'
+    coachFeedback: 'Bra utveckling. Fortsätt att titta upp innan du får bollen.',
+    canComplete: false
+  });
+});
+
+test('allows player completion only after coach follow-up is complete', () => {
+  const model = buildFocusSummaryViewModel({
+    development_area: 'game_understanding',
+    focus_text: 'Läsa spelet snabbare',
+    attention_text: 'Titta upp innan mottagning',
+    follow_up_status: 'follow_up_complete'
+  }, null);
+  assert.equal(model.canComplete, true);
+});
+
+test('builds a trimmed focus completion RPC request', () => {
+  assert.deepEqual(buildCompleteFocusRequest('focus-1', '  Jag tittar upp tidigare.  '), {
+    p_focus_id: 'focus-1',
+    p_end_reflection: 'Jag tittar upp tidigare.'
   });
 });
 
@@ -29,6 +47,7 @@ test('returns the empty state when no focus exists', () => {
     focusText: 'Du har inget fokus ännu.',
     attentionText: '',
     statusLabel: '',
-    coachFeedback: ''
+    coachFeedback: '',
+    canComplete: false
   });
 });
