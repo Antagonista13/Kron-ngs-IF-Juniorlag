@@ -50,6 +50,13 @@ function buildSubgoalToggleRequest(item) {
   };
 }
 
+function buildSubgoalCreateRequest(goalId, text) {
+  return {
+    p_goal_id: goalId,
+    p_text: (text || "").trim()
+  };
+}
+
 function setupKronangGoalSummary() {
   const developmentPage = document.getElementById("developmentPage");
   const developmentGrid = developmentPage
@@ -154,6 +161,73 @@ function setupKronangGoalSummary() {
     });
 
     summary.appendChild(progress);
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.textContent = "+ LÄGG TILL DELMÅL";
+    summary.appendChild(addButton);
+
+    addButton.addEventListener("click", function () {
+      addButton.hidden = true;
+
+      const editor = document.createElement("div");
+      const input = document.createElement("input");
+      const saveButton = document.createElement("button");
+      const cancelButton = document.createElement("button");
+
+      input.type = "text";
+      input.maxLength = 300;
+      input.placeholder = "Skriv ett delmål...";
+      input.setAttribute("aria-label", "Nytt delmål");
+
+      saveButton.type = "button";
+      saveButton.textContent = "SPARA";
+
+      cancelButton.type = "button";
+      cancelButton.textContent = "AVBRYT";
+
+      editor.appendChild(input);
+      editor.appendChild(saveButton);
+      editor.appendChild(cancelButton);
+      summary.appendChild(editor);
+
+      input.focus();
+
+      cancelButton.addEventListener("click", function () {
+        editor.remove();
+        addButton.hidden = false;
+      });
+
+      saveButton.addEventListener("click", async function () {
+        const request = buildSubgoalCreateRequest(goal.id, input.value);
+
+        if (!request.p_text) {
+          input.focus();
+          return;
+        }
+
+        input.disabled = true;
+        saveButton.disabled = true;
+        cancelButton.disabled = true;
+
+        const { error } = await window.kronangSupabase.rpc(
+          "add_my_goal_subgoal",
+          request
+        );
+
+        if (error) {
+          console.error("Kunde inte lägga till delmålet:", error);
+          input.disabled = false;
+          saveButton.disabled = false;
+          cancelButton.disabled = false;
+          input.focus();
+          return;
+        }
+
+        await loadGoalSummary();
+      });
+    });
+
     summary.hidden = false;
   }
 
@@ -248,7 +322,8 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     buildGoalSummaryViewModel,
     buildSubgoalSummaryViewModel,
-    buildSubgoalToggleRequest
+    buildSubgoalToggleRequest,
+    buildSubgoalCreateRequest
   };
 }
 
