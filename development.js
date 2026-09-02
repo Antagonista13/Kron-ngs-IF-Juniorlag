@@ -13,10 +13,13 @@ function setupKronangDevelopment() {
 
   const areas = [
     {
-      title: "Teknik",
-      selfField: "technique_self",
-      reflectionField: "technique_reflection",
-      coachField: "technique_coach"
+      {
+  title: "Teknik",
+  selfField: "technique_self",
+  reflectionField: "technique_reflection",
+  coachField: "technique_coach",
+  coachCommentField: "technique_coach_comment"
+},
     },
     {
       title: "Spelförståelse",
