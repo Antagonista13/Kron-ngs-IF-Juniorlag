@@ -39,7 +39,6 @@ function setupKronangDevelopment() {
   ];
 
   const selfRatings = [null, null, null, null];
-
   const selfReflections = ["", "", "", ""];
 
   function formatRating(value) {
@@ -80,6 +79,30 @@ function setupKronangDevelopment() {
     return html;
   }
 
+  function renderSaveButton() {
+    if (document.getElementById("saveDevelopmentButton")) {
+      return;
+    }
+
+    const saveSection =
+      document.createElement("section");
+
+    saveSection.className = "card development-save-card";
+
+    saveSection.innerHTML = `
+      <button
+        id="saveDevelopmentButton"
+        type="button"
+      >
+        SPARA SJÄLVSKATTNING
+      </button>
+
+      <p id="developmentSaveMessage"></p>
+    `;
+
+    developmentGrid.parentElement.appendChild(saveSection);
+  }
+
   function renderCards(assessment) {
     const cards =
       developmentGrid.querySelectorAll(
@@ -94,18 +117,17 @@ function setupKronangDevelopment() {
       }
 
       const selfRating =
-        selfRatings[index] !== null
-          ? selfRatings[index]
-          : assessment
+        assessment
           ? assessment[area.selfField]
           : null;
 
       const reflection =
-        selfReflections[index] !== ""
-          ? selfReflections[index]
-          : assessment
+        assessment
           ? assessment[area.reflectionField] || ""
           : "";
+
+      selfRatings[index] = selfRating;
+      selfReflections[index] = reflection;
 
       const coachRating =
         assessment
@@ -154,6 +176,8 @@ function setupKronangDevelopment() {
         textarea.value = reflection;
       }
     });
+
+    renderSaveButton();
   }
 
   async function loadDevelopment() {
@@ -247,30 +271,26 @@ function setupKronangDevelopment() {
 
       selfRatings[areaIndex] = rating;
 
-      const cards =
-        developmentGrid.querySelectorAll(
-          ".development-card"
-        );
+      const card =
+        button.closest(".development-card");
 
-      cards.forEach(function (card, index) {
-        if (index !== areaIndex) {
-          return;
+      if (!card) {
+        return;
+      }
+
+      const buttons =
+        card.querySelectorAll(".rating-star");
+
+      buttons.forEach(function (star, index) {
+        const starNumber = index + 1;
+
+        if (starNumber <= rating) {
+          star.textContent = "★";
+          star.classList.add("selected");
+        } else {
+          star.textContent = "☆";
+          star.classList.remove("selected");
         }
-
-        const buttons =
-          card.querySelectorAll(".rating-star");
-
-        buttons.forEach(function (star, starIndex) {
-          const starNumber = starIndex + 1;
-
-          if (starNumber <= rating) {
-            star.textContent = "★";
-            star.classList.add("selected");
-          } else {
-            star.textContent = "☆";
-            star.classList.remove("selected");
-          }
-        });
       });
     }
   );
@@ -290,6 +310,88 @@ function setupKronangDevelopment() {
 
       selfReflections[areaIndex] =
         textarea.value;
+    }
+  );
+
+  developmentPage.addEventListener(
+    "click",
+    async function (event) {
+      const button =
+        event.target.closest(
+          "#saveDevelopmentButton"
+        );
+
+      if (!button) {
+        return;
+      }
+
+      const message =
+        document.getElementById(
+          "developmentSaveMessage"
+        );
+
+      if (
+        selfRatings.some(
+          function (rating) {
+            return rating === null;
+          }
+        )
+      ) {
+        message.textContent =
+          "Välj en nivå 1–5 för alla fyra områden.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "SPARAR...";
+
+      const { error } =
+        await window.kronangSupabase.rpc(
+          "save_player_self_assessment",
+          {
+            p_technique_self: selfRatings[0],
+            p_technique_reflection:
+              selfReflections[0],
+
+            p_game_understanding_self:
+              selfRatings[1],
+            p_game_understanding_reflection:
+              selfReflections[1],
+
+            p_physical_self:
+              selfRatings[2],
+            p_physical_reflection:
+              selfReflections[2],
+
+            p_mentality_self:
+              selfRatings[3],
+            p_mentality_reflection:
+              selfReflections[3]
+          }
+        );
+
+      if (error) {
+        console.error(
+          "Fel vid sparande:",
+          error
+        );
+
+        message.textContent =
+          "Det gick inte att spara. Försök igen.";
+
+        button.disabled = false;
+        button.textContent =
+          "SPARA SJÄLVSKATTNING";
+
+        return;
+      }
+
+      message.textContent =
+        "Självskattningen är sparad.";
+
+      button.disabled = false;
+      button.textContent =
+        "SPARA SJÄLVSKATTNING";
     }
   );
 
