@@ -29,6 +29,14 @@ function buildFocusCreateRequest(area, focusText, attentionText) {
   };
 }
 
+function validateFocusCreateFields(area, focusText, attentionText) {
+  const errors = {};
+  if (!(area || "").trim()) errors.area = "Välj ett utvecklingsområde.";
+  if (!(focusText || "").trim()) errors.focusText = "Skriv vad du vill fokusera på.";
+  if (!(attentionText || "").trim()) errors.attentionText = "Skriv vad du ska tänka på.";
+  return { valid: Object.keys(errors).length === 0, errors: errors };
+}
+
 function buildFocusHistoryViewModel(focuses, feedbackByFocus) {
   return (focuses || []).map(function (focus) {
     const feedback = feedbackByFocus && feedbackByFocus[focus.id];
@@ -114,20 +122,85 @@ function setupKronangFocusSummary() {
 
   function renderCreateFocusForm() {
     const heading = document.createElement("h3");
-    const areaLabel = document.createElement("strong");
+    const intro = document.createElement("p");
+    const form = document.createElement("div");
+    const areaGroup = document.createElement("div");
+    const areaLabel = document.createElement("label");
     const area = document.createElement("select");
-    const focusLabel = document.createElement("strong");
+    const areaError = document.createElement("p");
+    const focusGroup = document.createElement("div");
+    const focusLabel = document.createElement("label");
     const focusText = document.createElement("input");
-    const attentionLabel = document.createElement("strong");
+    const focusError = document.createElement("p");
+    const attentionGroup = document.createElement("div");
+    const attentionLabel = document.createElement("label");
     const attentionText = document.createElement("textarea");
+    const attentionError = document.createElement("p");
+    const actions = document.createElement("div");
     const save = document.createElement("button");
     const cancel = document.createElement("button");
     const message = document.createElement("p");
 
     heading.textContent = "Skapa nytt fokus";
-    areaLabel.textContent = "Område";
+    intro.textContent = "Fält markerade med * är obligatoriska.";
+    intro.style.color = "#555";
+    intro.style.marginBottom = "18px";
+
+    form.style.display = "flex";
+    form.style.flexDirection = "column";
+    form.style.gap = "18px";
+
+    [areaGroup, focusGroup, attentionGroup].forEach(function (group) {
+      group.style.display = "flex";
+      group.style.flexDirection = "column";
+      group.style.gap = "7px";
+    });
+
+    function setRequiredLabel(label, text) {
+      label.textContent = text + " ";
+      label.style.fontWeight = "700";
+      const star = document.createElement("span");
+      star.textContent = "*";
+      star.style.color = "#b00020";
+      star.setAttribute("aria-hidden", "true");
+      label.appendChild(star);
+    }
+
+    function styleField(field) {
+      field.style.width = "100%";
+      field.style.padding = "12px";
+      field.style.border = "1px solid #bdbdbd";
+      field.style.borderRadius = "10px";
+      field.style.font = "inherit";
+      field.style.background = "#fff";
+    }
+
+    function styleError(error) {
+      error.style.color = "#b00020";
+      error.style.fontSize = "13px";
+      error.style.fontWeight = "700";
+      error.style.margin = "0";
+      error.hidden = true;
+    }
+
+    function clearErrors() {
+      [area, focusText, attentionText].forEach(function (field) { field.style.border = "1px solid #bdbdbd"; field.removeAttribute("aria-invalid"); });
+      [areaError, focusError, attentionError].forEach(function (error) { error.hidden = true; error.textContent = ""; });
+      message.textContent = "";
+    }
+
+    function showFieldError(field, errorElement, text) {
+      field.style.border = "2px solid #b00020";
+      field.setAttribute("aria-invalid", "true");
+      errorElement.textContent = text;
+      errorElement.hidden = false;
+    }
+
+    setRequiredLabel(areaLabel, "Utvecklingsområde");
+    areaLabel.htmlFor = "focusCreateArea";
+    area.id = "focusCreateArea";
     [
-      ["", "Välj område"],
+      ["", "Välj utvecklingsområde"],
       ["technique", "Teknik"],
       ["game_understanding", "Spelförståelse"],
       ["physical", "Fys"],
@@ -139,44 +212,69 @@ function setupKronangFocusSummary() {
       area.appendChild(option);
     });
 
-    focusLabel.textContent = "Vad vill du fokusera på?";
+    setRequiredLabel(focusLabel, "Vad vill du fokusera på?");
+    focusLabel.htmlFor = "focusCreateText";
+    focusText.id = "focusCreateText";
     focusText.type = "text";
     focusText.maxLength = 160;
     focusText.placeholder = "Till exempel: Bättre första touch";
-    focusText.setAttribute("aria-label", "Nytt fokus");
 
-    attentionLabel.textContent = "Vad ska du tänka på?";
+    setRequiredLabel(attentionLabel, "Vad ska du tänka på?");
+    attentionLabel.htmlFor = "focusCreateAttention";
+    attentionText.id = "focusCreateAttention";
     attentionText.rows = 4;
     attentionText.maxLength = 1000;
     attentionText.placeholder = "Beskriv vad du vill påminna dig själv om...";
-    attentionText.setAttribute("aria-label", "Vad ska jag tänka på");
+
+    [area, focusText, attentionText].forEach(styleField);
+    [areaError, focusError, attentionError].forEach(styleError);
 
     save.type = "button";
     save.textContent = "SPARA FOKUS";
     save.className = "primary-button";
     cancel.type = "button";
     cancel.textContent = "AVBRYT";
+    actions.style.display = "flex";
+    actions.style.gap = "10px";
+    actions.style.flexWrap = "wrap";
+    message.style.margin = "0";
 
-    summary.replaceChildren(heading, areaLabel, area, document.createElement("br"), focusLabel, focusText, document.createElement("br"), attentionLabel, attentionText, document.createElement("br"), save, cancel, message);
+    areaGroup.append(areaLabel, area, areaError);
+    focusGroup.append(focusLabel, focusText, focusError);
+    attentionGroup.append(attentionLabel, attentionText, attentionError);
+    actions.append(save, cancel);
+    form.append(areaGroup, focusGroup, attentionGroup, actions, message);
+    summary.replaceChildren(heading, intro, form);
     summary.hidden = false;
 
     cancel.addEventListener("click", function () { renderFocus(null, null); });
     save.addEventListener("click", async function () {
-      const request = buildFocusCreateRequest(area.value, focusText.value, attentionText.value);
-      if (!request.p_development_area) { message.textContent = "Välj ett utvecklingsområde."; area.focus(); return; }
-      if (!request.p_focus_text) { message.textContent = "Skriv vad du vill fokusera på."; focusText.focus(); return; }
+      clearErrors();
+      const validation = validateFocusCreateFields(area.value, focusText.value, attentionText.value);
+      if (!validation.valid) {
+        if (validation.errors.area) showFieldError(area, areaError, validation.errors.area);
+        if (validation.errors.focusText) showFieldError(focusText, focusError, validation.errors.focusText);
+        if (validation.errors.attentionText) showFieldError(attentionText, attentionError, validation.errors.attentionText);
+        if (validation.errors.area) area.focus();
+        else if (validation.errors.focusText) focusText.focus();
+        else attentionText.focus();
+        return;
+      }
 
+      const request = buildFocusCreateRequest(area.value, focusText.value, attentionText.value);
       save.disabled = true;
       cancel.disabled = true;
       const { error } = await window.kronangSupabase.rpc("create_my_development_focus", request);
       if (error) {
         console.error("Kunde inte skapa fokus:", error);
         message.textContent = "Fokuset kunde inte sparas.";
+        message.style.color = "#b00020";
         save.disabled = false;
         cancel.disabled = false;
         return;
       }
       message.textContent = "Fokuset är sparat.";
+      message.style.color = "inherit";
       await loadFocusSummary();
       await loadFocusHistory();
     });
@@ -325,5 +423,5 @@ function setupKronangFocusSummary() {
 
 function waitForKronangFocusSummary(){ if(window.kronangSupabase){ setupKronangFocusSummary(); return; } setTimeout(waitForKronangFocusSummary,100); }
 function loadGoalCreateScript(){ if(document.querySelector('script[data-goal-create-script]')) return; const script=document.createElement("script"); script.src="goal-create.js?v=2"; script.setAttribute("data-goal-create-script","true"); document.body.appendChild(script); }
-if(typeof module!=="undefined" && module.exports) module.exports={ buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusCreateRequest, buildFocusHistoryViewModel, formatFocusHistoryDate };
+if(typeof module!=="undefined" && module.exports) module.exports={ buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusCreateRequest, validateFocusCreateFields, buildFocusHistoryViewModel, formatFocusHistoryDate };
 if(typeof window!=="undefined" && typeof document!=="undefined"){ waitForKronangFocusSummary(); loadGoalCreateScript(); }
