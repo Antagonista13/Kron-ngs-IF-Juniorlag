@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusHistoryViewModel } = require('../focus-summary.js');
+const { buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusHistoryViewModel, buildFocusCreateRequest } = require('../focus-summary.js');
 
 test('builds a Swedish read-only focus summary with latest coach feedback', () => {
   const model = buildFocusSummaryViewModel({
@@ -37,6 +37,14 @@ test('builds a trimmed focus completion RPC request', () => {
   assert.deepEqual(buildCompleteFocusRequest('focus-1', '  Jag tittar upp tidigare.  '), {
     p_focus_id: 'focus-1',
     p_end_reflection: 'Jag tittar upp tidigare.'
+  });
+});
+
+test('builds a trimmed new focus RPC request', () => {
+  assert.deepEqual(buildFocusCreateRequest('technique', '  Bättre första touch  ', '  Ta emot bollen framåt.  '), {
+    p_development_area: 'technique',
+    p_focus_text: 'Bättre första touch',
+    p_attention_text: 'Ta emot bollen framåt.'
   });
 });
 
