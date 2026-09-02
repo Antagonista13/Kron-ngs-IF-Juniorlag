@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildSubgoalSummaryViewModel } = require('../goal-summary.js');
+const goalSummary = require('../goal-summary.js');
+const { buildSubgoalSummaryViewModel } = goalSummary;
 
 test('builds subgoal progress for active and completed subgoals', () => {
   const model = buildSubgoalSummaryViewModel([
@@ -23,4 +24,18 @@ test('shows an empty subgoal state', () => {
     items: [],
     progressText: 'Inga delmål ännu'
   });
+});
+
+test('builds the RPC request for completing and reopening a subgoal', () => {
+  assert.equal(typeof goalSummary.buildSubgoalToggleRequest, 'function');
+
+  assert.deepEqual(
+    goalSummary.buildSubgoalToggleRequest({ id: 'abc', completed: false }),
+    { p_subgoal_id: 'abc', p_completed: true }
+  );
+
+  assert.deepEqual(
+    goalSummary.buildSubgoalToggleRequest({ id: 'abc', completed: true }),
+    { p_subgoal_id: 'abc', p_completed: false }
+  );
 });
