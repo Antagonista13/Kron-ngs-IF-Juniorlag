@@ -5,7 +5,7 @@
 
 const AUTH_SUPABASE_URL = "https://ndbwnsiqcnxppikdrwvd.supabase.co";
 
-const AUTH_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibmRid25zaXFjbnhwcGlrZHJ2ZCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg4MjYyMDUyLCJleHAiOjIxMDM4MzgwNTJ9.ohJ9vdvgBXIGMsmH3wCiK7n0-PDWGp_Mt895UDTQoxA";
+const AUTH_SUPABASE_ANON_KEY = "sb_publishable_LueK_yc8XAevJC9zMMVktg_hRc1Zdac";
 
 function startKronangAuth() {
 
