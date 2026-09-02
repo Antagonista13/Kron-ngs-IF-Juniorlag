@@ -12,42 +12,35 @@ function setupKronangDevelopment() {
   }
 
   const areas = [
-    {
-      {
-  title: "Teknik",
-  selfField: "technique_self",
-  reflectionField: "technique_reflection",
-  coachField: "technique_coach",
-  coachCommentField: "technique_coach_comment"
-},
-    },
-    {
-      {
-  title: "Spelförståelse",
-  selfField: "game_understanding_self",
-  reflectionField: "game_understanding_reflection",
-  coachField: "game_understanding_coach",
-  coachCommentField: "game_understanding_coach_comment"
-},
-    },
-    {
-      {
-  title: "Fys",
-  selfField: "physical_self",
-  reflectionField: "physical_reflection",
-  coachField: "physical_coach",
-  coachCommentField: "physical_coach_comment"
-},
-    },
-    {
-      {
-  title: "Mentalitet",
-  selfField: "mentality_self",
-  reflectionField: "mentality_reflection",
-  coachField: "mentality_coach",
-  coachCommentField: "mentality_coach_comment"
-    }
-  ];
+  {
+    title: "Teknik",
+    selfField: "technique_self",
+    reflectionField: "technique_reflection",
+    coachField: "technique_coach",
+    coachCommentField: "technique_coach_comment"
+  },
+  {
+    title: "Spelförståelse",
+    selfField: "game_understanding_self",
+    reflectionField: "game_understanding_reflection",
+    coachField: "game_understanding_coach",
+    coachCommentField: "game_understanding_coach_comment"
+  },
+  {
+    title: "Fys",
+    selfField: "physical_self",
+    reflectionField: "physical_reflection",
+    coachField: "physical_coach",
+    coachCommentField: "physical_coach_comment"
+  },
+  {
+    title: "Mentalitet",
+    selfField: "mentality_self",
+    reflectionField: "mentality_reflection",
+    coachField: "mentality_coach",
+    coachCommentField: "mentality_coach_comment"
+  }
+];
 
   const selfRatings = [null, null, null, null];
   const selfReflections = ["", "", "", ""];
