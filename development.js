@@ -34,6 +34,8 @@ function setupKronangDevelopment() {
     }
   ];
 
+  const selfRatings = [null, null, null, null];
+
   function formatRating(value) {
     if (value === null || value === undefined) {
       return "—";
@@ -43,6 +45,33 @@ function setupKronangDevelopment() {
       "★".repeat(value) +
       "☆".repeat(5 - value)
     );
+  }
+
+  function renderSelfRating(value, areaIndex) {
+    let html = '<div class="self-rating-stars">';
+
+    for (let i = 1; i <= 5; i++) {
+      const selected =
+        value !== null &&
+        value !== undefined &&
+        i <= value;
+
+      html += `
+        <button
+          type="button"
+          class="rating-star ${selected ? "selected" : ""}"
+          data-area="${areaIndex}"
+          data-rating="${i}"
+          aria-label="${i} av 5"
+        >
+          ${selected ? "★" : "☆"}
+        </button>
+      `;
+    }
+
+    html += "</div>";
+
+    return html;
   }
 
   function renderCards(assessment) {
@@ -59,7 +88,9 @@ function setupKronangDevelopment() {
       }
 
       const selfRating =
-        assessment
+        selfRatings[index] !== null
+          ? selfRatings[index]
+          : assessment
           ? assessment[area.selfField]
           : null;
 
@@ -85,9 +116,7 @@ function setupKronangDevelopment() {
 
         <p>Din självskattning</p>
 
-        <strong>
-          ${formatRating(selfRating)}
-        </strong>
+        ${renderSelfRating(selfRating, index)}
 
         <p>Tränarens bedömning</p>
 
@@ -170,6 +199,52 @@ function setupKronangDevelopment() {
 
     renderCards(assessment);
   }
+
+  developmentGrid.addEventListener(
+    "click",
+    function (event) {
+      const button =
+        event.target.closest(".rating-star");
+
+      if (!button) {
+        return;
+      }
+
+      const areaIndex =
+        Number(button.dataset.area);
+
+      const rating =
+        Number(button.dataset.rating);
+
+      selfRatings[areaIndex] = rating;
+
+      const cards =
+        developmentGrid.querySelectorAll(
+          ".development-card"
+        );
+
+      cards.forEach(function (card, index) {
+        if (index !== areaIndex) {
+          return;
+        }
+
+        const buttons =
+          card.querySelectorAll(".rating-star");
+
+        buttons.forEach(function (star, starIndex) {
+          const starNumber = starIndex + 1;
+
+          if (starNumber <= rating) {
+            star.textContent = "★";
+            star.classList.add("selected");
+          } else {
+            star.textContent = "☆";
+            star.classList.remove("selected");
+          }
+        });
+      });
+    }
+  );
 
   window.kronangSupabase.auth.onAuthStateChange(
     function (_event, session) {
