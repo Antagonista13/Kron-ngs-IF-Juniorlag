@@ -57,6 +57,12 @@ function buildSubgoalCreateRequest(goalId, text) {
   };
 }
 
+function buildSubgoalArchiveRequest(item) {
+  return {
+    p_subgoal_id: item.id
+  };
+}
+
 function setupKronangGoalSummary() {
   const developmentPage = document.getElementById("developmentPage");
   const developmentGrid = developmentPage
@@ -130,14 +136,20 @@ function setupKronangGoalSummary() {
       const label = document.createElement("label");
       const checkbox = document.createElement("input");
       const text = document.createElement("span");
+      const archiveButton = document.createElement("button");
 
       checkbox.type = "checkbox";
       checkbox.checked = item.completed;
       checkbox.setAttribute("aria-label", item.text);
       text.textContent = " " + item.text;
 
+      archiveButton.type = "button";
+      archiveButton.textContent = "Ta bort";
+      archiveButton.setAttribute("aria-label", "Ta bort delmål: " + item.text);
+
       checkbox.addEventListener("change", async function () {
         checkbox.disabled = true;
+        archiveButton.disabled = true;
 
         const { error } = await window.kronangSupabase.rpc(
           "set_my_goal_subgoal_completed",
@@ -148,6 +160,26 @@ function setupKronangGoalSummary() {
           console.error("Kunde inte uppdatera delmålet:", error);
           checkbox.checked = item.completed;
           checkbox.disabled = false;
+          archiveButton.disabled = false;
+          return;
+        }
+
+        await loadGoalSummary();
+      });
+
+      archiveButton.addEventListener("click", async function () {
+        checkbox.disabled = true;
+        archiveButton.disabled = true;
+
+        const { error } = await window.kronangSupabase.rpc(
+          "archive_my_goal_subgoal",
+          buildSubgoalArchiveRequest(item)
+        );
+
+        if (error) {
+          console.error("Kunde inte ta bort delmålet:", error);
+          checkbox.disabled = false;
+          archiveButton.disabled = false;
           return;
         }
 
@@ -157,6 +189,8 @@ function setupKronangGoalSummary() {
       label.appendChild(checkbox);
       label.appendChild(text);
       row.appendChild(label);
+      row.appendChild(document.createTextNode(" "));
+      row.appendChild(archiveButton);
       summary.appendChild(row);
     });
 
@@ -323,7 +357,8 @@ if (typeof module !== "undefined" && module.exports) {
     buildGoalSummaryViewModel,
     buildSubgoalSummaryViewModel,
     buildSubgoalToggleRequest,
-    buildSubgoalCreateRequest
+    buildSubgoalCreateRequest,
+    buildSubgoalArchiveRequest
   };
 }
 
