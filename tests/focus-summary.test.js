@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildFocusSummaryViewModel, buildCompleteFocusRequest } = require('../focus-summary.js');
+const { buildFocusSummaryViewModel, buildCompleteFocusRequest, buildFocusHistoryViewModel } = require('../focus-summary.js');
 
 test('builds a Swedish read-only focus summary with latest coach feedback', () => {
   const model = buildFocusSummaryViewModel({
@@ -38,6 +38,31 @@ test('builds a trimmed focus completion RPC request', () => {
     p_focus_id: 'focus-1',
     p_end_reflection: 'Jag tittar upp tidigare.'
   });
+});
+
+test('builds focus history with player reflection and coach feedback', () => {
+  const model = buildFocusHistoryViewModel([
+    {
+      id: 'focus-1',
+      development_area: 'game_understanding',
+      focus_text: 'Läsa spelet snabbare',
+      attention_text: 'Titta upp innan mottagning',
+      player_reflection: 'Jag ser alternativen tidigare nu.',
+      ended_at: '2026-09-02T12:00:00Z'
+    }
+  ], {
+    'focus-1': { comment: 'Bra utveckling' }
+  });
+
+  assert.deepEqual(model, [{
+    id: 'focus-1',
+    areaLabel: 'Spelförståelse',
+    focusText: 'Läsa spelet snabbare',
+    attentionText: 'Titta upp innan mottagning',
+    reflection: 'Jag ser alternativen tidigare nu.',
+    coachFeedback: 'Bra utveckling',
+    endedAt: '2026-09-02T12:00:00Z'
+  }]);
 });
 
 test('returns the empty state when no focus exists', () => {
