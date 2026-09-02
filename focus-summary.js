@@ -173,7 +173,7 @@ function waitForKronangFocusSummary() {
 function loadGoalCreateScript() {
   if (document.querySelector('script[data-goal-create-script]')) return;
   const script = document.createElement("script");
-  script.src = "goal-create.js?v=1";
+  script.src = "goal-create.js?v=2";
   script.setAttribute("data-goal-create-script", "true");
   document.body.appendChild(script);
 }
