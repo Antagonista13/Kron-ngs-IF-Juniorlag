@@ -16,6 +16,33 @@ function buildGoalSummaryViewModel(goal) {
   };
 }
 
+function buildSubgoalSummaryViewModel(subgoals) {
+  const items = (subgoals || [])
+    .filter(function (subgoal) {
+      return subgoal.status !== "archived";
+    })
+    .map(function (subgoal) {
+      return {
+        id: subgoal.id,
+        text: subgoal.text || "",
+        completed: subgoal.status === "completed"
+      };
+    });
+
+  if (items.length === 0) {
+    return { items: [], progressText: "Inga delmål ännu" };
+  }
+
+  const completedCount = items.filter(function (item) {
+    return item.completed;
+  }).length;
+
+  return {
+    items: items,
+    progressText: completedCount + " av " + items.length + " delmål klara"
+  };
+}
+
 function setupKronangGoalSummary() {
   const developmentPage = document.getElementById("developmentPage");
   const developmentGrid = developmentPage
@@ -41,7 +68,7 @@ function setupKronangGoalSummary() {
     summary.hidden = true;
   }
 
-  function renderGoal(goal) {
+  function renderGoal(goal, subgoals) {
     const model = buildGoalSummaryViewModel(goal);
     const heading = document.createElement("h3");
 
@@ -76,6 +103,21 @@ function setupKronangGoalSummary() {
       summary.appendChild(successText);
     }
 
+    const subgoalModel = buildSubgoalSummaryViewModel(subgoals);
+    const subgoalHeading = document.createElement("h3");
+    const progress = document.createElement("p");
+
+    subgoalHeading.textContent = "Delmål";
+    progress.textContent = subgoalModel.progressText;
+    summary.appendChild(subgoalHeading);
+
+    subgoalModel.items.forEach(function (item) {
+      const row = document.createElement("p");
+      row.textContent = (item.completed ? "✓ " : "☐ ") + item.text;
+      summary.appendChild(row);
+    });
+
+    summary.appendChild(progress);
     summary.hidden = false;
   }
 
@@ -111,7 +153,7 @@ function setupKronangGoalSummary() {
     const { data: goal, error: goalError } =
       await window.kronangSupabase
         .from("development_goals")
-        .select("title, description, success_description, created_at")
+        .select("id, title, description, success_description, created_at")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(1)
@@ -123,7 +165,25 @@ function setupKronangGoalSummary() {
       return;
     }
 
-    renderGoal(goal);
+    let subgoals = [];
+
+    if (goal) {
+      const { data: subgoalData, error: subgoalError } =
+        await window.kronangSupabase
+          .from("development_subgoals")
+          .select("id, text, status, sort_order")
+          .eq("goal_id", goal.id)
+          .neq("status", "archived")
+          .order("sort_order", { ascending: true });
+
+      if (subgoalError) {
+        console.error("Delmålsfel i utveckling:", subgoalError);
+      } else {
+        subgoals = subgoalData || [];
+      }
+    }
+
+    renderGoal(goal, subgoals);
   }
 
   window.kronangSupabase.auth.onAuthStateChange(
@@ -149,7 +209,10 @@ function waitForKronangGoalSummary() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildGoalSummaryViewModel };
+  module.exports = {
+    buildGoalSummaryViewModel,
+    buildSubgoalSummaryViewModel
+  };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
