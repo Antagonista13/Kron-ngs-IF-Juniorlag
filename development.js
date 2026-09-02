@@ -31,10 +31,13 @@ function setupKronangDevelopment() {
 },
     },
     {
-      title: "Fys",
-      selfField: "physical_self",
-      reflectionField: "physical_reflection",
-      coachField: "physical_coach"
+      {
+  title: "Fys",
+  selfField: "physical_self",
+  reflectionField: "physical_reflection",
+  coachField: "physical_coach",
+  coachCommentField: "physical_coach_comment"
+},
     },
     {
       title: "Mentalitet",
