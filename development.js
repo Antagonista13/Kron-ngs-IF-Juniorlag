@@ -40,10 +40,13 @@ function setupKronangDevelopment() {
 },
     },
     {
-      title: "Mentalitet",
-      selfField: "mentality_self",
-      reflectionField: "mentality_reflection",
-      coachField: "mentality_coach"
+      {
+  title: "Mentalitet",
+  selfField: "mentality_self",
+  reflectionField: "mentality_reflection",
+  coachField: "mentality_coach",
+  coachCommentField: "mentality_coach_comment"
+},
     }
   ];
 
