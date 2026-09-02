@@ -17,17 +17,14 @@ test('builds a trimmed request for creating a new goal', () => {
   );
 });
 
-test('notifies the development view after a goal is created instead of reloading the app', () => {
-  assert.equal(typeof goalCreate.dispatchGoalCreated, 'function');
+test('remembers development as the page to restore after saving a goal', () => {
+  assert.equal(typeof goalCreate.rememberDevelopmentPage, 'function');
 
-  let eventName = null;
-  const target = {
-    dispatchEvent(event) {
-      eventName = event.type;
-      return true;
-    }
+  const values = {};
+  const storage = {
+    setItem(key, value) { values[key] = value; }
   };
 
-  goalCreate.dispatchGoalCreated(target);
-  assert.equal(eventName, 'kronang:goal-created');
+  goalCreate.rememberDevelopmentPage(storage);
+  assert.equal(values.kronangReturnPage, 'developmentPage');
 });
