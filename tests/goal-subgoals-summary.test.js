@@ -62,3 +62,14 @@ test('builds the RPC request for archiving a subgoal', () => {
     { p_subgoal_id: 'subgoal-1' }
   );
 });
+
+test('builds the RPC request for completing a goal with trimmed reflection', () => {
+  assert.equal(typeof goalSummary.buildGoalCompleteRequest, 'function');
+  assert.deepEqual(
+    goalSummary.buildGoalCompleteRequest('goal-1', '  Jag har lärt mig att läsa spelet bättre.  '),
+    {
+      p_goal_id: 'goal-1',
+      p_final_reflection: 'Jag har lärt mig att läsa spelet bättre.'
+    }
+  );
+});
