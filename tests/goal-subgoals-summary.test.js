@@ -62,3 +62,32 @@ test('completion mode replaces the normal goal controls', () => {
     }
   );
 });
+
+test('builds read-only history for completed goals with reflection and subgoals', () => {
+  assert.equal(typeof goalSummary.buildGoalHistoryViewModel, 'function');
+  assert.deepEqual(
+    goalSummary.buildGoalHistoryViewModel(
+      [{
+        id: 'goal-1',
+        title: 'Bli bättre på mitt beslutsfattande',
+        final_reflection: 'Jag tittar upp tidigare och fattar snabbare beslut.',
+        completed_at: '2026-09-02T16:43:16.000Z'
+      }],
+      {
+        'goal-1': [
+          { id: 's1', text: 'Titta upp innan mottagning', status: 'completed' },
+          { id: 's2', text: 'Arkiverat testdelmål', status: 'archived' }
+        ]
+      }
+    ),
+    [{
+      id: 'goal-1',
+      title: 'Bli bättre på mitt beslutsfattande',
+      reflection: 'Jag tittar upp tidigare och fattar snabbare beslut.',
+      completedAt: '2026-09-02T16:43:16.000Z',
+      subgoals: [
+        { id: 's1', text: 'Titta upp innan mottagning', completed: true }
+      ]
+    }]
+  );
+});
