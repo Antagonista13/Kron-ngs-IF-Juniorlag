@@ -1,50 +1,27 @@
 function buildGoalSummaryViewModel(goal) {
-  if (!goal) {
-    return {
-      empty: true,
-      title: "Du har inget mål ännu.",
-      description: "",
-      successDescription: ""
-    };
-  }
-
-  return {
-    empty: false,
-    title: goal.title || "",
-    description: goal.description || "",
-    successDescription: goal.success_description || ""
-  };
+  if (!goal) return { empty: true, title: "Du har inget mål ännu.", description: "", successDescription: "" };
+  return { empty: false, title: goal.title || "", description: goal.description || "", successDescription: goal.success_description || "" };
 }
 
 function buildSubgoalSummaryViewModel(subgoals) {
-  const items = (subgoals || [])
-    .filter(function (subgoal) { return subgoal.status !== "archived"; })
-    .map(function (subgoal) {
-      return { id: subgoal.id, text: subgoal.text || "", completed: subgoal.status === "completed" };
-    });
-
+  const items = (subgoals || []).filter(function (subgoal) { return subgoal.status !== "archived"; }).map(function (subgoal) {
+    return { id: subgoal.id, text: subgoal.text || "", completed: subgoal.status === "completed" };
+  });
   if (items.length === 0) return { items: [], progressText: "Inga delmål ännu" };
-
   const completedCount = items.filter(function (item) { return item.completed; }).length;
   return { items: items, progressText: completedCount + " av " + items.length + " delmål klara" };
 }
 
-function buildSubgoalToggleRequest(item) {
-  return { p_subgoal_id: item.id, p_completed: !item.completed };
-}
-
-function buildSubgoalCreateRequest(goalId, text) {
-  return { p_goal_id: goalId, p_text: (text || "").trim() };
-}
-
-function buildSubgoalArchiveRequest(item) {
-  return { p_subgoal_id: item.id };
-}
-
-function buildGoalCompleteRequest(goalId, reflection) {
+function buildSubgoalToggleRequest(item) { return { p_subgoal_id: item.id, p_completed: !item.completed }; }
+function buildSubgoalCreateRequest(goalId, text) { return { p_goal_id: goalId, p_text: (text || "").trim() }; }
+function buildSubgoalArchiveRequest(item) { return { p_subgoal_id: item.id }; }
+function buildGoalCompleteRequest(goalId, reflection) { return { p_goal_id: goalId, p_final_reflection: (reflection || "").trim() }; }
+function buildGoalCompletionViewModel(goal, subgoals) {
   return {
-    p_goal_id: goalId,
-    p_final_reflection: (reflection || "").trim()
+    heading: "Avsluta mål",
+    goalTitle: goal.title || "",
+    progressText: buildSubgoalSummaryViewModel(subgoals).progressText,
+    question: "Vad har du lärt dig och vad gjorde att du nådde målet?"
   };
 }
 
@@ -62,26 +39,66 @@ function setupKronangGoalSummary() {
     developmentGrid.parentElement.insertBefore(summary, developmentGrid);
   }
 
-  function clearSummary() {
-    summary.replaceChildren();
-    summary.hidden = true;
-  }
+  function clearSummary() { summary.replaceChildren(); summary.hidden = true; }
 
   function showGoalCompleted() {
     const heading = document.createElement("h2");
     const text = document.createElement("p");
     const closeButton = document.createElement("button");
-
     heading.textContent = "MÅL UPPNÅTT!";
     text.textContent = "Bra jobbat. Din slutreflektion och ditt avslutade mål är sparade.";
     closeButton.type = "button";
     closeButton.textContent = "STÄNG";
-
     summary.replaceChildren(heading, text, closeButton);
     summary.hidden = false;
+    closeButton.addEventListener("click", function () { loadGoalSummary(); });
+  }
 
-    closeButton.addEventListener("click", function () {
-      loadGoalSummary();
+  function renderCompletion(goal, subgoals) {
+    const model = buildGoalCompletionViewModel(goal, subgoals);
+    const heading = document.createElement("h2");
+    const goalText = document.createElement("p");
+    const progressText = document.createElement("p");
+    const question = document.createElement("strong");
+    const reflection = document.createElement("textarea");
+    const confirmButton = document.createElement("button");
+    const cancelButton = document.createElement("button");
+
+    heading.textContent = model.heading;
+    goalText.textContent = model.goalTitle;
+    progressText.textContent = model.progressText;
+    question.textContent = model.question;
+    reflection.maxLength = 2000;
+    reflection.rows = 5;
+    reflection.placeholder = "Skriv din slutreflektion...";
+    reflection.setAttribute("aria-label", "Slutreflektion");
+    confirmButton.type = "button";
+    confirmButton.textContent = "BEKRÄFTA ATT MÅLET ÄR UPPNÅTT";
+    confirmButton.disabled = true;
+    cancelButton.type = "button";
+    cancelButton.textContent = "AVBRYT";
+
+    summary.replaceChildren(heading, goalText, progressText, question, document.createElement("br"), reflection, document.createElement("br"), confirmButton, cancelButton);
+    summary.hidden = false;
+    reflection.focus();
+
+    reflection.addEventListener("input", function () { confirmButton.disabled = reflection.value.trim().length === 0; });
+    cancelButton.addEventListener("click", function () { renderGoal(goal, subgoals); });
+    confirmButton.addEventListener("click", async function () {
+      const request = buildGoalCompleteRequest(goal.id, reflection.value);
+      if (!request.p_final_reflection) { reflection.focus(); return; }
+      reflection.disabled = true;
+      confirmButton.disabled = true;
+      cancelButton.disabled = true;
+      const { error } = await window.kronangSupabase.rpc("complete_my_development_goal", request);
+      if (error) {
+        console.error("Kunde inte avsluta målet:", error);
+        reflection.disabled = false;
+        confirmButton.disabled = false;
+        cancelButton.disabled = false;
+        return;
+      }
+      showGoalCompleted();
     });
   }
 
@@ -90,7 +107,6 @@ function setupKronangGoalSummary() {
     const heading = document.createElement("h3");
     heading.textContent = "Mitt huvudmål";
     summary.replaceChildren(heading);
-
     if (model.empty) {
       const emptyText = document.createElement("p");
       emptyText.textContent = model.title;
@@ -105,7 +121,6 @@ function setupKronangGoalSummary() {
     description.textContent = model.description;
     summary.appendChild(title);
     summary.appendChild(description);
-
     if (model.successDescription) {
       const successLabel = document.createElement("strong");
       const successText = document.createElement("p");
@@ -128,7 +143,6 @@ function setupKronangGoalSummary() {
       const checkbox = document.createElement("input");
       const text = document.createElement("span");
       const archiveButton = document.createElement("button");
-
       checkbox.type = "checkbox";
       checkbox.checked = item.completed;
       checkbox.setAttribute("aria-label", item.text);
@@ -136,89 +150,43 @@ function setupKronangGoalSummary() {
       archiveButton.type = "button";
       archiveButton.textContent = "Ta bort";
       archiveButton.setAttribute("aria-label", "Ta bort delmål: " + item.text);
-
       checkbox.addEventListener("change", async function () {
-        checkbox.disabled = true;
-        archiveButton.disabled = true;
+        checkbox.disabled = true; archiveButton.disabled = true;
         const { error } = await window.kronangSupabase.rpc("set_my_goal_subgoal_completed", buildSubgoalToggleRequest(item));
-        if (error) {
-          console.error("Kunde inte uppdatera delmålet:", error);
-          checkbox.checked = item.completed;
-          checkbox.disabled = false;
-          archiveButton.disabled = false;
-          return;
-        }
+        if (error) { console.error("Kunde inte uppdatera delmålet:", error); checkbox.checked = item.completed; checkbox.disabled = false; archiveButton.disabled = false; return; }
         await loadGoalSummary();
       });
-
       archiveButton.addEventListener("click", async function () {
-        checkbox.disabled = true;
-        archiveButton.disabled = true;
+        checkbox.disabled = true; archiveButton.disabled = true;
         const { error } = await window.kronangSupabase.rpc("archive_my_goal_subgoal", buildSubgoalArchiveRequest(item));
-        if (error) {
-          console.error("Kunde inte ta bort delmålet:", error);
-          checkbox.disabled = false;
-          archiveButton.disabled = false;
-          return;
-        }
+        if (error) { console.error("Kunde inte ta bort delmålet:", error); checkbox.disabled = false; archiveButton.disabled = false; return; }
         await loadGoalSummary();
       });
-
-      label.appendChild(checkbox);
-      label.appendChild(text);
-      row.appendChild(label);
-      row.appendChild(document.createTextNode(" "));
-      row.appendChild(archiveButton);
-      summary.appendChild(row);
+      label.appendChild(checkbox); label.appendChild(text); row.appendChild(label); row.appendChild(document.createTextNode(" ")); row.appendChild(archiveButton); summary.appendChild(row);
     });
-
     summary.appendChild(progress);
 
     const addButton = document.createElement("button");
     addButton.type = "button";
     addButton.textContent = "+ LÄGG TILL DELMÅL";
     summary.appendChild(addButton);
-
     addButton.addEventListener("click", function () {
       addButton.hidden = true;
       const editor = document.createElement("div");
       const input = document.createElement("input");
       const saveButton = document.createElement("button");
       const cancelButton = document.createElement("button");
-      input.type = "text";
-      input.maxLength = 300;
-      input.placeholder = "Skriv ett delmål...";
-      input.setAttribute("aria-label", "Nytt delmål");
-      saveButton.type = "button";
-      saveButton.textContent = "SPARA";
-      cancelButton.type = "button";
-      cancelButton.textContent = "AVBRYT";
-      editor.appendChild(input);
-      editor.appendChild(saveButton);
-      editor.appendChild(cancelButton);
-      summary.appendChild(editor);
-      input.focus();
-
-      cancelButton.addEventListener("click", function () {
-        editor.remove();
-        addButton.hidden = false;
-      });
-
+      input.type = "text"; input.maxLength = 300; input.placeholder = "Skriv ett delmål..."; input.setAttribute("aria-label", "Nytt delmål");
+      saveButton.type = "button"; saveButton.textContent = "SPARA";
+      cancelButton.type = "button"; cancelButton.textContent = "AVBRYT";
+      editor.appendChild(input); editor.appendChild(saveButton); editor.appendChild(cancelButton); summary.appendChild(editor); input.focus();
+      cancelButton.addEventListener("click", function () { editor.remove(); addButton.hidden = false; });
       saveButton.addEventListener("click", async function () {
         const request = buildSubgoalCreateRequest(goal.id, input.value);
         if (!request.p_text) { input.focus(); return; }
-        input.disabled = true;
-        saveButton.disabled = true;
-        cancelButton.disabled = true;
+        input.disabled = true; saveButton.disabled = true; cancelButton.disabled = true;
         const { error } = await window.kronangSupabase.rpc("add_my_goal_subgoal", request);
-        if (error) {
-          console.error("Kunde inte lägga till delmålet:", error);
-          input.disabled = false;
-          saveButton.disabled = false;
-          cancelButton.disabled = false;
-          input.focus();
-          return;
-        }
+        if (error) { console.error("Kunde inte lägga till delmålet:", error); input.disabled = false; saveButton.disabled = false; cancelButton.disabled = false; input.focus(); return; }
         await loadGoalSummary();
       });
     });
@@ -228,76 +196,7 @@ function setupKronangGoalSummary() {
     completeButton.textContent = "AVSLUTA MÅL";
     summary.appendChild(document.createTextNode(" "));
     summary.appendChild(completeButton);
-
-    completeButton.addEventListener("click", function () {
-      addButton.hidden = true;
-      completeButton.hidden = true;
-
-      const panel = document.createElement("div");
-      const panelHeading = document.createElement("h3");
-      const goalText = document.createElement("p");
-      const progressText = document.createElement("p");
-      const question = document.createElement("strong");
-      const reflection = document.createElement("textarea");
-      const confirmButton = document.createElement("button");
-      const cancelButton = document.createElement("button");
-
-      panelHeading.textContent = "Avsluta mål";
-      goalText.textContent = goal.title;
-      progressText.textContent = subgoalModel.progressText;
-      question.textContent = "Vad har du lärt dig och vad gjorde att du nådde målet?";
-      reflection.maxLength = 2000;
-      reflection.rows = 5;
-      reflection.placeholder = "Skriv din slutreflektion...";
-      reflection.setAttribute("aria-label", "Slutreflektion");
-      confirmButton.type = "button";
-      confirmButton.textContent = "BEKRÄFTA ATT MÅLET ÄR UPPNÅTT";
-      confirmButton.disabled = true;
-      cancelButton.type = "button";
-      cancelButton.textContent = "AVBRYT";
-
-      panel.appendChild(panelHeading);
-      panel.appendChild(goalText);
-      panel.appendChild(progressText);
-      panel.appendChild(question);
-      panel.appendChild(document.createElement("br"));
-      panel.appendChild(reflection);
-      panel.appendChild(document.createElement("br"));
-      panel.appendChild(confirmButton);
-      panel.appendChild(cancelButton);
-      summary.appendChild(panel);
-      reflection.focus();
-
-      reflection.addEventListener("input", function () {
-        confirmButton.disabled = reflection.value.trim().length === 0;
-      });
-
-      cancelButton.addEventListener("click", function () {
-        panel.remove();
-        addButton.hidden = false;
-        completeButton.hidden = false;
-      });
-
-      confirmButton.addEventListener("click", async function () {
-        const request = buildGoalCompleteRequest(goal.id, reflection.value);
-        if (!request.p_final_reflection) { reflection.focus(); return; }
-        reflection.disabled = true;
-        confirmButton.disabled = true;
-        cancelButton.disabled = true;
-
-        const { error } = await window.kronangSupabase.rpc("complete_my_development_goal", request);
-        if (error) {
-          console.error("Kunde inte avsluta målet:", error);
-          reflection.disabled = false;
-          confirmButton.disabled = false;
-          cancelButton.disabled = false;
-          return;
-        }
-
-        showGoalCompleted();
-      });
-    });
-
+    completeButton.addEventListener("click", function () { renderCompletion(goal, subgoals); });
     summary.hidden = false;
   }
 
@@ -306,49 +205,25 @@ function setupKronangGoalSummary() {
     const { data: sessionData } = await window.kronangSupabase.auth.getSession();
     const user = sessionData.session ? sessionData.session.user : null;
     if (!user) { clearSummary(); return; }
-
     const { data: profile, error: profileError } = await window.kronangSupabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (profileError || !profile || profile.role !== "player") { clearSummary(); return; }
-
     const { data: goal, error: goalError } = await window.kronangSupabase.from("development_goals").select("id, title, description, success_description, created_at").eq("status", "active").order("created_at", { ascending: false }).limit(1).maybeSingle();
-    if (goalError) {
-      console.error("Målfel i utveckling:", goalError);
-      clearSummary();
-      return;
-    }
-
+    if (goalError) { console.error("Målfel i utveckling:", goalError); clearSummary(); return; }
     let subgoals = [];
     if (goal) {
       const { data: subgoalData, error: subgoalError } = await window.kronangSupabase.from("development_subgoals").select("id, text, status, sort_order").eq("goal_id", goal.id).neq("status", "archived").order("sort_order", { ascending: true });
-      if (subgoalError) console.error("Delmålsfel i utveckling:", subgoalError);
-      else subgoals = subgoalData || [];
+      if (subgoalError) console.error("Delmålsfel i utveckling:", subgoalError); else subgoals = subgoalData || [];
     }
-
     renderGoal(goal, subgoals);
   }
 
-  window.kronangSupabase.auth.onAuthStateChange(function (_event, session) {
-    if (session) loadGoalSummary();
-    else clearSummary();
-  });
-
+  window.kronangSupabase.auth.onAuthStateChange(function (_event, session) { if (session) loadGoalSummary(); else clearSummary(); });
   loadGoalSummary();
 }
 
-function waitForKronangGoalSummary() {
-  if (window.kronangSupabase) { setupKronangGoalSummary(); return; }
-  setTimeout(waitForKronangGoalSummary, 100);
-}
+function waitForKronangGoalSummary() { if (window.kronangSupabase) { setupKronangGoalSummary(); return; } setTimeout(waitForKronangGoalSummary, 100); }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    buildGoalSummaryViewModel,
-    buildSubgoalSummaryViewModel,
-    buildSubgoalToggleRequest,
-    buildSubgoalCreateRequest,
-    buildSubgoalArchiveRequest,
-    buildGoalCompleteRequest
-  };
+  module.exports = { buildGoalSummaryViewModel, buildSubgoalSummaryViewModel, buildSubgoalToggleRequest, buildSubgoalCreateRequest, buildSubgoalArchiveRequest, buildGoalCompleteRequest, buildGoalCompletionViewModel };
 }
-
 if (typeof window !== "undefined" && typeof document !== "undefined") waitForKronangGoalSummary();
