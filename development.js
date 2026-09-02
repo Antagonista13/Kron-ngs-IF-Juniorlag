@@ -46,7 +46,6 @@ function setupKronangDevelopment() {
   reflectionField: "mentality_reflection",
   coachField: "mentality_coach",
   coachCommentField: "mentality_coach_comment"
-},
     }
   ];
 
