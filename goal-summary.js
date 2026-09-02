@@ -43,6 +43,13 @@ function buildSubgoalSummaryViewModel(subgoals) {
   };
 }
 
+function buildSubgoalToggleRequest(item) {
+  return {
+    p_subgoal_id: item.id,
+    p_completed: !item.completed
+  };
+}
+
 function setupKronangGoalSummary() {
   const developmentPage = document.getElementById("developmentPage");
   const developmentGrid = developmentPage
@@ -113,7 +120,36 @@ function setupKronangGoalSummary() {
 
     subgoalModel.items.forEach(function (item) {
       const row = document.createElement("p");
-      row.textContent = (item.completed ? "✓ " : "☐ ") + item.text;
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      const text = document.createElement("span");
+
+      checkbox.type = "checkbox";
+      checkbox.checked = item.completed;
+      checkbox.setAttribute("aria-label", item.text);
+      text.textContent = " " + item.text;
+
+      checkbox.addEventListener("change", async function () {
+        checkbox.disabled = true;
+
+        const { error } = await window.kronangSupabase.rpc(
+          "set_my_goal_subgoal_completed",
+          buildSubgoalToggleRequest(item)
+        );
+
+        if (error) {
+          console.error("Kunde inte uppdatera delmålet:", error);
+          checkbox.checked = item.completed;
+          checkbox.disabled = false;
+          return;
+        }
+
+        await loadGoalSummary();
+      });
+
+      label.appendChild(checkbox);
+      label.appendChild(text);
+      row.appendChild(label);
       summary.appendChild(row);
     });
 
@@ -211,7 +247,8 @@ function waitForKronangGoalSummary() {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     buildGoalSummaryViewModel,
-    buildSubgoalSummaryViewModel
+    buildSubgoalSummaryViewModel,
+    buildSubgoalToggleRequest
   };
 }
 
