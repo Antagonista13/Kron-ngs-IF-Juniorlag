@@ -39,3 +39,18 @@ test('builds the RPC request for completing and reopening a subgoal', () => {
     { p_subgoal_id: 'abc', p_completed: false }
   );
 });
+
+test('builds the RPC request for adding a trimmed subgoal', () => {
+  assert.equal(typeof goalSummary.buildSubgoalCreateRequest, 'function');
+
+  assert.deepEqual(
+    goalSummary.buildSubgoalCreateRequest(
+      'goal-1',
+      '  Titta upp innan mottagning.  '
+    ),
+    {
+      p_goal_id: 'goal-1',
+      p_text: 'Titta upp innan mottagning.'
+    }
+  );
+});
