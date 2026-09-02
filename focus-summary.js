@@ -1,4 +1,4 @@
-function buildFocusSummaryViewModel(focus) {
+function buildFocusSummaryViewModel(focus, feedback) {
   const areaLabels = {
     technique: "Teknik",
     game_understanding: "Spelförståelse",
@@ -18,7 +18,8 @@ function buildFocusSummaryViewModel(focus) {
       areaLabel: "",
       focusText: "Du har inget fokus ännu.",
       attentionText: "",
-      statusLabel: ""
+      statusLabel: "",
+      coachFeedback: ""
     };
   }
 
@@ -27,7 +28,8 @@ function buildFocusSummaryViewModel(focus) {
     areaLabel: areaLabels[focus.development_area] || "",
     focusText: focus.focus_text || "",
     attentionText: focus.attention_text || "",
-    statusLabel: statusLabels[focus.follow_up_status] || ""
+    statusLabel: statusLabels[focus.follow_up_status] || "",
+    coachFeedback: feedback ? (feedback.comment || "") : ""
   };
 }
 
@@ -56,8 +58,8 @@ function setupKronangFocusSummary() {
     summary.hidden = true;
   }
 
-  function renderFocus(focus) {
-    const model = buildFocusSummaryViewModel(focus);
+  function renderFocus(focus, feedback) {
+    const model = buildFocusSummaryViewModel(focus, feedback);
     const heading = document.createElement("h3");
 
     heading.textContent = "Mitt fokus";
@@ -98,6 +100,15 @@ function setupKronangFocusSummary() {
       summary.appendChild(attentionText);
     }
 
+    if (model.coachFeedback) {
+      const feedbackLabel = document.createElement("strong");
+      const feedbackText = document.createElement("p");
+      feedbackLabel.textContent = "Tränarens återkoppling";
+      feedbackText.textContent = model.coachFeedback;
+      summary.appendChild(feedbackLabel);
+      summary.appendChild(feedbackText);
+    }
+
     summary.hidden = false;
   }
 
@@ -133,7 +144,7 @@ function setupKronangFocusSummary() {
     const { data: focus, error: focusError } =
       await window.kronangSupabase
         .from("development_focuses")
-        .select("development_area, focus_text, attention_text, follow_up_status, created_at")
+        .select("id, development_area, focus_text, attention_text, follow_up_status, created_at")
         .eq("lifecycle_status", "active")
         .order("created_at", { ascending: false })
         .limit(1)
@@ -145,7 +156,25 @@ function setupKronangFocusSummary() {
       return;
     }
 
-    renderFocus(focus);
+    let feedback = null;
+    if (focus) {
+      const { data: feedbackData, error: feedbackError } =
+        await window.kronangSupabase
+          .from("development_focus_coach_feedback")
+          .select("comment, created_at")
+          .eq("focus_id", focus.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+      if (feedbackError) {
+        console.error("Kunde inte hämta tränarens fokusåterkoppling:", feedbackError);
+      } else {
+        feedback = feedbackData || null;
+      }
+    }
+
+    renderFocus(focus, feedback);
   }
 
   window.kronangSupabase.auth.onAuthStateChange(
