@@ -54,3 +54,11 @@ test('builds the RPC request for adding a trimmed subgoal', () => {
     }
   );
 });
+
+test('builds the RPC request for archiving a subgoal', () => {
+  assert.equal(typeof goalSummary.buildSubgoalArchiveRequest, 'function');
+  assert.deepEqual(
+    goalSummary.buildSubgoalArchiveRequest({ id: 'subgoal-1' }),
+    { p_subgoal_id: 'subgoal-1' }
+  );
+});
