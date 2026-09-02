@@ -1,11 +1,11 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const coach = require('../coach.js');
+const coachContext = require('../coach-player-context.js');
 
 test('builds read-only coach context for a player goal and focus', () => {
-  assert.equal(typeof coach.buildCoachPlayerContext, 'function');
+  assert.equal(typeof coachContext.buildCoachPlayerContext, 'function');
   assert.deepEqual(
-    coach.buildCoachPlayerContext(
+    coachContext.buildCoachPlayerContext(
       { title: 'Bli bättre skytt' },
       [{ status: 'completed' }, { status: 'active' }],
       {
