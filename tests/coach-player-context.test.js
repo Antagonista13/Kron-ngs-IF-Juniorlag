@@ -11,6 +11,7 @@ test('builds read-only coach context for a player goal and focus', () => {
       {
         development_area: 'game_understanding',
         focus_text: 'Läsa spelet snabbare',
+        attention_text: 'Titta upp innan jag får bollen',
         follow_up_status: 'active'
       }
     ),
@@ -19,6 +20,7 @@ test('builds read-only coach context for a player goal and focus', () => {
       goalProgress: '1 av 2 delmål klara',
       focusArea: 'Spelförståelse',
       focusText: 'Läsa spelet snabbare',
+      focusAttention: 'Titta upp innan jag får bollen',
       focusStatus: 'Aktivt'
     }
   );
