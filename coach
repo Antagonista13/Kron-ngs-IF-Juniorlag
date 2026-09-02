@@ -1,0 +1,52 @@
+function setupKronangCoach() {
+  if (!window.kronangSupabase) {
+    return;
+  }
+
+  window.kronangSupabase.auth.getSession().then(async function ({ data }) {
+    if (!data.session || !data.session.user) {
+      return;
+    }
+
+    const user = data.session.user;
+
+    const { data: profile, error } =
+      await window.kronangSupabase
+        .from("profiles")
+        .select("full_name, role, team")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (error) {
+      console.error("Coach-profilfel:", error);
+      return;
+    }
+
+    if (!profile) {
+      return;
+    }
+
+    if (profile.role === "coach") {
+      console.log(
+        "Kronäng coach inloggad:",
+        profile.full_name
+      );
+    } else {
+      console.log(
+        "Kronäng spelare inloggad:",
+        profile.full_name
+      );
+    }
+  });
+}
+
+function waitForKronangCoach() {
+  if (window.kronangSupabase) {
+    setupKronangCoach();
+    return;
+  }
+
+  setTimeout(waitForKronangCoach, 100);
+}
+
+waitForKronangCoach();
