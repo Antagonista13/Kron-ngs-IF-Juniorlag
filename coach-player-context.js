@@ -27,6 +27,7 @@ function buildCoachPlayerContext(goal, subgoals, focus) {
       : "",
     focusArea: focus ? (areaLabels[focus.development_area] || "") : "",
     focusText: focus ? (focus.focus_text || "") : "Inget aktivt fokus.",
+    focusAttention: focus ? (focus.attention_text || "") : "",
     focusStatus: focus ? (statusLabels[focus.follow_up_status] || "") : ""
   };
 }
@@ -74,6 +75,15 @@ function setupCoachPlayerContext() {
 
     section.appendChild(focusLabel);
     section.appendChild(focusText);
+
+    if (selectedContext.focusAttention) {
+      const attentionLabel = document.createElement("strong");
+      const attentionText = document.createElement("p");
+      attentionLabel.textContent = "Spelaren ska tänka på";
+      attentionText.textContent = selectedContext.focusAttention;
+      section.appendChild(attentionLabel);
+      section.appendChild(attentionText);
+    }
 
     if (selectedContext.focusStatus) {
       const status = document.createElement("p");
@@ -123,7 +133,7 @@ function setupCoachPlayerContext() {
 
     const { data: focus, error: focusError } = await window.kronangSupabase
       .from("development_focuses")
-      .select("development_area, focus_text, follow_up_status")
+      .select("development_area, focus_text, attention_text, follow_up_status")
       .eq("player_id", playerId)
       .eq("lifecycle_status", "active")
       .order("created_at", { ascending: false })
