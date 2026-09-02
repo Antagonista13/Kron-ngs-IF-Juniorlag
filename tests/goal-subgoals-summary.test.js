@@ -9,85 +9,47 @@ test('builds subgoal progress for active and completed subgoals', () => {
     { id: 'b', text: 'Andra delmålet', status: 'completed' },
     { id: 'c', text: 'Arkiverat delmål', status: 'archived' }
   ]);
-
-  assert.deepEqual(model, {
-    items: [
-      { id: 'a', text: 'Första delmålet', completed: false },
-      { id: 'b', text: 'Andra delmålet', completed: true }
-    ],
-    progressText: '1 av 2 delmål klara'
-  });
+  assert.deepEqual(model, { items: [{ id: 'a', text: 'Första delmålet', completed: false }, { id: 'b', text: 'Andra delmålet', completed: true }], progressText: '1 av 2 delmål klara' });
 });
 
 test('shows an empty subgoal state', () => {
-  assert.deepEqual(buildSubgoalSummaryViewModel([]), {
-    items: [],
-    progressText: 'Inga delmål ännu'
-  });
+  assert.deepEqual(buildSubgoalSummaryViewModel([]), { items: [], progressText: 'Inga delmål ännu' });
 });
 
 test('builds the RPC request for completing and reopening a subgoal', () => {
-  assert.equal(typeof goalSummary.buildSubgoalToggleRequest, 'function');
   assert.deepEqual(goalSummary.buildSubgoalToggleRequest({ id: 'abc', completed: false }), { p_subgoal_id: 'abc', p_completed: true });
   assert.deepEqual(goalSummary.buildSubgoalToggleRequest({ id: 'abc', completed: true }), { p_subgoal_id: 'abc', p_completed: false });
 });
 
 test('builds the RPC request for adding a trimmed subgoal', () => {
-  assert.equal(typeof goalSummary.buildSubgoalCreateRequest, 'function');
   assert.deepEqual(goalSummary.buildSubgoalCreateRequest('goal-1', '  Titta upp innan mottagning.  '), { p_goal_id: 'goal-1', p_text: 'Titta upp innan mottagning.' });
 });
 
 test('builds the RPC request for archiving a subgoal', () => {
-  assert.equal(typeof goalSummary.buildSubgoalArchiveRequest, 'function');
   assert.deepEqual(goalSummary.buildSubgoalArchiveRequest({ id: 'subgoal-1' }), { p_subgoal_id: 'subgoal-1' });
 });
 
 test('builds the RPC request for completing a goal with trimmed reflection', () => {
-  assert.equal(typeof goalSummary.buildGoalCompleteRequest, 'function');
   assert.deepEqual(goalSummary.buildGoalCompleteRequest('goal-1', '  Jag har lärt mig att läsa spelet bättre.  '), { p_goal_id: 'goal-1', p_final_reflection: 'Jag har lärt mig att läsa spelet bättre.' });
 });
 
 test('completion mode replaces the normal goal controls', () => {
-  assert.equal(typeof goalSummary.buildGoalCompletionViewModel, 'function');
-  assert.deepEqual(
-    goalSummary.buildGoalCompletionViewModel(
-      { title: 'Bli bättre på mitt beslutsfattande' },
-      [{ status: 'completed' }, { status: 'active' }]
-    ),
-    {
-      heading: 'Avsluta mål',
-      goalTitle: 'Bli bättre på mitt beslutsfattande',
-      progressText: '1 av 2 delmål klara',
-      question: 'Vad har du lärt dig och vad gjorde att du nådde målet?'
-    }
-  );
+  assert.deepEqual(goalSummary.buildGoalCompletionViewModel({ title: 'Bli bättre på mitt beslutsfattande' }, [{ status: 'completed' }, { status: 'active' }]), { heading: 'Avsluta mål', goalTitle: 'Bli bättre på mitt beslutsfattande', progressText: '1 av 2 delmål klara', question: 'Vad har du lärt dig och vad gjorde att du nådde målet?' });
 });
 
-test('builds read-only history for completed goals with reflection and subgoals', () => {
+test('builds goal history with completed goals and saved subgoals', () => {
   assert.equal(typeof goalSummary.buildGoalHistoryViewModel, 'function');
+  assert.deepEqual(goalSummary.buildGoalHistoryViewModel([{ id: 'goal-1', title: 'Mitt gamla mål', final_reflection: 'Jag lärde mig mycket.', completed_at: '2026-09-02T12:00:00Z' }], { 'goal-1': [{ id: 'sub-1', text: 'Första delmålet', status: 'completed' }, { id: 'sub-2', text: 'Arkiverat', status: 'archived' }] }), [{ id: 'goal-1', title: 'Mitt gamla mål', reflection: 'Jag lärde mig mycket.', completedAt: '2026-09-02T12:00:00Z', subgoals: [{ id: 'sub-1', text: 'Första delmålet', completed: true }] }]);
+});
+
+test('builds a trimmed request for creating a new goal', () => {
+  assert.equal(typeof goalSummary.buildGoalCreateRequest, 'function');
   assert.deepEqual(
-    goalSummary.buildGoalHistoryViewModel(
-      [{
-        id: 'goal-1',
-        title: 'Bli bättre på mitt beslutsfattande',
-        final_reflection: 'Jag tittar upp tidigare och fattar snabbare beslut.',
-        completed_at: '2026-09-02T16:43:16.000Z'
-      }],
-      {
-        'goal-1': [
-          { id: 's1', text: 'Titta upp innan mottagning', status: 'completed' },
-          { id: 's2', text: 'Arkiverat testdelmål', status: 'archived' }
-        ]
-      }
-    ),
-    [{
-      id: 'goal-1',
-      title: 'Bli bättre på mitt beslutsfattande',
-      reflection: 'Jag tittar upp tidigare och fattar snabbare beslut.',
-      completedAt: '2026-09-02T16:43:16.000Z',
-      subgoals: [
-        { id: 's1', text: 'Titta upp innan mottagning', completed: true }
-      ]
-    }]
+    goalSummary.buildGoalCreateRequest('  Bli modigare i mitt spel  ', '  Jag vill våga ta fler initiativ.  ', '  Jag tar fler initiativ under träning och match.  '),
+    {
+      p_title: 'Bli modigare i mitt spel',
+      p_description: 'Jag vill våga ta fler initiativ.',
+      p_success_description: 'Jag tar fler initiativ under träning och match.'
+    }
   );
 });
