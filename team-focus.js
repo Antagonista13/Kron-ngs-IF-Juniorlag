@@ -1,111 +1,13 @@
-function normalizeTeamFocusWords(words) {
-  return String(words || '')
-    .trim()
-    .split(/[\s·,;]+/)
-    .filter(Boolean)
-    .map(function (word) { return word.toLocaleUpperCase('sv-SE'); })
-    .join(' · ');
-}
-
-function validateTeamFocus(title, words) {
-  const cleanTitle = (title || '').trim();
-  const cleanWords = normalizeTeamFocusWords(words);
-  if (!cleanTitle) return { valid: false, message: 'Skriv veckans fokus.' };
-  if (!cleanWords) return { valid: false, message: 'Skriv fokusorden.' };
-  return { valid: true, title: cleanTitle.toLocaleUpperCase('sv-SE'), words: cleanWords };
-}
-
-function buildTeamFocusViewModel(row) {
-  if (!row) return null;
-  return { title: row.title || '', words: row.focus_words || '' };
-}
-
-function renderSharedTeamFocus(row) {
-  const model = buildTeamFocusViewModel(row);
-  if (!model) return;
-  const home = document.querySelector('#homePage .card.focus');
-  if (home) {
-    const title = home.querySelector('h2');
-    const words = home.querySelector('.focus-words');
-    if (title) title.textContent = model.title;
-    if (words) words.textContent = model.words;
-  }
-
-  let card = document.getElementById('teamWeeklyFocus');
-  const page = document.getElementById('teamPage');
-  if (!page) return;
-  if (!card) {
-    card = document.createElement('section');
-    card.id = 'teamWeeklyFocus';
-    card.className = 'card team-weekly-focus';
-    const heading = page.querySelector('.page-heading');
-    if (heading) heading.insertAdjacentElement('afterend', card);
-    else page.prepend(card);
-  }
-  card.innerHTML = `<div class="card-title"><h3>Veckans fokus</h3></div><h2></h2><div class="quote"></div>`;
-  card.querySelector('h2').textContent = model.title;
-  card.querySelector('.quote').textContent = model.words;
-}
-
-function renderTeamFocusManager(profile, current) {
-  if (!profile || (profile.role !== 'coach' && profile.role !== 'admin')) return;
-  const page = document.getElementById('teamPage');
-  if (!page || document.getElementById('teamFocusManager')) return;
-  const manager = document.createElement('section');
-  manager.id = 'teamFocusManager';
-  manager.className = 'card team-focus-manager';
-  manager.innerHTML = `<button type="button" id="openTeamFocusManager">ÄNDRA VECKANS FOKUS</button>
-    <div id="teamFocusForm" hidden>
-      <label for="teamFocusTitle">Veckans fokus</label>
-      <input id="teamFocusTitle" maxlength="160" placeholder="Exempel: Snabbare passningsspel">
-      <label for="teamFocusWords">Fokusord</label>
-      <input id="teamFocusWords" maxlength="240" placeholder="Exempel: titta spela flytta">
-      <div class="team-post-form-actions"><button type="button" id="saveTeamFocus">SPARA FOKUS</button><button type="button" id="cancelTeamFocus">AVBRYT</button></div>
-      <p id="teamFocusMessage"></p>
-    </div>`;
-  const composer = document.getElementById('teamPostComposer');
-  if (composer) composer.insertAdjacentElement('afterend', manager);
-  else page.querySelector('.page-heading').insertAdjacentElement('afterend', manager);
-  const form = manager.querySelector('#teamFocusForm');
-  const title = manager.querySelector('#teamFocusTitle');
-  const words = manager.querySelector('#teamFocusWords');
-  if (current) { title.value = current.title || ''; words.value = current.focus_words || ''; }
-  manager.querySelector('#openTeamFocusManager').addEventListener('click', () => { form.hidden = false; });
-  manager.querySelector('#cancelTeamFocus').addEventListener('click', () => { form.hidden = true; });
-  manager.querySelector('#saveTeamFocus').addEventListener('click', async function () {
-    const validation = validateTeamFocus(title.value, words.value);
-    const message = manager.querySelector('#teamFocusMessage');
-    if (!validation.valid) { message.textContent = validation.message; return; }
-    title.value = validation.title;
-    words.value = validation.words;
-    this.disabled = true;
-    const { error } = await window.kronangSupabase.from('team_focus').upsert({ team: profile.team, title: validation.title, focus_words: validation.words, updated_by: profile.id }, { onConflict: 'team' });
-    this.disabled = false;
-    if (error) { console.error('Kunde inte spara veckans fokus:', error); message.textContent = 'Det gick inte att spara fokus.'; return; }
-    form.hidden = true;
-    await loadSharedTeamFocus(profile);
-  });
-}
-
-async function loadSharedTeamFocus(profile) {
-  const { data, error } = await window.kronangSupabase.from('team_focus').select('team, title, focus_words, updated_at').eq('team', profile.team).maybeSingle();
-  if (error) { console.error('Kunde inte hämta veckans fokus:', error); return; }
-  if (data) renderSharedTeamFocus(data);
-  renderTeamFocusManager(profile, data);
-}
-
-async function setupSharedTeamFocus() {
-  if (!window.kronangSupabase) return;
-  const { data: sessionData } = await window.kronangSupabase.auth.getSession();
-  if (!sessionData.session) return;
-  const { data: profile } = await window.kronangSupabase.from('profiles').select('id, role, team').eq('id', sessionData.session.user.id).maybeSingle();
-  if (profile && profile.team) loadSharedTeamFocus(profile);
-}
-
-function waitForSharedTeamFocus() {
-  if (window.kronangSupabase) { setupSharedTeamFocus(); return; }
-  setTimeout(waitForSharedTeamFocus, 100);
-}
-
-if (typeof module !== 'undefined' && module.exports) module.exports = { validateTeamFocus, buildTeamFocusViewModel, normalizeTeamFocusWords };
-if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForSharedTeamFocus();
+function focusPermissions(){if(typeof window!=='undefined'&&window.KronangPermissions)return window.KronangPermissions;if(typeof require==='function')return require('./role-permissions.js');return null;}
+function canViewTeamFocus(role){const p=focusPermissions();return Boolean(p&&p.canViewWeeklyFocus(role));}
+function canManageTeamFocus(role){const p=focusPermissions();return Boolean(p&&p.canManageTeamContent(role));}
+function normalizeTeamFocusWords(words){return String(words||'').trim().split(/[\s·,;]+/).filter(Boolean).map(function(word){return word.toLocaleUpperCase('sv-SE');}).join(' · ');}
+function validateTeamFocus(title,words){const cleanTitle=(title||'').trim(),cleanWords=normalizeTeamFocusWords(words);if(!cleanTitle)return{valid:false,message:'Skriv veckans fokus.'};if(!cleanWords)return{valid:false,message:'Skriv fokusorden.'};return{valid:true,title:cleanTitle.toLocaleUpperCase('sv-SE'),words:cleanWords};}
+function buildTeamFocusViewModel(row){if(!row)return null;return{title:row.title||'',words:row.focus_words||''};}
+function renderSharedTeamFocus(row){const model=buildTeamFocusViewModel(row);if(!model)return;const home=document.querySelector('#homePage .card.focus');if(home){const title=home.querySelector('h2'),words=home.querySelector('.focus-words');if(title)title.textContent=model.title;if(words)words.textContent=model.words;}let card=document.getElementById('teamWeeklyFocus');const page=document.getElementById('teamPage');if(!page)return;if(!card){card=document.createElement('section');card.id='teamWeeklyFocus';card.className='card team-weekly-focus';const heading=page.querySelector('.page-heading');if(heading)heading.insertAdjacentElement('afterend',card);else page.prepend(card);}card.innerHTML='<div class="card-title"><h3>Veckans fokus</h3></div><h2></h2><div class="quote"></div>';card.querySelector('h2').textContent=model.title;card.querySelector('.quote').textContent=model.words;}
+function renderTeamFocusManager(profile,current){if(!profile||!canManageTeamFocus(profile.role))return;const page=document.getElementById('teamPage');if(!page||document.getElementById('teamFocusManager'))return;const manager=document.createElement('section');manager.id='teamFocusManager';manager.className='card team-focus-manager';manager.innerHTML='<button type="button" id="openTeamFocusManager">ÄNDRA VECKANS FOKUS</button><div id="teamFocusForm" hidden><label for="teamFocusTitle">Veckans fokus</label><input id="teamFocusTitle" maxlength="160" placeholder="Exempel: Snabbare passningsspel"><label for="teamFocusWords">Fokusord</label><input id="teamFocusWords" maxlength="240" placeholder="Exempel: titta spela flytta"><div class="team-post-form-actions"><button type="button" id="saveTeamFocus">SPARA FOKUS</button><button type="button" id="cancelTeamFocus">AVBRYT</button></div><p id="teamFocusMessage"></p></div>';const composer=document.getElementById('teamPostComposer');if(composer)composer.insertAdjacentElement('afterend',manager);else page.querySelector('.page-heading').insertAdjacentElement('afterend',manager);const form=manager.querySelector('#teamFocusForm'),title=manager.querySelector('#teamFocusTitle'),words=manager.querySelector('#teamFocusWords');if(current){title.value=current.title||'';words.value=current.focus_words||'';}manager.querySelector('#openTeamFocusManager').addEventListener('click',()=>{form.hidden=false;});manager.querySelector('#cancelTeamFocus').addEventListener('click',()=>{form.hidden=true;});manager.querySelector('#saveTeamFocus').addEventListener('click',async function(){const validation=validateTeamFocus(title.value,words.value),message=manager.querySelector('#teamFocusMessage');if(!validation.valid){message.textContent=validation.message;return;}title.value=validation.title;words.value=validation.words;this.disabled=true;const{error}=await window.kronangSupabase.from('team_focus').upsert({team:profile.team,title:validation.title,focus_words:validation.words,updated_by:profile.id},{onConflict:'team'});this.disabled=false;if(error){console.error('Kunde inte spara veckans fokus:',error);message.textContent='Det gick inte att spara fokus.';return;}form.hidden=true;await loadSharedTeamFocus(profile);});}
+async function loadSharedTeamFocus(profile){if(!profile||!canViewTeamFocus(profile.role)){const card=document.getElementById('teamWeeklyFocus');if(card)card.remove();return;}const{data,error}=await window.kronangSupabase.from('team_focus').select('team, title, focus_words, updated_at').eq('team',profile.team).maybeSingle();if(error){console.error('Kunde inte hämta veckans fokus:',error);return;}if(data)renderSharedTeamFocus(data);renderTeamFocusManager(profile,data);}
+async function setupSharedTeamFocus(){if(!window.kronangSupabase)return;const{data:sessionData}=await window.kronangSupabase.auth.getSession();if(!sessionData.session)return;const{data:profile}=await window.kronangSupabase.from('profiles').select('id, role, team').eq('id',sessionData.session.user.id).maybeSingle();if(profile&&profile.team)loadSharedTeamFocus(profile);}
+function waitForSharedTeamFocus(){if(window.kronangSupabase){setupSharedTeamFocus();return;}setTimeout(waitForSharedTeamFocus,100);}
+if(typeof module!=='undefined'&&module.exports)module.exports={validateTeamFocus,buildTeamFocusViewModel,normalizeTeamFocusWords,canViewTeamFocus,canManageTeamFocus};
+if(typeof window!=='undefined'&&typeof document!=='undefined')waitForSharedTeamFocus();

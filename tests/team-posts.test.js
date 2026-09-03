@@ -1,12 +1,20 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
+const { canManageTeamPosts, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
 
 test('only coach and admin roles can manage team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
   assert.equal(canManageTeamPosts('admin'), true);
   assert.equal(canManageTeamPosts('player'), false);
+  assert.equal(canManageTeamPosts('parent'), false);
+  assert.equal(canManageTeamPosts('pending'), false);
   assert.equal(canManageTeamPosts(null), false);
+});
+
+test('parent can read team posts while pending cannot', () => {
+  assert.equal(canViewTeamPosts('parent'), true);
+  assert.equal(canViewTeamPosts('player'), true);
+  assert.equal(canViewTeamPosts('pending'), false);
 });
 
 test('requires both title and body for a team post', () => {

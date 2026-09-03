@@ -3,6 +3,8 @@ const { normalizePlayer, validatePlayerInput, formatSwedishBirthDate, canManageR
 assert.strictEqual(canManageRoster('coach'), true);
 assert.strictEqual(canManageRoster('admin'), true);
 assert.strictEqual(canManageRoster('player'), false);
+assert.strictEqual(canManageRoster('parent'), false);
+assert.strictEqual(canManageRoster('pending'), false);
 assert.deepStrictEqual(normalizePlayer({id:'1',full_name:' Axel Venhagen ',mobile_phone:' 0727 ',birth_date:'2011-07-15',shirt_number:57,is_active:true,profile_id:null}),{id:'1',name:'Axel Venhagen',mobile:'0727',birthDate:'2011-07-15',shirtNumber:57,isActive:true,profileId:null});
 assert.strictEqual(validatePlayerInput({name:'   '}).ok, false);
 assert.strictEqual(validatePlayerInput({name:'Axel',shirtNumber:''}).ok, true);
