@@ -1,0 +1,11 @@
+const fs = require('fs');
+const assert = require('assert');
+const sql = fs.readFileSync('supabase/migrations/202609030007_admin_roles_and_invitations.sql','utf8').toLowerCase();
+['admin','coach','player','parent','pending'].forEach(role => assert.ok(sql.includes("'"+role+"'")));
+assert.ok(sql.includes('display_title'));
+assert.ok(sql.includes('is_active'));
+assert.ok(sql.includes('user_invitations'));
+assert.ok(sql.includes('is_admin'));
+assert.ok(sql.includes('is_leader'));
+assert.ok(sql.includes("'pending'"));
+assert.ok(!sql.includes('service_role'));
