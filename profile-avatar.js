@@ -4,7 +4,7 @@ function buildProfileAvatarModel(profile){
 }
 
 function profileFallbackIcon(){
-  return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5"/></svg>';
+  return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5"/></svg>';
 }
 
 function renderProfileAvatar(model){
@@ -24,5 +24,5 @@ async function loadProfileAvatar(){
 }
 
 function waitForProfileAvatar(){if(window.kronangSupabase){loadProfileAvatar();return;}setTimeout(waitForProfileAvatar,100);}
-if(typeof module!=='undefined'&&module.exports)module.exports={buildProfileAvatarModel};
+if(typeof module!=='undefined'&&module.exports)module.exports={buildProfileAvatarModel,profileFallbackIcon};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForProfileAvatar();
