@@ -19,6 +19,7 @@ jobs:
           if [ -f team-staff.js ]; then node --check team-staff.js; fi
           if [ -f profile-avatar.js ]; then node --check profile-avatar.js; fi
           if [ -f player-roster.js ]; then node --check player-roster.js; fi
+          node --check navigation-scroll.js
           node --check role-permissions.js
           node --check access-gate.js
           node --check admin-access.js
@@ -53,6 +54,10 @@ jobs:
         run: node --test tests/team-challenge.test.js
       - name: Role permission tests
         run: node --test tests/role-permissions.test.js
+      - name: Browser script compatibility tests
+        run: node --test tests/browser-script-order.test.js
+      - name: Navigation scroll tests
+        run: node --test tests/navigation-scroll.test.js
       - name: Admin role schema tests
         run: node tests/admin-role-schema.test.js
       - name: Admin user RPC tests
