@@ -6,6 +6,7 @@ on:
   push:
     branches: [codex/admin-roles-approval]
 
+# Feature-branch push trigger is temporary and used only for pre-PR verification.
 jobs:
   test:
     runs-on: ubuntu-latest
