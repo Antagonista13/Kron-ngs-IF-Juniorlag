@@ -1,175 +1,35 @@
-function canManageTeamPosts(role) {
-  return role === "coach" || role === "admin";
-}
-
+function canManageTeamPosts(role) { return role === "coach" || role === "admin"; }
 function validateTeamPost(title, body) {
-  const cleanTitle = (title || "").trim();
-  const cleanBody = (body || "").trim();
-  if (!cleanTitle) return { valid: false, message: "Skriv en rubrik." };
-  if (!cleanBody) return { valid: false, message: "Skriv ett meddelande." };
-  return { valid: true, title: cleanTitle, body: cleanBody };
+  const cleanTitle=(title||"").trim(), cleanBody=(body||"").trim();
+  if(!cleanTitle) return {valid:false,message:"Skriv en rubrik."};
+  if(!cleanBody) return {valid:false,message:"Skriv ett meddelande."};
+  return {valid:true,title:cleanTitle,body:cleanBody};
+}
+function buildTeamPostEditState(post){ return {id:post.id,title:(post.title||"").trim(),body:(post.body||"").trim(),isPinned:Boolean(post.is_pinned)}; }
+function formatTeamPostDate(value){if(!value)return"";const d=new Date(value);if(Number.isNaN(d.getTime()))return"";return new Intl.DateTimeFormat("sv-SE",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Stockholm"}).format(d);}
+function sortTeamPosts(posts){return(posts||[]).slice().sort((a,b)=>Boolean(a.is_pinned)!==Boolean(b.is_pinned)?(a.is_pinned?-1:1):new Date(b.created_at||0)-new Date(a.created_at||0));}
+function escapeTeamPostText(value){return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+
+let teamPostsProfile=null;
+let teamPostsCache=[];
+let editingTeamPostId=null;
+
+function renderTeamPosts(posts,profile){
+ const page=document.getElementById("teamPage");if(!page)return;let list=document.getElementById("teamPostsList");
+ if(!list){list=document.createElement("div");list.id="teamPostsList";list.className="team-posts-list";page.querySelectorAll(".team-post").forEach(c=>c.remove());page.appendChild(list);}
+ const sorted=sortTeamPosts(posts);if(!sorted.length){list.innerHTML='<section class="card team-post"><p>Inga laginlägg ännu.</p></section>';return;}
+ const manage=canManageTeamPosts(profile&&profile.role);
+ list.innerHTML=sorted.map(post=>`<section class="card team-post${post.is_pinned?" team-post-important":""}" data-post-id="${escapeTeamPostText(post.id)}"><div class="post-header"><strong>KRONÄNGS IF JUNIORLAG</strong><span>${escapeTeamPostText(formatTeamPostDate(post.created_at))}</span></div>${post.is_pinned?'<span class="team-post-pinned">VIKTIGT</span>':''}<h3>${escapeTeamPostText(post.title)}</h3><p>${escapeTeamPostText(post.body).replace(/\n/g,"<br>")}</p>${manage?'<div class="team-post-manage"><button type="button" data-action="edit">REDIGERA</button><button type="button" data-action="delete">TA BORT</button></div>':''}</section>`).join("");
+ if(manage) list.querySelectorAll("[data-action]").forEach(btn=>btn.addEventListener("click",()=>handleTeamPostAction(btn.closest("[data-post-id]").dataset.postId,btn.dataset.action)));
 }
 
-function formatTeamPostDate(value) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("sv-SE", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Europe/Stockholm"
-  }).format(date);
-}
+function resetTeamPostComposer(){const c=document.getElementById("teamPostComposer");if(!c)return;editingTeamPostId=null;c.querySelector("#teamPostTitle").value="";c.querySelector("#teamPostBody").value="";c.querySelector("#teamPostPinned").checked=false;c.querySelector("#saveTeamPost").textContent="PUBLICERA";c.querySelector("#teamPostMessage").textContent="";}
+function openTeamPostEditor(post){const c=document.getElementById("teamPostComposer");if(!c)return;const s=buildTeamPostEditState(post);editingTeamPostId=s.id;c.querySelector("#teamPostTitle").value=s.title;c.querySelector("#teamPostBody").value=s.body;c.querySelector("#teamPostPinned").checked=s.isPinned;c.querySelector("#saveTeamPost").textContent="SPARA ÄNDRINGAR";c.querySelector("#teamPostForm").hidden=false;c.scrollIntoView({behavior:"smooth",block:"start"});}
+async function handleTeamPostAction(id,action){const post=teamPostsCache.find(p=>String(p.id)===String(id));if(!post)return;if(action==="edit"){openTeamPostEditor(post);return;}if(action==="delete"){if(!window.confirm(`Ta bort inlägget ”${post.title}”?`))return;const{error}=await window.kronangSupabase.from("team_posts").delete().eq("id",post.id).eq("team",teamPostsProfile.team);if(error){console.error("Kunde inte ta bort laginlägg:",error);window.alert("Det gick inte att ta bort inlägget.");return;}await loadTeamPosts(teamPostsProfile);}}
 
-function sortTeamPosts(posts) {
-  return (posts || []).slice().sort(function (a, b) {
-    if (Boolean(a.is_pinned) !== Boolean(b.is_pinned)) return a.is_pinned ? -1 : 1;
-    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-  });
-}
-
-function escapeTeamPostText(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function renderTeamPosts(posts) {
-  const page = document.getElementById("teamPage");
-  if (!page) return;
-  let list = document.getElementById("teamPostsList");
-  if (!list) {
-    list = document.createElement("div");
-    list.id = "teamPostsList";
-    list.className = "team-posts-list";
-    page.querySelectorAll(".team-post").forEach(function (card) { card.remove(); });
-    page.appendChild(list);
-  }
-
-  const sortedPosts = sortTeamPosts(posts);
-  if (!sortedPosts.length) {
-    list.innerHTML = '<section class="card team-post"><p>Inga laginlägg ännu.</p></section>';
-    return;
-  }
-
-  list.innerHTML = sortedPosts.map(function (post) {
-    const pinned = post.is_pinned ? '<span class="team-post-pinned">VIKTIGT</span>' : '';
-    return `<section class="card team-post${post.is_pinned ? " team-post-important" : ""}">
-      <div class="post-header"><strong>KRONÄNGS IF JUNIORLAG</strong><span>${escapeTeamPostText(formatTeamPostDate(post.created_at))}</span></div>
-      ${pinned}
-      <h3>${escapeTeamPostText(post.title)}</h3>
-      <p>${escapeTeamPostText(post.body).replace(/\n/g, "<br>")}</p>
-    </section>`;
-  }).join("");
-}
-
-function renderTeamPostComposer(profile) {
-  const page = document.getElementById("teamPage");
-  if (!page || !canManageTeamPosts(profile && profile.role) || document.getElementById("teamPostComposer")) return;
-
-  const composer = document.createElement("section");
-  composer.id = "teamPostComposer";
-  composer.className = "card team-post-composer";
-  composer.innerHTML = `
-    <button type="button" id="openTeamPostComposer">+ NYTT INLÄGG</button>
-    <div id="teamPostForm" hidden>
-      <label for="teamPostTitle">Rubrik</label>
-      <input id="teamPostTitle" maxlength="120" placeholder="Rubrik...">
-      <label for="teamPostBody">Meddelande</label>
-      <textarea id="teamPostBody" rows="5" maxlength="3000" placeholder="Skriv lagets information..."></textarea>
-      <label class="team-post-pin-option"><input id="teamPostPinned" type="checkbox"> <span>Fäst som viktigt</span></label>
-      <div class="team-post-form-actions">
-        <button type="button" id="saveTeamPost">PUBLICERA</button>
-        <button type="button" id="cancelTeamPost">AVBRYT</button>
-      </div>
-      <p id="teamPostMessage"></p>
-    </div>`;
-
-  const heading = page.querySelector(".page-heading");
-  if (heading) heading.insertAdjacentElement("afterend", composer);
-  else page.prepend(composer);
-
-  const form = composer.querySelector("#teamPostForm");
-  composer.querySelector("#openTeamPostComposer").addEventListener("click", function () { form.hidden = false; });
-  composer.querySelector("#cancelTeamPost").addEventListener("click", function () { form.hidden = true; });
-  composer.querySelector("#saveTeamPost").addEventListener("click", async function () {
-    const button = this;
-    const message = composer.querySelector("#teamPostMessage");
-    const validation = validateTeamPost(composer.querySelector("#teamPostTitle").value, composer.querySelector("#teamPostBody").value);
-    if (!validation.valid) { message.textContent = validation.message; return; }
-
-    button.disabled = true;
-    button.textContent = "PUBLICERAR...";
-    message.textContent = "";
-    const { error } = await window.kronangSupabase.from("team_posts").insert({
-      team: profile.team,
-      title: validation.title,
-      body: validation.body,
-      created_by: profile.id,
-      is_pinned: composer.querySelector("#teamPostPinned").checked
-    });
-    if (error) {
-      console.error("Kunde inte publicera laginlägg:", error);
-      message.textContent = "Det gick inte att publicera inlägget.";
-    } else {
-      composer.querySelector("#teamPostTitle").value = "";
-      composer.querySelector("#teamPostBody").value = "";
-      composer.querySelector("#teamPostPinned").checked = false;
-      form.hidden = true;
-      await loadTeamPosts(profile);
-    }
-    button.disabled = false;
-    button.textContent = "PUBLICERA";
-  });
-}
-
-async function loadTeamPosts(profile) {
-  if (!window.kronangSupabase || !profile || !profile.team) return;
-  const { data, error } = await window.kronangSupabase
-    .from("team_posts")
-    .select("id, title, body, is_pinned, created_at")
-    .eq("team", profile.team)
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Kunde inte hämta laginlägg:", error);
-    return;
-  }
-  renderTeamPosts(data || []);
-}
-
-async function setupTeamPosts() {
-  if (!window.kronangSupabase) return;
-  const { data: sessionData } = await window.kronangSupabase.auth.getSession();
-  if (!sessionData.session || !sessionData.session.user) return;
-  const user = sessionData.session.user;
-  const { data: profile, error } = await window.kronangSupabase
-    .from("profiles")
-    .select("id, full_name, role, team")
-    .eq("id", user.id)
-    .maybeSingle();
-  if (error || !profile) {
-    if (error) console.error("Kunde inte hämta profil för laginlägg:", error);
-    return;
-  }
-  renderTeamPostComposer(profile);
-  loadTeamPosts(profile);
-}
-
-function waitForTeamPosts() {
-  if (window.kronangSupabase) { setupTeamPosts(); return; }
-  setTimeout(waitForTeamPosts, 100);
-}
-
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts };
-}
-
-if (typeof window !== "undefined" && typeof document !== "undefined") {
-  waitForTeamPosts();
-}
+function renderTeamPostComposer(profile){const page=document.getElementById("teamPage");if(!page||!canManageTeamPosts(profile&&profile.role)||document.getElementById("teamPostComposer"))return;const c=document.createElement("section");c.id="teamPostComposer";c.className="card team-post-composer";c.innerHTML=`<button type="button" id="openTeamPostComposer">+ NYTT INLÄGG</button><div id="teamPostForm" hidden><label for="teamPostTitle">Rubrik</label><input id="teamPostTitle" maxlength="120" placeholder="Rubrik..."><label for="teamPostBody">Meddelande</label><textarea id="teamPostBody" rows="5" maxlength="3000" placeholder="Skriv lagets information..."></textarea><label class="team-post-pin-option"><input id="teamPostPinned" type="checkbox"> <span>Fäst som viktigt</span></label><div class="team-post-form-actions"><button type="button" id="saveTeamPost">PUBLICERA</button><button type="button" id="cancelTeamPost">AVBRYT</button></div><p id="teamPostMessage"></p></div>`;const h=page.querySelector(".page-heading");if(h)h.insertAdjacentElement("afterend",c);else page.prepend(c);const form=c.querySelector("#teamPostForm");c.querySelector("#openTeamPostComposer").addEventListener("click",()=>{resetTeamPostComposer();form.hidden=false;});c.querySelector("#cancelTeamPost").addEventListener("click",()=>{resetTeamPostComposer();form.hidden=true;});c.querySelector("#saveTeamPost").addEventListener("click",async function(){const button=this,message=c.querySelector("#teamPostMessage"),v=validateTeamPost(c.querySelector("#teamPostTitle").value,c.querySelector("#teamPostBody").value);if(!v.valid){message.textContent=v.message;return;}button.disabled=true;message.textContent="";const payload={team:profile.team,title:v.title,body:v.body,is_pinned:c.querySelector("#teamPostPinned").checked};let result;if(editingTeamPostId){result=await window.kronangSupabase.from("team_posts").update({...payload,updated_at:new Date().toISOString()}).eq("id",editingTeamPostId).eq("team",profile.team);}else{result=await window.kronangSupabase.from("team_posts").insert({...payload,created_by:profile.id});}button.disabled=false;if(result.error){console.error("Kunde inte spara laginlägg:",result.error);message.textContent="Det gick inte att spara inlägget.";return;}resetTeamPostComposer();form.hidden=true;await loadTeamPosts(profile);});}
+async function loadTeamPosts(profile){if(!window.kronangSupabase||!profile||!profile.team)return;const{data,error}=await window.kronangSupabase.from("team_posts").select("id, title, body, is_pinned, created_at").eq("team",profile.team).order("is_pinned",{ascending:false}).order("created_at",{ascending:false});if(error){console.error("Kunde inte hämta laginlägg:",error);return;}teamPostsCache=data||[];renderTeamPosts(teamPostsCache,profile);}
+async function setupTeamPosts(){if(!window.kronangSupabase)return;const{data:s}=await window.kronangSupabase.auth.getSession();if(!s.session||!s.session.user)return;const{data:profile,error}=await window.kronangSupabase.from("profiles").select("id, full_name, role, team").eq("id",s.session.user.id).maybeSingle();if(error||!profile){if(error)console.error("Kunde inte hämta profil för laginlägg:",error);return;}teamPostsProfile=profile;renderTeamPostComposer(profile);loadTeamPosts(profile);}
+function waitForTeamPosts(){if(window.kronangSupabase){setupTeamPosts();return;}setTimeout(waitForTeamPosts,100);}
+if(typeof module!=="undefined"&&module.exports)module.exports={canManageTeamPosts,validateTeamPost,formatTeamPostDate,sortTeamPosts,buildTeamPostEditState};
+if(typeof window!=="undefined"&&typeof document!=="undefined")waitForTeamPosts();
