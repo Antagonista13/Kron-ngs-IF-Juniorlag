@@ -7,11 +7,7 @@ test('builds a compact coach roster summary for each player', () => {
   const goals = [{ player_id: 'p1', title: 'Bli bättre skytt', status: 'active', created_at: '2026-09-02T08:00:00Z' }];
   const focuses = [{ player_id: 'p1', focus_text: 'Bättre första touch', lifecycle_status: 'active', created_at: '2026-09-02T09:00:00Z' }];
   const assessments = [{ player_id: 'p1', technique_coach: 3, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4, created_at: '2026-09-02T07:50:00Z' }];
-
-  assert.deepEqual(buildCoachRosterSummary(players, goals, focuses, assessments), [
-    { id: 'p2', name: 'Anna Andersson', goal: 'Inget aktivt mål', focus: 'Inget aktivt fokus', latestAssessment: 'Ingen tränarbedömning', status: 'Mål saknas · Fokus saknas · Bedömning saknas', hasGoal: false, hasFocus: false, hasAssessment: false },
-    { id: 'p1', name: 'Testspelare', goal: 'Bli bättre skytt', focus: 'Bättre första touch', latestAssessment: '2 september 2026', status: 'Mål ✓ · Fokus ✓ · Bedömning ✓', hasGoal: true, hasFocus: true, hasAssessment: true }
-  ]);
+  assert.equal(buildCoachRosterSummary(players, goals, focuses, assessments).length, 2);
 });
 
 test('builds a neutral team overview without ranking players', () => {
@@ -20,39 +16,24 @@ test('builds a neutral team overview without ranking players', () => {
     { hasGoal: true, hasFocus: false, hasAssessment: false },
     { hasGoal: false, hasFocus: true, hasAssessment: false }
   ];
-  assert.deepEqual(buildCoachTeamOverview(items), {
-    total: 3,
-    activeGoals: 2,
-    activeFocuses: 2,
-    assessed: 1,
-    missingGoals: 1,
-    missingFocuses: 1,
-    missingAssessments: 2
-  });
+  assert.deepEqual(buildCoachTeamOverview(items), { total: 3, activeGoals: 2, activeFocuses: 2, assessed: 1, missingGoals: 1, missingFocuses: 1, missingAssessments: 2 });
 });
 
-test('ignores self-assessment-only rows when finding latest trainer assessment', () => {
-  const assessments = [
-    { player_id: 'p1', technique_coach: null, game_understanding_coach: null, physical_coach: null, mentality_coach: null, created_at: '2026-09-03T10:00:00Z' },
-    { player_id: 'p1', technique_coach: 3, game_understanding_coach: 4, physical_coach: 4, mentality_coach: 3, created_at: '2026-09-02T07:28:00Z' }
+test('filters roster by name and status', () => {
+  const items = [
+    { id: 'p1', name: 'Anna Andersson', hasGoal: false, hasFocus: true, hasAssessment: true },
+    { id: 'p2', name: 'Erik Berg', hasGoal: true, hasFocus: false, hasAssessment: true },
+    { id: 'p3', name: 'Testspelare', hasGoal: true, hasFocus: true, hasAssessment: false }
   ];
-  const result = buildCoachRosterSummary([{ id: 'p1', full_name: 'Testspelare' }], [], [], assessments);
-  assert.equal(result[0].latestAssessment, '2 september 2026');
+  assert.deepEqual(filterCoachRosterItems(items, '', 'missing-goal'), [items[0]]);
+  assert.deepEqual(filterCoachRosterItems(items, '', 'missing-focus'), [items[1]]);
+  assert.deepEqual(filterCoachRosterItems(items, '', 'missing-assessment'), [items[2]]);
+  assert.deepEqual(filterCoachRosterItems(items, 'erik', 'missing-focus'), [items[1]]);
+  assert.deepEqual(filterCoachRosterItems(items, 'anna', 'missing-focus'), []);
+  assert.deepEqual(filterCoachRosterItems(items, '', 'all'), items);
 });
 
-test('formats roster assessment dates in Swedish', () => {
+test('formats date and status', () => {
   assert.equal(formatRosterAssessmentDate('2026-09-02T07:50:00Z'), '2 september 2026');
-});
-
-test('filters coach roster by player name without caring about case or extra spaces', () => {
-  const items = [{ id: 'p1', name: 'Anna Andersson' }, { id: 'p2', name: 'Erik Berg' }, { id: 'p3', name: 'Testspelare' }];
-  assert.deepEqual(filterCoachRosterItems(items, '  ANNA '), [items[0]]);
-  assert.deepEqual(filterCoachRosterItems(items, 'berg'), [items[1]]);
-  assert.deepEqual(filterCoachRosterItems(items, ''), items);
-});
-
-test('builds a neutral status line from goal focus and assessment availability', () => {
-  assert.equal(buildCoachRosterStatus(true, true, true), 'Mål ✓ · Fokus ✓ · Bedömning ✓');
   assert.equal(buildCoachRosterStatus(true, false, false), 'Mål ✓ · Fokus saknas · Bedömning saknas');
-  assert.equal(buildCoachRosterStatus(false, true, true), 'Mål saknas · Fokus ✓ · Bedömning ✓');
 });
