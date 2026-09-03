@@ -10,10 +10,15 @@ function hasCoachRating(row) {
   });
 }
 
+function getCoachRatedRows(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.filter(hasCoachRating);
+}
+
 function buildCoachComparisonModel(rows) {
   if (!Array.isArray(rows) || rows.length < 2) return [];
 
-  const coachRatedRows = rows.filter(hasCoachRating);
+  const coachRatedRows = getCoachRatedRows(rows);
   if (coachRatedRows.length < 2) return [];
 
   const current = coachRatedRows[0];
@@ -34,6 +39,26 @@ function buildCoachComparisonModel(rows) {
   });
 }
 
+function formatComparisonDate(value) {
+  if (!value) return "Okänt datum";
+  return new Intl.DateTimeFormat("sv-SE", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Stockholm"
+  }).format(new Date(value));
+}
+
+function buildCoachComparisonDates(rows) {
+  const coachRatedRows = getCoachRatedRows(rows);
+  if (coachRatedRows.length < 2) return null;
+
+  return {
+    current: formatComparisonDate(coachRatedRows[0].created_at),
+    previous: formatComparisonDate(coachRatedRows[1].created_at)
+  };
+}
+
 function shouldWaitForCoachAssessmentRender(saveButtonExists, attempt) {
   return !saveButtonExists && attempt < 30;
 }
@@ -51,11 +76,16 @@ function assessmentChangeLabel(current, previous) {
 
 function renderCoachComparison(rows) {
   const comparison = buildCoachComparisonModel(rows);
-  if (!comparison.length) return "";
+  const dates = buildCoachComparisonDates(rows);
+  if (!comparison.length || !dates) return "";
 
   return `
     <section class="coach-comparison-card">
       <h3>Jämförelse mot föregående bedömning</h3>
+      <div class="coach-comparison-dates">
+        <span><strong>Nu:</strong> ${dates.current}</span>
+        <span><strong>Tidigare:</strong> ${dates.previous}</span>
+      </div>
       <div class="coach-comparison-grid">
         ${comparison.map(function (item) {
           return `
@@ -139,7 +169,13 @@ function waitForCoachComparison() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating, assessmentChangeLabel };
+  module.exports = {
+    buildCoachComparisonModel,
+    buildCoachComparisonDates,
+    shouldWaitForCoachAssessmentRender,
+    hasCoachRating,
+    assessmentChangeLabel
+  };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
