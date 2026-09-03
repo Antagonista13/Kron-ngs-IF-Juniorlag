@@ -2,12 +2,7 @@ function buildHomePlayerHeader(profile) {
   const item = profile || {};
   const number = item.player_number === null || item.player_number === undefined || item.player_number === '' ? '' : '#' + item.player_number;
   const team = item.team || 'Kronängs IF Juniorlag';
-  return {
-    name: item.full_name || 'Spelare',
-    meta: team,
-    playerNumber: number,
-    avatarUrl: item.avatar_url || ''
-  };
+  return { name: item.full_name || 'Spelare', meta: team, playerNumber: number, avatarUrl: item.avatar_url || '' };
 }
 
 function buildNavIcon(type) {
@@ -23,108 +18,65 @@ function buildNavIcon(type) {
 }
 
 function getHomeShortcutPage(type) {
-  const targets = { activity: 'calendarPage', profile: 'profilePage' };
+  const targets = { activity: 'calendarPage', challenge: 'developmentPage', profile: 'profilePage' };
   return targets[type] || '';
 }
+function isHomeActivationKey(key) { return key === 'Enter' || key === ' '; }
 
-function isHomeActivationKey(key) {
-  return key === 'Enter' || key === ' ';
+function activateHomeShortcut(element, type) {
+  if (!element || element.dataset.shortcutReady) return;
+  element.dataset.shortcutReady = 'true';
+  element.addEventListener('click', function (event) {
+    if (type === 'challenge' && event.target && event.target.closest && event.target.closest('#challengeButton')) return;
+    const target = getHomeShortcutPage(type);
+    const nav = document.querySelector('.nav-item[data-page="' + target + '"]');
+    if (nav) nav.click();
+  });
+  element.addEventListener('keydown', function (event) {
+    if (!isHomeActivationKey(event.key)) return;
+    event.preventDefault();
+    element.click();
+  });
 }
 
 function setupHomePlayerHeader() {
   const homePage = document.getElementById('homePage');
   if (!homePage || !window.kronangSupabase) return;
-
   let header = document.getElementById('homePlayerHeader');
   if (!header) {
-    header = document.createElement('section');
-    header.id = 'homePlayerHeader';
-    header.className = 'home-player-header';
-    const welcome = homePage.querySelector('.welcome');
-    if (welcome) welcome.replaceWith(header); else homePage.prepend(header);
+    header = document.createElement('section'); header.id = 'homePlayerHeader'; header.className = 'home-player-header';
+    const welcome = homePage.querySelector('.welcome'); if (welcome) welcome.replaceWith(header); else homePage.prepend(header);
   }
-
   document.querySelectorAll('.nav-item').forEach(function (button) {
-    const page = button.getAttribute('data-page');
-    const map = { homePage: 'home', calendarPage: 'calendar', developmentPage: 'development', teamPage: 'team', profilePage: 'profile' };
-    const span = button.querySelector('span');
+    const map = { homePage:'home', calendarPage:'calendar', developmentPage:'development', teamPage:'team', profilePage:'profile' };
+    const span = button.querySelector('span'), page = button.getAttribute('data-page');
     if (span && map[page]) span.innerHTML = buildNavIcon(map[page]);
   });
-
-  const activityCard = document.getElementById('homeNextActivityCard');
-  if (activityCard && !activityCard.dataset.shortcutReady) {
-    activityCard.dataset.shortcutReady = 'true';
-    activityCard.addEventListener('click', function () {
-      const target = getHomeShortcutPage('activity');
-      const nav = document.querySelector('.nav-item[data-page="' + target + '"]');
-      if (nav) nav.click();
-    });
-    activityCard.addEventListener('keydown', function (event) {
-      if (!isHomeActivationKey(event.key)) return;
-      event.preventDefault();
-      activityCard.click();
-    });
-  }
+  activateHomeShortcut(document.getElementById('homeNextActivityCard'), 'activity');
+  activateHomeShortcut(document.getElementById('homeChallengeCard'), 'challenge');
 
   function render(model) {
     header.innerHTML = '';
-    const text = document.createElement('div');
-    text.className = 'home-player-copy';
-    const eyebrow = document.createElement('span');
-    eyebrow.className = 'home-player-eyebrow';
-    eyebrow.textContent = 'VÄLKOMMEN TILLBAKA';
-    const name = document.createElement('h2');
-    name.textContent = model.name;
-    const meta = document.createElement('p');
-    meta.textContent = model.meta;
+    const text = document.createElement('div'); text.className = 'home-player-copy';
+    const eyebrow = document.createElement('span'); eyebrow.className = 'home-player-eyebrow'; eyebrow.textContent = 'VÄLKOMMEN TILLBAKA';
+    const name = document.createElement('h2'); name.textContent = model.name;
+    const meta = document.createElement('p'); meta.textContent = model.meta;
     text.append(eyebrow, name, meta);
-
-    const avatar = document.createElement('button');
-    avatar.type = 'button';
-    avatar.className = 'home-player-avatar';
-    avatar.setAttribute('aria-label', 'Öppna profil');
-    if (model.avatarUrl) {
-      const img = document.createElement('img');
-      img.src = model.avatarUrl;
-      img.alt = 'Profilbild för ' + model.name;
-      avatar.appendChild(img);
-    } else {
-      avatar.innerHTML = buildNavIcon('profile');
-      avatar.setAttribute('title', 'Ingen profilbild vald');
-    }
-    if (model.playerNumber) {
-      const number = document.createElement('span');
-      number.className = 'home-player-number';
-      number.textContent = model.playerNumber;
-      avatar.appendChild(number);
-    }
-    avatar.addEventListener('click', function () {
-      const target = getHomeShortcutPage('profile');
-      const profileNav = document.querySelector('.nav-item[data-page="' + target + '"]');
-      if (profileNav) profileNav.click();
-    });
-    header.append(text, avatar);
+    const avatar = document.createElement('button'); avatar.type = 'button'; avatar.className = 'home-player-avatar'; avatar.setAttribute('aria-label','Öppna profil');
+    if (model.avatarUrl) { const img=document.createElement('img'); img.src=model.avatarUrl; img.alt='Profilbild för '+model.name; avatar.appendChild(img); }
+    else { avatar.innerHTML=buildNavIcon('profile'); avatar.setAttribute('title','Ingen profilbild vald'); }
+    if (model.playerNumber) { const number=document.createElement('span'); number.className='home-player-number'; number.textContent=model.playerNumber; avatar.appendChild(number); }
+    avatar.addEventListener('click',function(){ const nav=document.querySelector('.nav-item[data-page="profilePage"]'); if(nav) nav.click(); });
+    header.append(text,avatar);
   }
-
   async function load() {
-    const { data: sessionData } = await window.kronangSupabase.auth.getSession();
-    const user = sessionData.session ? sessionData.session.user : null;
-    if (!user) return;
-    let result = await window.kronangSupabase.from('profiles').select('full_name, team, player_number, avatar_url').eq('id', user.id).maybeSingle();
-    if (result.error) {
-      result = await window.kronangSupabase.from('profiles').select('full_name, team').eq('id', user.id).maybeSingle();
-    }
-    if (result.data) render(buildHomePlayerHeader(result.data));
+    const {data:sessionData}=await window.kronangSupabase.auth.getSession(); const user=sessionData.session?sessionData.session.user:null; if(!user)return;
+    let result=await window.kronangSupabase.from('profiles').select('full_name, team, player_number, avatar_url').eq('id',user.id).maybeSingle();
+    if(result.error) result=await window.kronangSupabase.from('profiles').select('full_name, team').eq('id',user.id).maybeSingle();
+    if(result.data) render(buildHomePlayerHeader(result.data));
   }
-
-  document.addEventListener('kronang:auth-signed-in', load);
-  load();
+  document.addEventListener('kronang:auth-signed-in',load); load();
 }
-
-function waitForHomePlayerHeader() {
-  if (window.kronangSupabase) { setupHomePlayerHeader(); return; }
-  setTimeout(waitForHomePlayerHeader, 100);
-}
-
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey };
-if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForHomePlayerHeader();
+function waitForHomePlayerHeader(){ if(window.kronangSupabase){setupHomePlayerHeader();return;} setTimeout(waitForHomePlayerHeader,100); }
+if(typeof module!=='undefined'&&module.exports)module.exports={buildHomePlayerHeader,buildNavIcon,getHomeShortcutPage,isHomeActivationKey};
+if(typeof window!=='undefined'&&typeof document!=='undefined')waitForHomePlayerHeader();

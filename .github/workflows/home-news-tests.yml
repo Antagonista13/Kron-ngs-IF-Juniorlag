@@ -1,0 +1,24 @@
+name: Home and news tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [codex/home-warm-news]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check home-player-header.js
+          node --check team-posts.js
+      - name: Home tests
+        run: node tests/home-player-header.test.js
+      - name: Team post tests
+        run: node --test tests/team-posts.test.js

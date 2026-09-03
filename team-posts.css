@@ -6,7 +6,7 @@
 #teamPostForm label,#teamFocusForm label,#teamChallengeForm label { display:block;margin:12px 0 6px;font-weight:800; }
 #teamPostForm input,#teamPostForm textarea,#teamFocusForm input,#teamChallengeForm input,#teamChallengeForm textarea { width:100%;box-sizing:border-box;border:1px solid #cfcfcf;border-radius:12px;padding:12px 14px;font:inherit;background:#fff;color:#111; }
 #teamPostForm textarea,#teamChallengeForm textarea { resize:vertical; }
-.team-post-pin-option { display:flex !important;align-items:center;gap:8px;cursor:pointer; }
+.team-post-image-preview{margin-top:10px}.team-post-image-preview img{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:14px}.team-post-image{display:block;width:100%;max-height:360px;object-fit:cover;border-radius:16px;margin:16px 0 4px}.team-post-pin-option { display:flex !important;align-items:center;gap:8px;cursor:pointer; }
 .team-post-pin-option input { width:auto !important;margin:0; }
 .team-post-form-actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:12px; }
 #teamPostMessage,#teamFocusMessage,#teamChallengeMessage { margin:10px 0 0;color:#666; }

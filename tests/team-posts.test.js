@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState } = require('../team-posts.js');
+const { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
 
 test('only coach and admin roles can manage team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
@@ -28,8 +28,13 @@ test('pinned posts sort before newer normal posts', () => {
   assert.deepEqual(sortTeamPosts(posts).map((post) => post.id), ['pin', 'new', 'old']);
 });
 
-test('edit state preserves title body and pinned status', () => {
-  assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true }), {
-    id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true
+test('normalizes optional image urls', () => {
+  assert.equal(normalizeTeamPostImageUrl('  https://example.com/photo.jpg  '), 'https://example.com/photo.jpg');
+  assert.equal(normalizeTeamPostImageUrl(null), '');
+});
+
+test('edit state preserves optional image url', () => {
+  assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true, image_url: ' https://example.com/a.jpg ' }), {
+    id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true, imageUrl: 'https://example.com/a.jpg'
   });
 });
