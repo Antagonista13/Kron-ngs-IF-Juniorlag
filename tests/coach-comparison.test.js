@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating, assessmentChangeLabel } = require('../coach-comparison.js');
+const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating, assessmentChangeLabel, buildCoachComparisonDates } = require('../coach-comparison.js');
 
 test('compares current coach ratings with the immediately previous complete coach assessment', () => {
   const rows = [
@@ -56,4 +56,17 @@ test('describes rating change without judging it', () => {
   assert.equal(assessmentChangeLabel(3, 4), '−1');
   assert.equal(assessmentChangeLabel(3, 3), 'Oförändrat');
   assert.equal(assessmentChangeLabel(5, 3), '+2');
+});
+
+test('uses dates from the same two complete coach assessments used in comparison', () => {
+  const rows = [
+    { technique_coach: 3, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4, created_at: '2026-09-02T07:50:00Z' },
+    { technique_coach: null, game_understanding_coach: null, physical_coach: null, mentality_coach: null, created_at: '2026-09-02T07:44:00Z' },
+    { technique_coach: 3, game_understanding_coach: 4, physical_coach: 4, mentality_coach: 3, created_at: '2026-09-02T07:28:00Z' }
+  ];
+
+  assert.deepEqual(buildCoachComparisonDates(rows), {
+    current: '2 september 2026',
+    previous: '2 september 2026'
+  });
 });
