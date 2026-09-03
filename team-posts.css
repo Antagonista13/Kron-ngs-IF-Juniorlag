@@ -17,4 +17,7 @@
 .team-post-manage button { border:1px solid #cfcfcf;border-radius:9px;background:#fff;color:#111;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer; }
 .team-post-manage button:hover,.team-post-manage button:focus { border-color:#111; }
 .team-focus-manager,.team-weekly-focus,#teamChallengeManager { margin-bottom:18px; }
-.team-weekly-focus h2 { margin:8px 0 14px; }
+.team-weekly-focus{position:relative;overflow:hidden;background:linear-gradient(135deg,#060606,#222);color:#fff;border:none;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+.team-weekly-focus::after{content:"";position:absolute;inset:0 0 0 42%;background:linear-gradient(145deg,transparent 0 48%,rgba(209,170,103,.14) 49% 50%,transparent 51%),radial-gradient(circle at 70% 58%,transparent 0 10px,rgba(255,255,255,.12) 11px 12px,transparent 13px);pointer-events:none}
+.team-weekly-focus .card-title,.team-weekly-focus h2,.team-weekly-focus .quote{position:relative;z-index:1}
+.team-weekly-focus .card-title h3{color:#d1aa67}.team-weekly-focus h2 { margin:8px 0 14px;color:#fff }.team-weekly-focus .quote{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(209,170,103,.35)}
