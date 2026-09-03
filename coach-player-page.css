@@ -1,0 +1,48 @@
+#coachDevelopmentView:not(.coach-player-detail-open) #coachPlayerDevelopment {
+  display: none;
+}
+
+#coachDevelopmentView.coach-player-detail-open > h2,
+#coachDevelopmentView.coach-player-detail-open > p,
+#coachDevelopmentView.coach-player-detail-open .coach-roster-search,
+#coachDevelopmentView.coach-player-detail-open #coachPlayerList,
+#coachDevelopmentView.coach-player-detail-open .coach-roster-empty {
+  display: none;
+}
+
+.coach-player-page-header {
+  margin: 0 0 22px;
+}
+
+.coach-player-page-back {
+  border: 0;
+  background: transparent;
+  color: #111;
+  padding: 0;
+  margin: 0 0 14px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.coach-player-page-back:hover,
+.coach-player-page-back:focus {
+  text-decoration: underline;
+}
+
+.coach-player-page-header h2 {
+  margin: 0 0 6px;
+  font-size: 30px;
+}
+
+.coach-player-page-header p {
+  margin: 0;
+  color: #666;
+  line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+  .coach-player-page-header h2 {
+    font-size: 26px;
+  }
+}
