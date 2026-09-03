@@ -146,6 +146,27 @@ function setupAdminPage() {
     const open = entry.querySelector('#openAdminPage');
     if (!open.dataset.ready) { open.dataset.ready = 'true'; open.addEventListener('click', async () => { openPage('adminPage'); await loadAll(); }); }
   }
+  const inviteForm = document.getElementById('adminInviteForm');
+  if (inviteForm && !inviteForm.dataset.ready) {
+    inviteForm.dataset.ready = 'true';
+    inviteForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const message = document.getElementById('adminInviteMessage');
+      const button = inviteForm.querySelector('button[type="submit"]');
+      const validation = access.validateInvite({
+        fullName: document.getElementById('adminInviteName').value,
+        email: document.getElementById('adminInviteEmail').value,
+        expectedRole: document.getElementById('adminInviteRole').value
+      });
+      if (!validation.ok) { message.textContent = validation.message; return; }
+      button.disabled = true; message.textContent = 'Skickar inbjudan…';
+      const result = await window.kronangSupabase.functions.invoke('invite-user', { body: validation.value });
+      button.disabled = false;
+      if (result.error) { message.textContent = 'Inbjudan kunde inte skickas.'; return; }
+      inviteForm.reset(); message.textContent = 'Inbjudan är skickad. Kontot väntar sedan på ditt godkännande.';
+      await loadAll();
+    });
+  }
   const back = document.getElementById('adminBackButton');
   if (back && !back.dataset.ready) { back.dataset.ready = 'true'; back.addEventListener('click', () => openPage('profilePage')); }
   document.addEventListener('kronang:auth-signed-in', activate);
