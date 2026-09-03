@@ -1,9 +1,18 @@
+function normalizeTeamFocusWords(words) {
+  return String(words || '')
+    .trim()
+    .split(/[\s·,;]+/)
+    .filter(Boolean)
+    .map(function (word) { return word.toLocaleUpperCase('sv-SE'); })
+    .join(' · ');
+}
+
 function validateTeamFocus(title, words) {
   const cleanTitle = (title || '').trim();
-  const cleanWords = (words || '').trim();
+  const cleanWords = normalizeTeamFocusWords(words);
   if (!cleanTitle) return { valid: false, message: 'Skriv veckans fokus.' };
   if (!cleanWords) return { valid: false, message: 'Skriv fokusorden.' };
-  return { valid: true, title: cleanTitle, words: cleanWords };
+  return { valid: true, title: cleanTitle.toLocaleUpperCase('sv-SE'), words: cleanWords };
 }
 
 function buildTeamFocusViewModel(row) {
@@ -48,9 +57,9 @@ function renderTeamFocusManager(profile, current) {
   manager.innerHTML = `<button type="button" id="openTeamFocusManager">ÄNDRA VECKANS FOKUS</button>
     <div id="teamFocusForm" hidden>
       <label for="teamFocusTitle">Veckans fokus</label>
-      <input id="teamFocusTitle" maxlength="160">
+      <input id="teamFocusTitle" maxlength="160" placeholder="Exempel: Snabbare passningsspel">
       <label for="teamFocusWords">Fokusord</label>
-      <input id="teamFocusWords" maxlength="240" placeholder="PRESS · HJÄLP · KRYMP">
+      <input id="teamFocusWords" maxlength="240" placeholder="Exempel: titta spela flytta">
       <div class="team-post-form-actions"><button type="button" id="saveTeamFocus">SPARA FOKUS</button><button type="button" id="cancelTeamFocus">AVBRYT</button></div>
       <p id="teamFocusMessage"></p>
     </div>`;
@@ -67,6 +76,8 @@ function renderTeamFocusManager(profile, current) {
     const validation = validateTeamFocus(title.value, words.value);
     const message = manager.querySelector('#teamFocusMessage');
     if (!validation.valid) { message.textContent = validation.message; return; }
+    title.value = validation.title;
+    words.value = validation.words;
     this.disabled = true;
     const { error } = await window.kronangSupabase.from('team_focus').upsert({ team: profile.team, title: validation.title, focus_words: validation.words, updated_by: profile.id }, { onConflict: 'team' });
     this.disabled = false;
@@ -96,5 +107,5 @@ function waitForSharedTeamFocus() {
   setTimeout(waitForSharedTeamFocus, 100);
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { validateTeamFocus, buildTeamFocusViewModel };
+if (typeof module !== 'undefined' && module.exports) module.exports = { validateTeamFocus, buildTeamFocusViewModel, normalizeTeamFocusWords };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForSharedTeamFocus();
