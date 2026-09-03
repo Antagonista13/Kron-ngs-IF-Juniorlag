@@ -1,25 +1,43 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { goHomeAfterLogin, buildPostLoginUrl } = require('../auth-navigation.js');
+const { activateHome, handleAuthNavigation } = require('../auth-navigation.js');
 
-test('builds a fresh same-page URL that forces a clean app load', () => {
-  const url = buildPostLoginUrl({ pathname: '/Kron-ngs-IF-Juniorlag/', search: '?old=1' }, 12345);
-  assert.equal(url, '/Kron-ngs-IF-Juniorlag/?login=12345');
+function fakeClassList(initialActive) {
+  const values = new Set(initialActive ? ['active'] : []);
+  return { add: value => values.add(value), remove: value => values.delete(value), contains: value => values.has(value) };
+}
+
+function makeUi() {
+  const pages = [{ id: 'homePage', classList: fakeClassList(false) }, { id: 'profilePage', classList: fakeClassList(true) }];
+  const navs = [{ dataset: { page: 'homePage' }, classList: fakeClassList(false) }, { dataset: { page: 'profilePage' }, classList: fakeClassList(true) }];
+  const events = [];
+  const doc = {
+    querySelectorAll: selector => selector === '.page' ? pages : navs,
+    dispatchEvent: event => events.push(event.type)
+  };
+  const win = { scrollTo: (x, y) => events.push(`scroll:${x}:${y}`), requestAnimationFrame: cb => cb() };
+  return { pages, navs, events, doc, win };
+}
+
+test('activateHome switches from profile to home and scrolls to top', () => {
+  const ui = makeUi();
+  assert.equal(activateHome(ui.win, ui.doc), true);
+  assert.equal(ui.pages[0].classList.contains('active'), true);
+  assert.equal(ui.pages[1].classList.contains('active'), false);
+  assert.equal(ui.navs[0].classList.contains('active'), true);
+  assert.equal(ui.navs[1].classList.contains('active'), false);
+  assert.ok(ui.events.includes('scroll:0:0'));
 });
 
-test('navigates to a fresh home load instead of reloading stale page state', () => {
-  const calls = [];
-  const fakeWindow = {
-    location: {
-      pathname: '/Kron-ngs-IF-Juniorlag/',
-      search: '',
-      replace: url => calls.push(['replace', url])
-    },
-    history: { scrollRestoration: 'auto' }
-  };
+test('SIGNED_IN activates home and announces account refresh', () => {
+  const ui = makeUi();
+  handleAuthNavigation('SIGNED_IN', { user: { id: 'player' } }, ui.win, ui.doc);
+  assert.equal(ui.pages[0].classList.contains('active'), true);
+  assert.ok(ui.events.includes('kronang:auth-signed-in'));
+});
 
-  goHomeAfterLogin(fakeWindow, 67890);
-
-  assert.equal(fakeWindow.history.scrollRestoration, 'manual');
-  assert.deepEqual(calls, [['replace', '/Kron-ngs-IF-Juniorlag/?login=67890']]);
+test('SIGNED_OUT announces account reset', () => {
+  const ui = makeUi();
+  handleAuthNavigation('SIGNED_OUT', null, ui.win, ui.doc);
+  assert.ok(ui.events.includes('kronang:auth-signed-out'));
 });
