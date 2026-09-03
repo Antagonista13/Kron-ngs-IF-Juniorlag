@@ -25,6 +25,20 @@
   color: #111;
 }
 #teamPostForm textarea { resize: vertical; }
+.team-post-pin-option { display: flex !important; align-items: center; gap: 8px; cursor: pointer; }
+.team-post-pin-option input { width: auto !important; margin: 0; }
 .team-post-form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 #teamPostMessage { margin: 10px 0 0; color: #666; }
 .team-posts-list .team-post { margin-bottom: 18px; }
+.team-post-important { border: 2px solid #111; }
+.team-post-pinned {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
