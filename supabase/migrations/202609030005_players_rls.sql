@@ -18,7 +18,18 @@ create policy "players can read own player row"
 on public.players
 for select
 to authenticated
-using (profile_id = auth.uid());
+using (
+  profile_id = auth.uid()
+  or (
+    profile_id is null
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.role = 'player'
+        and lower(trim(p.full_name)) = lower(trim(players.full_name))
+    )
+  )
+);
 
 create policy "leaders can add players"
 on public.players
