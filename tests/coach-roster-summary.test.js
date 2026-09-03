@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachRosterSummary, formatRosterAssessmentDate } = require('../coach-roster-summary.js');
+const { buildCoachRosterSummary, formatRosterAssessmentDate, filterCoachRosterItems } = require('../coach-roster-summary.js');
 
 test('builds a compact coach roster summary for each player', () => {
   const players = [
@@ -46,4 +46,16 @@ test('ignores self-assessment-only rows when finding latest trainer assessment',
 
 test('formats roster assessment dates in Swedish', () => {
   assert.equal(formatRosterAssessmentDate('2026-09-02T07:50:00Z'), '2 september 2026');
+});
+
+test('filters coach roster by player name without caring about case or extra spaces', () => {
+  const items = [
+    { id: 'p1', name: 'Anna Andersson' },
+    { id: 'p2', name: 'Erik Berg' },
+    { id: 'p3', name: 'Testspelare' }
+  ];
+
+  assert.deepEqual(filterCoachRosterItems(items, '  ANNA '), [items[0]]);
+  assert.deepEqual(filterCoachRosterItems(items, 'berg'), [items[1]]);
+  assert.deepEqual(filterCoachRosterItems(items, ''), items);
 });
