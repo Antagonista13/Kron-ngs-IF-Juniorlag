@@ -27,6 +27,10 @@ function getHomeShortcutPage(type) {
   return targets[type] || '';
 }
 
+function isHomeActivationKey(key) {
+  return key === 'Enter' || key === ' ';
+}
+
 function setupHomePlayerHeader() {
   const homePage = document.getElementById('homePage');
   if (!homePage || !window.kronangSupabase) return;
@@ -54,6 +58,11 @@ function setupHomePlayerHeader() {
       const target = getHomeShortcutPage('activity');
       const nav = document.querySelector('.nav-item[data-page="' + target + '"]');
       if (nav) nav.click();
+    });
+    activityCard.addEventListener('keydown', function (event) {
+      if (!isHomeActivationKey(event.key)) return;
+      event.preventDefault();
+      activityCard.click();
     });
   }
 
@@ -117,5 +126,5 @@ function waitForHomePlayerHeader() {
   setTimeout(waitForHomePlayerHeader, 100);
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage };
+if (typeof module !== 'undefined' && module.exports) module.exports = { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForHomePlayerHeader();
