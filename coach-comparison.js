@@ -19,6 +19,10 @@ function buildCoachComparisonModel(rows) {
   });
 }
 
+function shouldWaitForCoachAssessmentRender(saveButtonExists, attempt) {
+  return !saveButtonExists && attempt < 30;
+}
+
 function comparisonStars(value) {
   if (value === null || value === undefined) return "—";
   return "★".repeat(value) + "☆".repeat(5 - value);
@@ -77,6 +81,22 @@ async function loadCoachComparison(playerId) {
   }
 }
 
+function mountCoachComparisonWhenReady(playerId, attempt) {
+  const container = document.getElementById("coachPlayerDevelopment");
+  if (!container) return;
+
+  const saveButtonExists = Boolean(container.querySelector("#saveCoachAssessment"));
+  if (shouldWaitForCoachAssessmentRender(saveButtonExists, attempt)) {
+    setTimeout(function () {
+      mountCoachComparisonWhenReady(playerId, attempt + 1);
+    }, 100);
+    return;
+  }
+
+  if (!saveButtonExists) return;
+  loadCoachComparison(playerId);
+}
+
 function setupCoachComparison() {
   const list = document.getElementById("coachPlayerList");
   if (!list) return false;
@@ -85,9 +105,7 @@ function setupCoachComparison() {
     const button = event.target.closest(".coach-player-button");
     if (!button) return;
 
-    setTimeout(function () {
-      loadCoachComparison(button.dataset.playerId);
-    }, 350);
+    mountCoachComparisonWhenReady(button.dataset.playerId, 0);
   });
 
   return true;
@@ -99,7 +117,7 @@ function waitForCoachComparison() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachComparisonModel };
+  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
