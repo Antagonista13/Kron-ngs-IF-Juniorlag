@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts } = require('../team-posts.js');
+const { canManageTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState } = require('../team-posts.js');
 
 test('only coach and admin roles can manage team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
@@ -26,4 +26,10 @@ test('pinned posts sort before newer normal posts', () => {
     { id: 'old', is_pinned: false, created_at: '2026-09-01T09:00:00Z' }
   ];
   assert.deepEqual(sortTeamPosts(posts).map((post) => post.id), ['pin', 'new', 'old']);
+});
+
+test('edit state preserves title body and pinned status', () => {
+  assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true }), {
+    id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true
+  });
 });
