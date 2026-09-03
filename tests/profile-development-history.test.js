@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildDevelopmentHistory } = require('../profile-development-history.js');
+const { buildDevelopmentHistory, getDevelopmentHistoryMountTarget } = require('../profile-development-history.js');
 
 test('combines goals, focuses and challenges newest first', () => {
   const result = buildDevelopmentHistory(
@@ -23,4 +23,8 @@ test('ignores history rows without a usable date', () => {
   );
   assert.equal(result.length, 1);
   assert.equal(result[0].type, 'challenge');
+});
+
+test('development history belongs on the development page', () => {
+  assert.equal(getDevelopmentHistoryMountTarget(), 'developmentPage');
 });
