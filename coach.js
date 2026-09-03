@@ -25,7 +25,7 @@ function setupKronangCoach() {
       if (playerError || !player) { developmentContainer.innerHTML="<p>Spelaren kunde inte hämtas.</p>"; return; }
       const { data: assessment, error: assessmentError } = await window.kronangSupabase.from("development_assessments").select("*").eq("player_id", playerId).order("created_at", { ascending:false }).limit(1).maybeSingle();
       if (assessmentError) { developmentContainer.innerHTML="<p>Utvecklingsdata kunde inte hämtas.</p>"; return; }
-      if (!assessment) { developmentContainer.innerHTML=`<hr><h3 class="coach-assessment-player-name">${player.full_name}</h3><p>Det finns ingen utvecklingsbedömning ännu.</p>`; return; }
+      if (!assessment) { developmentContainer.innerHTML=`<hr><p>Det finns ingen utvecklingsbedömning ännu.</p>`; return; }
       const areas=[
         {title:"Teknik",selfField:"technique_self",reflectionField:"technique_reflection",coachField:"technique_coach",commentField:"technique_coach_comment"},
         {title:"Spelförståelse",selfField:"game_understanding_self",reflectionField:"game_understanding_reflection",coachField:"game_understanding_coach",commentField:"game_understanding_coach_comment"},
@@ -33,7 +33,7 @@ function setupKronangCoach() {
         {title:"Mentalitet",selfField:"mentality_self",reflectionField:"mentality_reflection",coachField:"mentality_coach",commentField:"mentality_coach_comment"}
       ];
       function stars(value){ if(value===null||value===undefined)return "☆☆☆☆☆"; return "★".repeat(value)+"☆".repeat(5-value); }
-      let html=`<hr><h3 class="coach-assessment-player-name">${player.full_name}</h3><p><strong>Spelarens självskattning</strong></p>`;
+      let html=`<hr><p><strong>Spelarens självskattning</strong></p>`;
       areas.forEach(function(area,index){ html+=`<div class="coach-development-area"><h4>${area.title}</h4><p><strong>Spelarens skattning:</strong> ${stars(assessment[area.selfField])}</p><p><strong>Spelarens reflektion:</strong><br>${assessment[area.reflectionField]||"Ingen reflektion."}</p><p><strong>Din bedömning:</strong></p><div class="coach-rating-stars">${[1,2,3,4,5].map(function(rating){return `<button type="button" class="coach-rating-star" data-area="${index}" data-rating="${rating}">${assessment[area.coachField]&&rating<=assessment[area.coachField]?"★":"☆"}</button>`;}).join("")}</div><textarea class="coach-comment" data-area="${index}" rows="3" placeholder="Skriv din kommentar...">${assessment[area.commentField]||""}</textarea></div>`; });
       html+=`<button id="saveCoachAssessment" type="button">SPARA TRÄNARBEDÖMNING</button><p id="coachSaveMessage"></p>`; developmentContainer.innerHTML=html;
       const coachRatings=areas.map(a=>assessment[a.coachField]||null); const coachComments=areas.map(a=>assessment[a.commentField]||"");
