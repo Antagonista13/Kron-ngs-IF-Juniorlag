@@ -6,9 +6,9 @@ const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 
 test('admin access module is cache-busted and loaded before admin page', () => {
-  const access = html.indexOf('admin-access.js?v=2');
+  const access = html.indexOf('admin-access.js?v=3');
   const page = html.indexOf('admin-page.js?v=2');
-  assert.notEqual(access, -1, 'admin-access.js must use a fresh cache version');
+  assert.notEqual(access, -1, 'admin-access.js must use the current fresh cache version');
   assert.notEqual(page, -1, 'admin-page.js must use a fresh cache version');
   assert.ok(access < page, 'admin-access.js must load before admin-page.js');
 });
