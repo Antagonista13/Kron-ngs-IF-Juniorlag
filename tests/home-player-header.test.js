@@ -15,6 +15,8 @@ assert.ok(buildNavIcon('home').includes('<svg'));
 assert.ok(buildNavIcon('development').includes('<svg'));
 assert.ok(!buildNavIcon('profile').includes('👤'));
 assert.strictEqual(getHomeShortcutPage('activity'), 'calendarPage');
+assert.strictEqual(getHomeShortcutPage('challenge'), 'developmentPage');
+assert.strictEqual(getHomeShortcutPage('profile'), 'profilePage');
 assert.strictEqual(getHomeShortcutPage('unknown'), '');
 assert.strictEqual(isHomeActivationKey('Enter'), true);
 assert.strictEqual(isHomeActivationKey(' '), true);
