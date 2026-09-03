@@ -19,6 +19,7 @@ function buildPlayerDevelopmentTrend(rows) {
     };
   });
 }
+function getDevelopmentTrendMountTarget() { return 'developmentPage'; }
 function trendStars(value) {
   if (value === null || value === undefined) return '—';
   return '★'.repeat(value) + '☆'.repeat(5-value);
@@ -30,16 +31,17 @@ function trendChange(current, previous) {
   return diff > 0 ? '+' + diff : '−' + Math.abs(diff);
 }
 function ensurePlayerDevelopmentTrendCard() {
-  const profilePage = document.getElementById('profilePage');
-  if (!profilePage) return null;
+  const developmentPage = document.getElementById(getDevelopmentTrendMountTarget());
+  if (!developmentPage) return null;
   let card = document.getElementById('profileDevelopmentTrend');
-  if (card) return card;
+  if (card) {
+    if (card.parentElement !== developmentPage) developmentPage.appendChild(card);
+    return card;
+  }
   card = document.createElement('section');
   card.id = 'profileDevelopmentTrend';
   card.className = 'card profile-development-trend';
-  const history = document.getElementById('profileDevelopmentHistory');
-  if (history) history.insertAdjacentElement('beforebegin', card);
-  else profilePage.appendChild(card);
+  developmentPage.appendChild(card);
   return card;
 }
 function renderPlayerDevelopmentTrend(model, hasPrevious) {
@@ -85,5 +87,5 @@ function waitForPlayerDevelopmentTrend() {
   window.addEventListener('kronang-auth-changed',loadPlayerDevelopmentTrend);
   loadPlayerDevelopmentTrend();
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange };
+if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange, getDevelopmentTrendMountTarget };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForPlayerDevelopmentTrend();
