@@ -131,6 +131,7 @@ button { font-family: inherit; }
 #coachFocusFeedbackControls textarea, .coach-comment { width: 100%; border: 1px solid #cfcfcf; border-radius: 12px; padding: 11px; font: inherit; line-height: 1.4; resize: vertical; background: #fafafa; }
 #coachFocusFeedbackControls textarea:focus, .coach-comment:focus { outline: 2px solid #111; outline-offset: 1px; background: #fff; }
 #coachFocusFeedbackControls button, #saveCoachAssessment { border: none; background: #111; color: #fff; border-radius: 10px; padding: 10px 13px; font-weight: 700; cursor: pointer; margin: 8px 6px 6px 0; }
+#coachPlayerDevelopment { padding-bottom: 110px; }
 #coachPlayerDevelopment > hr { border: 0; margin: 18px 0; }
 #coachPlayerDevelopment > p:first-of-type { margin: 24px 0 14px; padding: 0; font-size: 22px; font-weight: 800; }
 .coach-development-area { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 14px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
@@ -140,7 +141,7 @@ button { font-family: inherit; }
 .coach-development-area p { line-height: 1.45; margin: 10px 0; }
 .coach-rating-stars { display: flex; gap: 4px; margin: 8px 0 14px; }
 .coach-rating-star { border: none; background: transparent; padding: 0 3px; font-size: 29px; cursor: pointer; }
-.coach-comment { min-height: 96px; margin-top: 4px; }
+.coach-comment { min-height: 72px; margin-top: 4px; }
 #saveCoachAssessment { width: 100%; margin: 4px 0 18px; padding: 14px 16px; border-radius: 12px; }
 
 @media (min-width: 700px) {
