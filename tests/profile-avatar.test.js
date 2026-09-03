@@ -1,5 +1,10 @@
+const fs = require('fs');
 const assert = require('assert');
 const { buildProfileAvatarModel } = require('../profile-avatar.js');
 assert.deepStrictEqual(buildProfileAvatarModel({full_name:'Testspelare', avatar_url:'https://example.se/me.jpg'}), {name:'Testspelare', avatarUrl:'https://example.se/me.jpg'});
 assert.deepStrictEqual(buildProfileAvatarModel({full_name:'Testspelare'}), {name:'Testspelare', avatarUrl:''});
+const css = fs.readFileSync('style.css', 'utf8');
+assert.ok(css.includes('.profile-avatar svg'), 'profile fallback svg needs explicit styling');
+assert.ok(css.includes('fill:none'), 'profile fallback svg must not fill black shapes');
+assert.ok(css.includes('stroke:currentColor'), 'profile fallback svg should inherit the white avatar color');
 console.log('profile avatar tests passed');
