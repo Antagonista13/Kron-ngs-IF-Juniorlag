@@ -34,11 +34,11 @@ assert.strictEqual(isHomeActivationKey('Enter'), true);
 assert.strictEqual(isHomeActivationKey(' '), true);
 assert.strictEqual(isHomeActivationKey('Escape'), false);
 
-const css = fs.readFileSync('home-player-header.css', 'utf8');
+const css = fs.readFileSync('player-labels.css', 'utf8');
 const numberStyle = css.match(/\.home-player-number\{([^}]*)\}/);
-assert.ok(numberStyle, 'home-player-number style should exist');
+assert.ok(numberStyle, 'home-player-number override should exist');
 assert.ok(numberStyle[1].includes('color:#d1aa67'), 'player number should use the gold label color');
 assert.ok(numberStyle[1].includes('Segoe Script'), 'player number should use the handwritten label font');
-assert.ok(!numberStyle[1].includes('background:rgba(0,0,0,.88)'), 'player number should not use the old pill badge');
+assert.ok(numberStyle[1].includes('background:transparent'), 'player number should not use the old pill badge');
 
 console.log('home-player-header tests passed');
