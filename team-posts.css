@@ -1,44 +1,24 @@
 .team-post-composer { margin-bottom: 18px; }
 #openTeamPostComposer,
 #saveTeamPost,
-#cancelTeamPost {
-  border: none;
-  border-radius: 10px;
-  padding: 11px 14px;
-  font-weight: 800;
-  cursor: pointer;
+#cancelTeamPost,
+#openTeamFocusManager,
+#saveTeamFocus,
+#cancelTeamFocus {
+  border: none; border-radius: 10px; padding: 11px 14px; font-weight: 800; cursor: pointer;
 }
-#openTeamPostComposer,
-#saveTeamPost { background: #111; color: #fff; }
-#cancelTeamPost { background: #ececec; color: #111; }
-#teamPostForm { margin-top: 16px; }
-#teamPostForm label { display: block; margin: 12px 0 6px; font-weight: 800; }
-#teamPostForm input,
-#teamPostForm textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #cfcfcf;
-  border-radius: 12px;
-  padding: 12px 14px;
-  font: inherit;
-  background: #fff;
-  color: #111;
-}
-#teamPostForm textarea { resize: vertical; }
-.team-post-pin-option { display: flex !important; align-items: center; gap: 8px; cursor: pointer; }
-.team-post-pin-option input { width: auto !important; margin: 0; }
-.team-post-form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-#teamPostMessage { margin: 10px 0 0; color: #666; }
-.team-posts-list .team-post { margin-bottom: 18px; }
-.team-post-important { border: 2px solid #111; }
-.team-post-pinned {
-  display: inline-block;
-  margin: 12px 0 0;
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: #111;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .04em;
-}
+#openTeamPostComposer,#saveTeamPost,#openTeamFocusManager,#saveTeamFocus { background:#111; color:#fff; }
+#cancelTeamPost,#cancelTeamFocus { background:#ececec; color:#111; }
+#teamPostForm,#teamFocusForm { margin-top:16px; }
+#teamPostForm label,#teamFocusForm label { display:block; margin:12px 0 6px; font-weight:800; }
+#teamPostForm input,#teamPostForm textarea,#teamFocusForm input { width:100%; box-sizing:border-box; border:1px solid #cfcfcf; border-radius:12px; padding:12px 14px; font:inherit; background:#fff; color:#111; }
+#teamPostForm textarea { resize:vertical; }
+.team-post-pin-option { display:flex !important; align-items:center; gap:8px; cursor:pointer; }
+.team-post-pin-option input { width:auto !important; margin:0; }
+.team-post-form-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+#teamPostMessage,#teamFocusMessage { margin:10px 0 0; color:#666; }
+.team-posts-list .team-post { margin-bottom:18px; }
+.team-post-important { border:2px solid #111; }
+.team-post-pinned { display:inline-block; margin:12px 0 0; padding:5px 8px; border-radius:999px; background:#111; color:#fff; font-size:12px; font-weight:800; letter-spacing:.04em; }
+.team-focus-manager,.team-weekly-focus { margin-bottom:18px; }
+.team-weekly-focus h2 { margin:8px 0 14px; }
