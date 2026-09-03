@@ -1,8 +1,23 @@
+function hasCoachRating(row) {
+  if (!row) return false;
+  return [
+    "technique_coach",
+    "game_understanding_coach",
+    "physical_coach",
+    "mentality_coach"
+  ].some(function (field) {
+    return row[field] !== null && row[field] !== undefined;
+  });
+}
+
 function buildCoachComparisonModel(rows) {
   if (!Array.isArray(rows) || rows.length < 2) return [];
 
-  const current = rows[0];
-  const previous = rows[1];
+  const coachRatedRows = rows.filter(hasCoachRating);
+  if (coachRatedRows.length < 2) return [];
+
+  const current = coachRatedRows[0];
+  const previous = coachRatedRows[1];
   const areas = [
     ["Teknik", "technique_coach"],
     ["Spelförståelse", "game_understanding_coach"],
@@ -63,7 +78,7 @@ async function loadCoachComparison(playerId) {
     .select("technique_coach, game_understanding_coach, physical_coach, mentality_coach, created_at")
     .eq("player_id", playerId)
     .order("created_at", { ascending: false })
-    .limit(2);
+    .limit(10);
 
   if (error || !data) return;
 
@@ -117,7 +132,7 @@ function waitForCoachComparison() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender };
+  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
