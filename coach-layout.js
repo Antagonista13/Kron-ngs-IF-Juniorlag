@@ -10,6 +10,10 @@ function buildCoachLayoutModel() {
   };
 }
 
+function isRedundantAssessmentHeading(tagName, headingIndex) {
+  return tagName === "H3" && headingIndex > 0;
+}
+
 function ensureCoachLayoutStyles() {
   if (document.getElementById("coachLayoutStyles")) return;
   const style = document.createElement("style");
@@ -42,6 +46,16 @@ function ensureCoachLayoutStyles() {
   document.head.appendChild(style);
 }
 
+function removeRedundantAssessmentHeading(assessment) {
+  if (!assessment) return;
+  const directHeadings = Array.from(assessment.children).filter(function (child) {
+    return child.tagName === "H3";
+  });
+  directHeadings.forEach(function (heading, index) {
+    if (isRedundantAssessmentHeading(heading.tagName, index)) heading.remove();
+  });
+}
+
 function setupCoachLayout() {
   const coachView = document.getElementById("coachDevelopmentView");
   const playerList = document.getElementById("coachPlayerList");
@@ -50,6 +64,7 @@ function setupCoachLayout() {
   ensureCoachLayoutStyles();
   const model = buildCoachLayoutModel();
   coachView.classList.add("coach-workspace");
+
   if (!document.getElementById("coachOverviewCard")) {
     const overview = document.createElement("section");
     const heading = document.createElement("h3");
@@ -60,6 +75,7 @@ function setupCoachLayout() {
     playerList.parentElement.insertBefore(overview, playerList);
     overview.appendChild(playerList);
   }
+
   function decorate() {
     const context = development.querySelector("#coachPlayerContext");
     if (context) {
@@ -67,15 +83,20 @@ function setupCoachLayout() {
       const firstHeading = context.querySelector("h3");
       if (firstHeading) firstHeading.textContent = model.contextTitle;
     }
+
     const feedback = development.querySelector("#coachFocusFeedbackControls");
     if (feedback) {
       feedback.classList.add("coach-feedback-block");
       const feedbackHeading = feedback.querySelector("h4");
       if (feedbackHeading) feedbackHeading.textContent = model.feedbackTitle;
     }
+
     let assessment = development.querySelector("#coachAssessmentCard");
     const saveButton = development.querySelector("#saveCoachAssessment");
-    const noAssessmentText = Array.from(development.querySelectorAll("p")).find(function (p) { return p.textContent === "Det finns ingen utvecklingsbedömning ännu."; });
+    const noAssessmentText = Array.from(development.querySelectorAll("p")).find(function (p) {
+      return p.textContent === "Det finns ingen utvecklingsbedömning ännu.";
+    });
+
     if (!assessment && (saveButton || noAssessmentText)) {
       assessment = document.createElement("section");
       const heading = document.createElement("h3");
@@ -83,16 +104,32 @@ function setupCoachLayout() {
       assessment.className = model.cardClass + " coach-assessment-card";
       heading.textContent = model.assessmentTitle;
       assessment.appendChild(heading);
-      const nodes = Array.from(development.childNodes).filter(function (node) { return !(node.nodeType === 1 && node.id === "coachPlayerContext"); });
+      const nodes = Array.from(development.childNodes).filter(function (node) {
+        return !(node.nodeType === 1 && node.id === "coachPlayerContext");
+      });
       nodes.forEach(function (node) { assessment.appendChild(node); });
       development.appendChild(assessment);
     }
+
+    removeRedundantAssessmentHeading(assessment);
   }
+
   const observer = new MutationObserver(decorate);
   observer.observe(development, { childList: true, subtree: true });
   decorate();
   return true;
 }
-function waitForCoachLayout() { if (setupCoachLayout()) return; setTimeout(waitForCoachLayout, 100); }
-if (typeof module !== "undefined" && module.exports) { module.exports = { buildCoachLayoutModel }; }
-if (typeof window !== "undefined") { window.KronangCoachLayout = { buildCoachLayoutModel }; if (typeof document !== "undefined") waitForCoachLayout(); }
+
+function waitForCoachLayout() {
+  if (setupCoachLayout()) return;
+  setTimeout(waitForCoachLayout, 100);
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { buildCoachLayoutModel, isRedundantAssessmentHeading };
+}
+
+if (typeof window !== "undefined") {
+  window.KronangCoachLayout = { buildCoachLayoutModel, isRedundantAssessmentHeading };
+  if (typeof document !== "undefined") waitForCoachLayout();
+}
