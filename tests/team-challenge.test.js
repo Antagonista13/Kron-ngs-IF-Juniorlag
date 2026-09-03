@@ -1,11 +1,21 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge, shouldRefreshChallengeForAuthEvent } = require('../team-challenge.js');
+const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge, canViewTeamChallenge, shouldRefreshChallengeForAuthEvent } = require('../team-challenge.js');
 
 test('coach and admin can manage weekly challenge', () => {
   assert.equal(canManageTeamChallenge('coach'), true);
   assert.equal(canManageTeamChallenge('admin'), true);
   assert.equal(canManageTeamChallenge('player'), false);
+  assert.equal(canManageTeamChallenge('parent'), false);
+  assert.equal(canManageTeamChallenge('pending'), false);
+});
+
+test('parent and pending cannot view weekly challenge', () => {
+  assert.equal(canViewTeamChallenge('player'), true);
+  assert.equal(canViewTeamChallenge('coach'), true);
+  assert.equal(canViewTeamChallenge('admin'), true);
+  assert.equal(canViewTeamChallenge('parent'), false);
+  assert.equal(canViewTeamChallenge('pending'), false);
 });
 
 test('weekly challenge requires title and instruction', () => {

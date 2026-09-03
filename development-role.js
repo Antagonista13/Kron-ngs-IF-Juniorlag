@@ -1,3 +1,8 @@
+function isLeaderRoleLocal(role) {
+  if (typeof window !== "undefined" && window.KronangPermissions) return window.KronangPermissions.isLeaderRole(role);
+  return role === "coach" || role === "admin";
+}
+
 function canEditSelfAssessment(role) {
   return role === "player";
 }
@@ -7,7 +12,7 @@ function shouldShowPlayerDevelopmentCards(role) {
 }
 
 function getDevelopmentHeading(role, fullName) {
-  if (role === "coach") {
+  if (isLeaderRoleLocal(role)) {
     return {
       title: "Juniorlagets utveckling",
       subtitle: "Följ spelarnas mål, fokus och utveckling över tid."

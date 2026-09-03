@@ -1,0 +1,12 @@
+const fs = require('fs');
+const assert = require('assert');
+const path = 'supabase/migrations/202609030008_admin_user_rpcs.sql';
+assert.equal(fs.existsSync(path), true, 'admin RPC migration must exist');
+const sql = fs.readFileSync(path, 'utf8').toLowerCase();
+['admin_list_users','admin_approve_user','admin_reject_user','admin_update_user_access'].forEach(name => assert.ok(sql.includes(name), name + ' missing'));
+assert.ok(sql.includes('public.is_admin()'));
+assert.ok(sql.includes("p_role not in ('player','parent','coach')") || sql.includes("p_role in ('player','parent','coach')"));
+assert.ok(sql.includes('update public.players'));
+assert.ok(sql.includes("role = 'admin'") || sql.includes("role='admin'"));
+assert.ok(sql.includes('revoke execute'));
+assert.ok(sql.includes('grant execute'));
