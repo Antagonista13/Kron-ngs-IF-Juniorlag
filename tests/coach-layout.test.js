@@ -9,6 +9,7 @@ test('defines the four coach tool blocks in the intended order', () => {
     feedbackTitle: 'Tränarens återkoppling',
     assessmentTitle: 'Självskattning & tränarbedömning',
     cardClass: 'coach-tool-card',
-    assessmentIntroGap: 8
+    assessmentIntroGap: 8,
+    showPlayerNameInAssessment: false
   });
 });
