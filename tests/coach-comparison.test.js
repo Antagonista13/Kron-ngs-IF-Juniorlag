@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachComparisonModel } = require('../coach-comparison.js');
+const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender } = require('../coach-comparison.js');
 
 test('compares current coach ratings with the immediately previous assessment', () => {
   const rows = [
@@ -19,4 +19,11 @@ test('compares current coach ratings with the immediately previous assessment', 
 
 test('returns no comparison when there is no previous assessment', () => {
   assert.deepEqual(buildCoachComparisonModel([{ technique_coach: 4 }]), []);
+});
+
+test('waits until the main coach assessment has finished rendering', () => {
+  assert.equal(shouldWaitForCoachAssessmentRender(false, 0), true);
+  assert.equal(shouldWaitForCoachAssessmentRender(false, 29), true);
+  assert.equal(shouldWaitForCoachAssessmentRender(false, 30), false);
+  assert.equal(shouldWaitForCoachAssessmentRender(true, 0), false);
 });
