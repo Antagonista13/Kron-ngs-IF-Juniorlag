@@ -18,7 +18,7 @@ function buildNavIcon(type) {
 }
 
 function getHomeShortcutPage(type) {
-  const targets = { activity: 'calendarPage', challenge: 'developmentPage', profile: 'profilePage' };
+  const targets = { activity: 'calendarPage', challenge: 'developmentPage', news: 'teamPage', profile: 'profilePage' };
   return targets[type] || '';
 }
 function isHomeActivationKey(key) { return key === 'Enter' || key === ' '; }
@@ -34,6 +34,7 @@ function activateHomeShortcut(element, type) {
   });
   element.addEventListener('keydown', function (event) {
     if (!isHomeActivationKey(event.key)) return;
+    if (event.target !== element) return;
     event.preventDefault();
     element.click();
   });
@@ -52,8 +53,12 @@ function setupHomePlayerHeader() {
     const span = button.querySelector('span'), page = button.getAttribute('data-page');
     if (span && map[page]) span.innerHTML = buildNavIcon(map[page]);
   });
+  homePage.querySelectorAll('[data-home-icon]').forEach(function (icon) {
+    icon.innerHTML = buildNavIcon(icon.getAttribute('data-home-icon'));
+  });
   activateHomeShortcut(document.getElementById('homeNextActivityCard'), 'activity');
   activateHomeShortcut(document.getElementById('homeChallengeCard'), 'challenge');
+  activateHomeShortcut(document.getElementById('homeNewsCard'), 'news');
 
   function render(model) {
     header.innerHTML = '';
