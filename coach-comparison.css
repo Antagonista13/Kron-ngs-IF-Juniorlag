@@ -1,0 +1,50 @@
+.coach-comparison-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 28px 0 18px;
+  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
+}
+
+.coach-comparison-card h3 {
+  margin: 0 0 16px;
+  font-size: 21px;
+}
+
+.coach-comparison-row {
+  padding: 12px 0;
+}
+
+.coach-comparison-row + .coach-comparison-row {
+  border-top: 1px solid #eeeeee;
+}
+
+.coach-comparison-row > strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 17px;
+}
+
+.coach-comparison-row div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  line-height: 1.5;
+}
+
+.coach-comparison-previous {
+  color: #6f6f6f;
+}
+
+@media (max-width: 600px) {
+  .coach-comparison-card {
+    padding: 16px;
+    border-radius: 15px;
+  }
+
+  .coach-comparison-row div {
+    flex-direction: column;
+    gap: 3px;
+  }
+}
