@@ -1,0 +1,30 @@
+.team-post-composer { margin-bottom: 18px; }
+#openTeamPostComposer,
+#saveTeamPost,
+#cancelTeamPost {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+#openTeamPostComposer,
+#saveTeamPost { background: #111; color: #fff; }
+#cancelTeamPost { background: #ececec; color: #111; }
+#teamPostForm { margin-top: 16px; }
+#teamPostForm label { display: block; margin: 12px 0 6px; font-weight: 800; }
+#teamPostForm input,
+#teamPostForm textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfcfcf;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+  color: #111;
+}
+#teamPostForm textarea { resize: vertical; }
+.team-post-form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+#teamPostMessage { margin: 10px 0 0; color: #666; }
+.team-posts-list .team-post { margin-bottom: 18px; }
