@@ -1,0 +1,3 @@
+.home-player-number{right:28px;bottom:26px;min-width:0;height:auto;padding:0;border-radius:0;background:transparent;color:#d1aa67;display:block;font-family:"Segoe Script","Brush Script MT",cursive;font-size:32px;font-weight:500;line-height:1;letter-spacing:.3px;border:0;box-shadow:none;transform:rotate(-7deg);text-shadow:0 2px 5px rgba(0,0,0,.28);pointer-events:none}
+@media(max-width:560px){.home-player-number{right:22px;bottom:20px;font-size:27px}}
+@media(max-width:390px){.home-player-number{right:19px;bottom:18px;font-size:25px}}
