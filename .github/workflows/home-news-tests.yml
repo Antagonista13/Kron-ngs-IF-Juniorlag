@@ -3,8 +3,6 @@ name: Home and news tests
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [codex/home-warm-news]
 
 jobs:
   test:
@@ -18,7 +16,17 @@ jobs:
         run: |
           node --check home-player-header.js
           node --check team-posts.js
+          if [ -f team-staff.js ]; then node --check team-staff.js; fi
+          if [ -f profile-avatar.js ]; then node --check profile-avatar.js; fi
       - name: Home tests
         run: node tests/home-player-header.test.js
       - name: Team post tests
         run: node --test tests/team-posts.test.js
+      - name: Mobile home tests
+        run: node tests/home-mobile-layout.test.js
+      - name: Team focus style tests
+        run: node tests/team-focus-style.test.js
+      - name: Team staff tests
+        run: node tests/team-staff.test.js
+      - name: Profile avatar tests
+        run: node tests/profile-avatar.test.js
