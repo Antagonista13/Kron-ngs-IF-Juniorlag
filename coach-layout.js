@@ -4,7 +4,8 @@ function buildCoachLayoutModel() {
     contextTitle: "Mål & fokus",
     feedbackTitle: "Tränarens återkoppling",
     assessmentTitle: "Självskattning & tränarbedömning",
-    cardClass: "coach-tool-card"
+    cardClass: "coach-tool-card",
+    assessmentIntroGap: 8
   };
 }
 
@@ -67,11 +68,15 @@ function ensureCoachLayoutStyles() {
       cursor: pointer;
     }
     .coach-assessment-card > hr { display: none; }
+    .coach-assessment-card > p { margin-bottom: 8px; }
     .coach-assessment-card .coach-development-area {
       border-top: 1px solid #e5e5e5;
       padding: 18px 0 8px;
     }
-    .coach-assessment-card .coach-development-area:first-of-type { border-top: none; }
+    .coach-assessment-card .coach-development-area:first-of-type {
+      border-top: none;
+      padding-top: 8px;
+    }
     .coach-rating-star {
       border: none;
       background: transparent;
