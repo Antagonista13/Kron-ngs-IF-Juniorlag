@@ -5,7 +5,7 @@ function hasCoachRating(row) {
     "game_understanding_coach",
     "physical_coach",
     "mentality_coach"
-  ].some(function (field) {
+  ].every(function (field) {
     return row[field] !== null && row[field] !== undefined;
   });
 }
