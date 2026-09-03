@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender } = require('../coach-comparison.js');
+const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating } = require('../coach-comparison.js');
 
-test('compares current coach ratings with the immediately previous coach-rated assessment', () => {
+test('compares current coach ratings with the immediately previous complete coach assessment', () => {
   const rows = [
     { technique_coach: 4, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4 },
     { technique_coach: 3, game_understanding_coach: 3, physical_coach: 4, mentality_coach: 2 },
@@ -17,10 +17,10 @@ test('compares current coach ratings with the immediately previous coach-rated a
   ]);
 });
 
-test('skips an older self-assessment row that has no coach ratings', () => {
+test('skips mixed or incomplete rows between two complete coach assessments', () => {
   const rows = [
     { technique_coach: 3, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4 },
-    { technique_coach: null, game_understanding_coach: null, physical_coach: null, mentality_coach: null },
+    { technique_coach: null, game_understanding_coach: 2, physical_coach: null, mentality_coach: null },
     { technique_coach: 3, game_understanding_coach: 4, physical_coach: 4, mentality_coach: 3 }
   ];
 
@@ -32,10 +32,15 @@ test('skips an older self-assessment row that has no coach ratings', () => {
   ]);
 });
 
-test('returns no comparison when there is no previous coach-rated assessment', () => {
+test('a coach assessment counts only when all four coach ratings exist', () => {
+  assert.equal(hasCoachRating({ technique_coach: 3, game_understanding_coach: 3, physical_coach: 4, mentality_coach: 3 }), true);
+  assert.equal(hasCoachRating({ technique_coach: null, game_understanding_coach: 3, physical_coach: null, mentality_coach: null }), false);
+});
+
+test('returns no comparison when there is no previous complete coach assessment', () => {
   assert.deepEqual(buildCoachComparisonModel([
-    { technique_coach: 4 },
-    { technique_coach: null }
+    { technique_coach: 4, game_understanding_coach: 3, physical_coach: 4, mentality_coach: 4 },
+    { technique_coach: null, game_understanding_coach: 3, physical_coach: null, mentality_coach: null }
   ]), []);
 });
 
