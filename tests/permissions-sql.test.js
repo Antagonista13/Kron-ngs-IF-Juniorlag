@@ -1,0 +1,18 @@
+const fs = require('fs');
+const assert = require('assert');
+const path = 'supabase/migrations/202609030009_permissions_rls.sql';
+assert.equal(fs.existsSync(path), true, 'permissions migration must exist');
+const sql = fs.readFileSync(path, 'utf8').toLowerCase();
+['parent','pending','player','coach','admin'].forEach(role => assert.ok(sql.includes("'" + role + "'"), role + ' role predicate missing'));
+assert.ok(sql.includes('public.players'));
+assert.ok(sql.includes('public.is_leader()'));
+assert.ok(sql.includes('profile_id = auth.uid()'));
+assert.ok(sql.includes('public.team_focus'));
+assert.ok(sql.includes("role in ('admin','coach','player')") || sql.includes("role in ('admin', 'coach', 'player')"));
+assert.ok(sql.includes('public.team_challenges'));
+assert.ok(sql.includes('public.team_posts'));
+assert.ok(sql.includes("'parent'"));
+assert.ok(sql.includes('public.development_goals'));
+assert.ok(sql.includes('public.development_focuses'));
+assert.ok(sql.includes('public.development_subgoals'));
+assert.ok(sql.includes('player_id = auth.uid()'));
