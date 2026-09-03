@@ -3,6 +3,8 @@ name: Home and news tests
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [codex/admin-roles-approval]
 
 jobs:
   test:
@@ -19,6 +21,10 @@ jobs:
           if [ -f team-staff.js ]; then node --check team-staff.js; fi
           if [ -f profile-avatar.js ]; then node --check profile-avatar.js; fi
           if [ -f player-roster.js ]; then node --check player-roster.js; fi
+          node --check role-permissions.js
+          node --check access-gate.js
+          node --check admin-access.js
+          node --check admin-page.js
       - name: Home tests
         run: node tests/home-player-header.test.js
       - name: Team post tests
@@ -41,3 +47,29 @@ jobs:
         run: node tests/player-roster-ui.test.js
       - name: Player shirt number source tests
         run: node tests/player-shirt-number-source.test.js
+      - name: Auth tests
+        run: node --test tests/auth-navigation.test.js tests/auth-password.test.js
+      - name: Development role tests
+        run: node --test tests/development-role.test.js
+      - name: Team challenge tests
+        run: node --test tests/team-challenge.test.js
+      - name: Role permission tests
+        run: node --test tests/role-permissions.test.js
+      - name: Admin role schema tests
+        run: node tests/admin-role-schema.test.js
+      - name: Admin user RPC tests
+        run: node tests/admin-user-rpcs.test.js
+      - name: Permission SQL tests
+        run: node tests/permissions-sql.test.js
+      - name: Access gate tests
+        run: node --test tests/access-gate.test.js
+      - name: Role content visibility tests
+        run: node --test tests/role-content-visibility.test.js
+      - name: Admin view tests
+        run: node --test tests/admin-access.test.js tests/admin-page-model.test.js
+      - name: Invite function tests
+        run: node tests/invite-function.test.js
+      - name: Security leak checks
+        run: |
+          if grep -R "SUPABASE_SERVICE_ROLE_KEY" -- *.js tests 2>/dev/null; then exit 1; fi
+          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql 2>/dev/null; then exit 1; fi
