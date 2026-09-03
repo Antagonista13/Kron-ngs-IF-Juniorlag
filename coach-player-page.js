@@ -6,6 +6,16 @@ function buildCoachPlayerPageViewModel(name) {
   };
 }
 
+function buildCoachPlayerNavigation() {
+  return [
+    { label: "Mål", target: "coachPlayerContext" },
+    { label: "Fokus", target: "coachPlayerContext" },
+    { label: "Bedömning", target: "coachPlayerDevelopment" },
+    { label: "Jämförelse", target: "coachComparisonCard" },
+    { label: "Historik", target: "coachHistorySection" }
+  ];
+}
+
 function ensureCoachPlayerPageHeader() {
   const coachView = document.getElementById("coachDevelopmentView");
   const development = document.getElementById("coachPlayerDevelopment");
@@ -22,24 +32,42 @@ function ensureCoachPlayerPageHeader() {
   return header;
 }
 
+function scrollToCoachPlayerSection(targetId) {
+  let target = document.getElementById(targetId);
+  if (!target && targetId === "coachComparisonCard") target = document.querySelector(".coach-comparison-card");
+  if (!target && targetId === "coachHistorySection") target = document.querySelector(".coach-history-section");
+  if (!target) return false;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  return true;
+}
+
 function openCoachPlayerPage(button) {
   const coachView = document.getElementById("coachDevelopmentView");
   const header = ensureCoachPlayerPageHeader();
   if (!coachView || !header || !button) return;
 
   const model = buildCoachPlayerPageViewModel(button.textContent);
+  const navigation = buildCoachPlayerNavigation();
   header.innerHTML = `
     <button type="button" class="coach-player-page-back">${model.backLabel}</button>
     <h2>${model.title}</h2>
-    <p>${model.subtitle}</p>
+    <nav class="coach-player-section-nav" aria-label="Spelarens utvecklingsdelar">
+      ${navigation.map(function (item) {
+        return `<button type="button" data-target="${item.target}">${item.label}</button>`;
+      }).join("")}
+    </nav>
   `;
   header.hidden = false;
   coachView.classList.add("coach-player-detail-open");
 
   const back = header.querySelector(".coach-player-page-back");
-  if (back) {
-    back.addEventListener("click", closeCoachPlayerPage, { once: true });
-  }
+  if (back) back.addEventListener("click", closeCoachPlayerPage, { once: true });
+
+  header.querySelectorAll(".coach-player-section-nav button").forEach(function (navButton) {
+    navButton.addEventListener("click", function () {
+      scrollToCoachPlayerSection(navButton.dataset.target);
+    });
+  });
 
   header.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -83,7 +111,7 @@ function waitForCoachPlayerPage() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachPlayerPageViewModel };
+  module.exports = { buildCoachPlayerPageViewModel, buildCoachPlayerNavigation };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
