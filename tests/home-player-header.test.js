@@ -1,15 +1,24 @@
 const assert = require('assert');
 const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey } = require('../home-player-header.js');
 
-const player = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', player_number: 17, avatar_url: null });
+const player = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', role: 'player', player_number: 17, avatar_url: null });
 assert.strictEqual(player.name, 'Testspelare');
 assert.strictEqual(player.meta, 'Kronängs IF Juniorlag');
 assert.strictEqual(player.playerNumber, '#17');
+assert.strictEqual(player.roleLabel, '');
 assert.strictEqual(player.avatarUrl, '');
 
-const withoutNumber = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', player_number: null });
+const coach = buildHomePlayerHeader({ full_name: 'Henric', team: 'Kronängs IF Juniorlag', role: 'coach', player_number: null });
+assert.strictEqual(coach.playerNumber, '');
+assert.strictEqual(coach.roleLabel, 'Ledare');
+
+const admin = buildHomePlayerHeader({ full_name: 'Admin', team: 'Kronängs IF Juniorlag', role: 'admin', player_number: null });
+assert.strictEqual(admin.roleLabel, 'Ledare');
+
+const withoutNumber = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', role: 'player', player_number: null });
 assert.strictEqual(withoutNumber.meta, 'Kronängs IF Juniorlag');
 assert.strictEqual(withoutNumber.playerNumber, '');
+assert.strictEqual(withoutNumber.roleLabel, '');
 
 assert.ok(buildNavIcon('home').includes('<svg'));
 assert.ok(buildNavIcon('development').includes('<svg'));
