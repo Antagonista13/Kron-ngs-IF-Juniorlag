@@ -10,10 +10,6 @@ function buildCoachLayoutModel() {
   };
 }
 
-function isRedundantAssessmentHeading(tagName, headingIndex) {
-  return tagName === "H3" && headingIndex > 0;
-}
-
 function ensureCoachLayoutStyles() {
   if (document.getElementById("coachLayoutStyles")) return;
   const style = document.createElement("style");
@@ -34,7 +30,6 @@ function ensureCoachLayoutStyles() {
     .coach-feedback-block button, #saveCoachAssessment { border: none; background: #111; color: #fff; border-radius: 10px; padding: 10px 13px; font-weight: 700; margin: 0 6px 6px 0; cursor: pointer; }
     .coach-assessment-card > hr { display: none; }
     .coach-assessment-card > p { margin-bottom: 8px; }
-    .coach-assessment-card .coach-assessment-player-name { display: none; }
     .coach-assessment-card .coach-development-area { border-top: 1px solid #e5e5e5; padding: 18px 0 8px; }
     .coach-assessment-card .coach-development-area:first-of-type { border-top: none; padding-top: 8px; }
     .coach-rating-star { border: none; background: transparent; font-size: 28px; padding: 0 3px; cursor: pointer; }
@@ -46,21 +41,12 @@ function ensureCoachLayoutStyles() {
   document.head.appendChild(style);
 }
 
-function removeRedundantAssessmentHeading(assessment) {
-  if (!assessment) return;
-  const directHeadings = Array.from(assessment.children).filter(function (child) {
-    return child.tagName === "H3";
-  });
-  directHeadings.forEach(function (heading, index) {
-    if (isRedundantAssessmentHeading(heading.tagName, index)) heading.remove();
-  });
-}
-
 function setupCoachLayout() {
   const coachView = document.getElementById("coachDevelopmentView");
   const playerList = document.getElementById("coachPlayerList");
   const development = document.getElementById("coachPlayerDevelopment");
   if (!coachView || !playerList || !development) return false;
+
   ensureCoachLayoutStyles();
   const model = buildCoachLayoutModel();
   coachView.classList.add("coach-workspace");
@@ -110,8 +96,6 @@ function setupCoachLayout() {
       nodes.forEach(function (node) { assessment.appendChild(node); });
       development.appendChild(assessment);
     }
-
-    removeRedundantAssessmentHeading(assessment);
   }
 
   const observer = new MutationObserver(decorate);
@@ -126,10 +110,10 @@ function waitForCoachLayout() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachLayoutModel, isRedundantAssessmentHeading };
+  module.exports = { buildCoachLayoutModel };
 }
 
 if (typeof window !== "undefined") {
-  window.KronangCoachLayout = { buildCoachLayoutModel, isRedundantAssessmentHeading };
+  window.KronangCoachLayout = { buildCoachLayoutModel };
   if (typeof document !== "undefined") waitForCoachLayout();
 }
