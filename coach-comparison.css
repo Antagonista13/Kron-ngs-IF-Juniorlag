@@ -8,8 +8,19 @@
 }
 
 .coach-comparison-card h3 {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-size: 21px;
+}
+
+.coach-comparison-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eeeeee;
+  color: #555;
+  font-size: 14px;
 }
 
 .coach-comparison-row {
@@ -37,10 +48,19 @@
   color: #6f6f6f;
 }
 
+.coach-comparison-change {
+  font-weight: 800;
+}
+
 @media (max-width: 600px) {
   .coach-comparison-card {
     padding: 16px;
     border-radius: 15px;
+  }
+
+  .coach-comparison-dates {
+    flex-direction: column;
+    gap: 3px;
   }
 
   .coach-comparison-row div {
