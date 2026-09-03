@@ -48,21 +48,20 @@ function buildCoachTeamOverview(items) {
   const activeGoals = rows.filter(function (item) { return item.hasGoal; }).length;
   const activeFocuses = rows.filter(function (item) { return item.hasFocus; }).length;
   const assessed = rows.filter(function (item) { return item.hasAssessment; }).length;
-  return {
-    total: rows.length,
-    activeGoals: activeGoals,
-    activeFocuses: activeFocuses,
-    assessed: assessed,
-    missingGoals: rows.length - activeGoals,
-    missingFocuses: rows.length - activeFocuses,
-    missingAssessments: rows.length - assessed
-  };
+  return { total: rows.length, activeGoals: activeGoals, activeFocuses: activeFocuses, assessed: assessed, missingGoals: rows.length - activeGoals, missingFocuses: rows.length - activeFocuses, missingAssessments: rows.length - assessed };
 }
 
-function filterCoachRosterItems(items, query) {
+function filterCoachRosterItems(items, query, statusFilter) {
   const normalizedQuery = (query || "").trim().toLocaleLowerCase("sv");
-  if (!normalizedQuery) return items || [];
-  return (items || []).filter(function (item) { return (item.name || "").toLocaleLowerCase("sv").includes(normalizedQuery); });
+  const filter = statusFilter || "all";
+  return (items || []).filter(function (item) {
+    const nameMatches = !normalizedQuery || (item.name || "").toLocaleLowerCase("sv").includes(normalizedQuery);
+    let statusMatches = true;
+    if (filter === "missing-goal") statusMatches = !item.hasGoal;
+    if (filter === "missing-focus") statusMatches = !item.hasFocus;
+    if (filter === "missing-assessment") statusMatches = !item.hasAssessment;
+    return nameMatches && statusMatches;
+  });
 }
 
 function renderCoachTeamOverview(items) {
@@ -72,14 +71,7 @@ function renderCoachTeamOverview(items) {
   const section = document.createElement("section");
   section.id = "coachTeamOverview";
   section.className = "coach-team-overview";
-  section.innerHTML = `
-    <h3>Lagöversikt</h3>
-    <p class="coach-team-total">${overview.total} ${overview.total === 1 ? "spelare" : "spelare"}</p>
-    <div class="coach-team-overview-grid">
-      <div><strong>${overview.activeGoals}</strong><span>med aktivt mål</span><small>${overview.missingGoals} saknar mål</small></div>
-      <div><strong>${overview.activeFocuses}</strong><span>med aktivt fokus</span><small>${overview.missingFocuses} saknar fokus</small></div>
-      <div><strong>${overview.assessed}</strong><span>bedömda</span><small>${overview.missingAssessments} saknar bedömning</small></div>
-    </div>`;
+  section.innerHTML = `<h3>Lagöversikt</h3><p class="coach-team-total">${overview.total} spelare</p><div class="coach-team-overview-grid"><div><strong>${overview.activeGoals}</strong><span>med aktivt mål</span><small>${overview.missingGoals} saknar mål</small></div><div><strong>${overview.activeFocuses}</strong><span>med aktivt fokus</span><small>${overview.missingFocuses} saknar fokus</small></div><div><strong>${overview.assessed}</strong><span>bedömda</span><small>${overview.missingAssessments} saknar bedömning</small></div></div>`;
   list.parentNode.insertBefore(section, list);
 }
 
@@ -106,16 +98,57 @@ function renderCoachRosterSummary(items) {
 function setupCoachRosterSearch(items) {
   const list = document.getElementById("coachPlayerList");
   if (!list || document.getElementById("coachRosterSearch")) return;
-  const search = document.createElement("div"); search.className = "coach-roster-search";
-  const label = document.createElement("label"); label.htmlFor = "coachRosterSearch"; label.textContent = "Sök spelare";
-  const input = document.createElement("input"); input.id = "coachRosterSearch"; input.type = "search"; input.placeholder = "Skriv spelarens namn..."; input.autocomplete = "off";
-  const empty = document.createElement("p"); empty.className = "coach-roster-empty"; empty.textContent = "Ingen spelare matchar sökningen."; empty.hidden = true;
-  search.appendChild(label); search.appendChild(input); list.parentNode.insertBefore(search, list); list.parentNode.insertBefore(empty, list.nextSibling);
-  input.addEventListener("input", function () {
-    const visibleItems = filterCoachRosterItems(items, input.value);
+  const search = document.createElement("div");
+  search.className = "coach-roster-search";
+  const label = document.createElement("label");
+  label.htmlFor = "coachRosterSearch";
+  label.textContent = "Sök spelare";
+  const input = document.createElement("input");
+  input.id = "coachRosterSearch";
+  input.type = "search";
+  input.placeholder = "Skriv spelarens namn...";
+  input.autocomplete = "off";
+  const filters = document.createElement("div");
+  filters.className = "coach-roster-filters";
+  filters.setAttribute("aria-label", "Filtrera spelaröversikten");
+  const filterOptions = [
+    ["all", "Alla"],
+    ["missing-goal", "Saknar mål"],
+    ["missing-focus", "Saknar fokus"],
+    ["missing-assessment", "Saknar bedömning"]
+  ];
+  filterOptions.forEach(function (option, index) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.filter = option[0];
+    button.textContent = option[1];
+    if (index === 0) button.classList.add("active");
+    filters.appendChild(button);
+  });
+  const empty = document.createElement("p");
+  empty.className = "coach-roster-empty";
+  empty.textContent = "Ingen spelare matchar sökning och filter.";
+  empty.hidden = true;
+  search.appendChild(label);
+  search.appendChild(input);
+  search.appendChild(filters);
+  list.parentNode.insertBefore(search, list);
+  list.parentNode.insertBefore(empty, list.nextSibling);
+
+  let activeFilter = "all";
+  function applyFilters() {
+    const visibleItems = filterCoachRosterItems(items, input.value, activeFilter);
     const visibleIds = new Set(visibleItems.map(function (item) { return item.id; }));
     list.querySelectorAll(".coach-roster-player").forEach(function (card) { card.hidden = !visibleIds.has(card.dataset.playerId); });
     empty.hidden = visibleItems.length !== 0;
+  }
+  input.addEventListener("input", applyFilters);
+  filters.addEventListener("click", function (event) {
+    const button = event.target.closest("button[data-filter]");
+    if (!button) return;
+    activeFilter = button.dataset.filter;
+    filters.querySelectorAll("button[data-filter]").forEach(function (item) { item.classList.toggle("active", item === button); });
+    applyFilters();
   });
 }
 
