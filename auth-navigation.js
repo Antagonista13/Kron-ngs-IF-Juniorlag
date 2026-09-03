@@ -1,76 +1,37 @@
-function buildPostLoginUrl(locationLike, stamp) {
-  const path = (locationLike && locationLike.pathname) || '/';
-  const token = stamp || Date.now();
-  return `${path}?login=${token}`;
-}
-
-function goHomeAfterLogin(targetWindow, stamp) {
-  if (!targetWindow || !targetWindow.location) return;
-  if (targetWindow.history && 'scrollRestoration' in targetWindow.history) {
-    targetWindow.history.scrollRestoration = 'manual';
-  }
-  const nextUrl = buildPostLoginUrl(targetWindow.location, stamp);
-  if (typeof targetWindow.location.replace === 'function') {
-    targetWindow.location.replace(nextUrl);
-    return;
-  }
-  targetWindow.location.href = nextUrl;
-}
-
-function restoreHomeAfterLogin(targetWindow, targetDocument) {
-  if (!targetWindow || !targetDocument || !targetWindow.location) return false;
-  const search = String(targetWindow.location.search || '');
-  if (!/[?&]login=/.test(search)) return false;
-
+function activateHome(targetWindow, targetDocument) {
+  if (!targetWindow || !targetDocument) return false;
   const pages = targetDocument.querySelectorAll('.page');
   const navItems = targetDocument.querySelectorAll('.nav-item');
   if (!pages || !pages.length || !navItems || !navItems.length) return false;
-
-  pages.forEach(function (page) {
-    page.classList.remove('active');
-    if (page.id === 'homePage') page.classList.add('active');
-  });
-
-  navItems.forEach(function (item) {
-    item.classList.remove('active');
-    if (item.dataset && item.dataset.page === 'homePage') item.classList.add('active');
-  });
-
-  if (targetWindow.history && typeof targetWindow.history.replaceState === 'function') {
-    targetWindow.history.replaceState(null, '', targetWindow.location.pathname || '/');
-  }
-
-  const scrollHome = function () {
-    if (typeof targetWindow.scrollTo === 'function') targetWindow.scrollTo(0, 0);
-  };
-
+  pages.forEach(function (page) { page.classList.remove('active'); if (page.id === 'homePage') page.classList.add('active'); });
+  navItems.forEach(function (item) { item.classList.remove('active'); if (item.dataset && item.dataset.page === 'homePage') item.classList.add('active'); });
+  const scrollHome = function () { if (typeof targetWindow.scrollTo === 'function') targetWindow.scrollTo(0, 0); };
   scrollHome();
-  if (typeof targetWindow.requestAnimationFrame === 'function') {
-    targetWindow.requestAnimationFrame(scrollHome);
-    targetWindow.requestAnimationFrame(function () {
-      targetWindow.requestAnimationFrame(scrollHome);
-    });
-  }
-
+  if (typeof targetWindow.requestAnimationFrame === 'function') targetWindow.requestAnimationFrame(scrollHome);
   return true;
 }
 
-function installHomeAfterLoginRestore(targetWindow, targetDocument) {
-  if (!targetWindow || !targetDocument) return;
-  if (targetWindow.history && 'scrollRestoration' in targetWindow.history) {
-    targetWindow.history.scrollRestoration = 'manual';
+function dispatchAuthEvent(targetDocument, name, session) {
+  if (!targetDocument || typeof targetDocument.dispatchEvent !== 'function') return;
+  let event;
+  if (typeof CustomEvent === 'function') event = new CustomEvent(name, { detail: { session: session || null } });
+  else event = { type: name, detail: { session: session || null } };
+  targetDocument.dispatchEvent(event);
+}
+
+function handleAuthNavigation(eventName, session, targetWindow, targetDocument) {
+  if (eventName === 'SIGNED_IN') {
+    activateHome(targetWindow, targetDocument);
+    dispatchAuthEvent(targetDocument, 'kronang:auth-signed-in', session);
+  } else if (eventName === 'SIGNED_OUT') {
+    dispatchAuthEvent(targetDocument, 'kronang:auth-signed-out', null);
   }
-  const run = function () { restoreHomeAfterLogin(targetWindow, targetDocument); };
-  if (targetDocument.readyState === 'complete') run();
-  else if (typeof targetWindow.addEventListener === 'function') targetWindow.addEventListener('load', run, { once: true });
-  if (typeof targetWindow.addEventListener === 'function') targetWindow.addEventListener('pageshow', run);
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { buildPostLoginUrl, goHomeAfterLogin, restoreHomeAfterLogin, installHomeAfterLoginRestore };
-}
+function goHomeAfterLogin(targetWindow, targetDocument) { return activateHome(targetWindow, targetDocument); }
 
+if (typeof module !== 'undefined' && module.exports) module.exports = { activateHome, handleAuthNavigation, goHomeAfterLogin };
 if (typeof window !== 'undefined') {
-  window.goHomeAfterLogin = function () { goHomeAfterLogin(window); };
-  if (typeof document !== 'undefined') installHomeAfterLoginRestore(window, document);
+  window.goHomeAfterLogin = function () { return activateHome(window, document); };
+  window.handleKronangAuthNavigation = function (eventName, session) { return handleAuthNavigation(eventName, session, window, document); };
 }
