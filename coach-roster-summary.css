@@ -12,6 +12,10 @@
 .coach-roster-search label { display:block; margin-bottom:7px; font-weight:800; color:#111; }
 .coach-roster-search input { width:100%; border:1px solid #cfcfcf; border-radius:12px; padding:12px 14px; font:inherit; background:#fff; color:#111; }
 .coach-roster-search input:focus { outline:2px solid #111; outline-offset:2px; }
+.coach-roster-filters { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.coach-roster-filters button { border:1px solid #d4d4d4; background:#fff; color:#333; border-radius:999px; padding:8px 12px; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.coach-roster-filters button:hover,.coach-roster-filters button:focus { border-color:#111; color:#111; outline:none; }
+.coach-roster-filters button.active { background:#111; border-color:#111; color:#fff; }
 .coach-roster-empty { margin:4px 0 18px; color:#666; }
 #coachPlayerList { background:transparent; border:0; border-radius:0; padding:0; margin-bottom:18px; box-shadow:none; }
 .coach-roster-player { border:1px solid #e5e5e5; border-radius:14px; padding:14px; margin-bottom:12px; background:#fff; box-shadow:0 5px 16px rgba(0,0,0,0.04); }
@@ -21,4 +25,4 @@
 .coach-roster-details p { margin:0; line-height:1.4; color:#444; }
 .coach-roster-details strong { color:#111; }
 @media (min-width:760px) { #coachPlayerList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } #coachPlayerList > p { grid-column:1/-1; } .coach-roster-player { margin-bottom:0; } }
-@media (max-width:600px) { .coach-team-overview-grid { grid-template-columns:1fr; } }
+@media (max-width:600px) { .coach-team-overview-grid { grid-template-columns:1fr; } .coach-roster-filters { gap:6px; } .coach-roster-filters button { padding:7px 10px; font-size:13px; } }
