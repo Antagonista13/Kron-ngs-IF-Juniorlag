@@ -1,4 +1,8 @@
 function canManageTeamChallenge(role) { return role === 'coach' || role === 'admin'; }
+function shouldRefreshChallengeForAuthEvent(eventName, session) {
+  if (eventName === 'SIGNED_OUT') return true;
+  return eventName === 'SIGNED_IN' && Boolean(session && session.user);
+}
 function validateTeamChallenge(title, instruction) {
   const cleanTitle = String(title || '').trim();
   const cleanInstruction = String(instruction || '').trim();
@@ -9,6 +13,17 @@ function validateTeamChallenge(title, instruction) {
 function buildTeamChallengeViewModel(row) {
   if (!row) return null;
   return { id: row.id || '', title: row.title || '', instruction: row.instruction || '', completed: Boolean(row.completed) };
+}
+function clearChallengeUserState() {
+  const manager = document.getElementById('teamChallengeManager');
+  if (manager) manager.remove();
+  const button = document.getElementById('challengeButton');
+  if (button) {
+    button.hidden = true;
+    button.disabled = false;
+    button.onclick = null;
+    button.textContent = 'JAG ÄR KLAR ✓';
+  }
 }
 function renderChallengeHome(model, profile) {
   const card = document.querySelector('#homePage .card.challenge');
@@ -25,7 +40,13 @@ function renderChallengeHome(model, profile) {
   if (title) title.textContent = model.title;
   if (text) text.textContent = model.instruction;
   if (!button) return;
-  if (!profile || profile.role !== 'player') { button.hidden = true; return; }
+  if (!profile || profile.role !== 'player') {
+    button.hidden = true;
+    button.disabled = false;
+    button.onclick = null;
+    button.textContent = 'JAG ÄR KLAR ✓';
+    return;
+  }
   button.hidden = false;
   button.disabled = model.completed;
   button.textContent = model.completed ? 'UTMANING KLAR! ✓' : 'JAG ÄR KLAR ✓';
@@ -44,9 +65,11 @@ function renderChallengeHome(model, profile) {
   };
 }
 function renderChallengeManager(profile, current) {
+  const existing = document.getElementById('teamChallengeManager');
+  if (existing) existing.remove();
   if (!canManageTeamChallenge(profile && profile.role)) return;
   const page = document.getElementById('teamPage');
-  if (!page || document.getElementById('teamChallengeManager')) return;
+  if (!page) return;
   const manager = document.createElement('section');
   manager.id = 'teamChallengeManager';
   manager.className = 'card team-focus-manager';
@@ -94,10 +117,24 @@ async function loadTeamChallenge(profile) {
 async function setupTeamChallenge() {
   if (!window.kronangSupabase) return;
   const { data: sessionData } = await window.kronangSupabase.auth.getSession();
-  if (!sessionData.session) return;
+  if (!sessionData.session) { clearChallengeUserState(); return; }
   const { data: profile } = await window.kronangSupabase.from('profiles').select('id, role, team').eq('id', sessionData.session.user.id).maybeSingle();
   if (profile && profile.team) loadTeamChallenge(profile);
 }
-function waitForTeamChallenge() { if (window.kronangSupabase) setupTeamChallenge(); else setTimeout(waitForTeamChallenge, 100); }
-if (typeof module !== 'undefined' && module.exports) module.exports = { canManageTeamChallenge, validateTeamChallenge, buildTeamChallengeViewModel };
+function handleChallengeAuthChange(eventName, session) {
+  if (!shouldRefreshChallengeForAuthEvent(eventName, session)) return;
+  clearChallengeUserState();
+  if (eventName === 'SIGNED_IN') setupTeamChallenge();
+}
+function waitForTeamChallenge() {
+  if (!window.kronangSupabase) { setTimeout(waitForTeamChallenge, 100); return; }
+  setupTeamChallenge();
+  document.addEventListener('kronang:auth-signed-in', function (event) {
+    handleChallengeAuthChange('SIGNED_IN', event.detail && event.detail.session);
+  });
+  document.addEventListener('kronang:auth-signed-out', function () {
+    handleChallengeAuthChange('SIGNED_OUT', null);
+  });
+}
+if (typeof module !== 'undefined' && module.exports) module.exports = { canManageTeamChallenge, validateTeamChallenge, buildTeamChallengeViewModel, shouldRefreshChallengeForAuthEvent };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForTeamChallenge();
