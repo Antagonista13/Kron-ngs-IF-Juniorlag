@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating } = require('../coach-comparison.js');
+const { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating, assessmentChangeLabel } = require('../coach-comparison.js');
 
 test('compares current coach ratings with the immediately previous complete coach assessment', () => {
   const rows = [
@@ -49,4 +49,11 @@ test('waits until the main coach assessment has finished rendering', () => {
   assert.equal(shouldWaitForCoachAssessmentRender(false, 29), true);
   assert.equal(shouldWaitForCoachAssessmentRender(false, 30), false);
   assert.equal(shouldWaitForCoachAssessmentRender(true, 0), false);
+});
+
+test('describes rating change without judging it', () => {
+  assert.equal(assessmentChangeLabel(4, 3), '+1');
+  assert.equal(assessmentChangeLabel(3, 4), '−1');
+  assert.equal(assessmentChangeLabel(3, 3), 'Oförändrat');
+  assert.equal(assessmentChangeLabel(5, 3), '+2');
 });
