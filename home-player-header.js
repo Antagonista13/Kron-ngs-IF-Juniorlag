@@ -4,7 +4,8 @@ function buildHomePlayerHeader(profile) {
   const team = item.team || 'Kronängs IF Juniorlag';
   return {
     name: item.full_name || 'Spelare',
-    meta: number ? number + ' · ' + team : team,
+    meta: team,
+    playerNumber: number,
     avatarUrl: item.avatar_url || ''
   };
 }
@@ -19,6 +20,11 @@ function buildNavIcon(type) {
     profile: '<svg ' + common + '><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5"/></svg>'
   };
   return icons[type] || '';
+}
+
+function getHomeShortcutPage(type) {
+  const targets = { activity: 'calendarPage', profile: 'profilePage' };
+  return targets[type] || '';
 }
 
 function setupHomePlayerHeader() {
@@ -41,6 +47,16 @@ function setupHomePlayerHeader() {
     if (span && map[page]) span.innerHTML = buildNavIcon(map[page]);
   });
 
+  const activityCard = document.getElementById('homeNextActivityCard');
+  if (activityCard && !activityCard.dataset.shortcutReady) {
+    activityCard.dataset.shortcutReady = 'true';
+    activityCard.addEventListener('click', function () {
+      const target = getHomeShortcutPage('activity');
+      const nav = document.querySelector('.nav-item[data-page="' + target + '"]');
+      if (nav) nav.click();
+    });
+  }
+
   function render(model) {
     header.innerHTML = '';
     const text = document.createElement('div');
@@ -54,8 +70,10 @@ function setupHomePlayerHeader() {
     meta.textContent = model.meta;
     text.append(eyebrow, name, meta);
 
-    const avatar = document.createElement('div');
+    const avatar = document.createElement('button');
+    avatar.type = 'button';
     avatar.className = 'home-player-avatar';
+    avatar.setAttribute('aria-label', 'Öppna profil');
     if (model.avatarUrl) {
       const img = document.createElement('img');
       img.src = model.avatarUrl;
@@ -63,8 +81,19 @@ function setupHomePlayerHeader() {
       avatar.appendChild(img);
     } else {
       avatar.innerHTML = buildNavIcon('profile');
-      avatar.setAttribute('aria-label', 'Ingen profilbild vald');
+      avatar.setAttribute('title', 'Ingen profilbild vald');
     }
+    if (model.playerNumber) {
+      const number = document.createElement('span');
+      number.className = 'home-player-number';
+      number.textContent = model.playerNumber;
+      avatar.appendChild(number);
+    }
+    avatar.addEventListener('click', function () {
+      const target = getHomeShortcutPage('profile');
+      const profileNav = document.querySelector('.nav-item[data-page="' + target + '"]');
+      if (profileNav) profileNav.click();
+    });
     header.append(text, avatar);
   }
 
@@ -88,5 +117,5 @@ function waitForHomePlayerHeader() {
   setTimeout(waitForHomePlayerHeader, 100);
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildHomePlayerHeader, buildNavIcon };
+if (typeof module !== 'undefined' && module.exports) module.exports = { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForHomePlayerHeader();
