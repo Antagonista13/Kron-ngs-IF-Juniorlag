@@ -58,6 +58,15 @@ function buildCoachRosterSummary(players, goals, focuses, assessments) {
     });
 }
 
+function filterCoachRosterItems(items, query) {
+  const normalizedQuery = (query || "").trim().toLocaleLowerCase("sv");
+  if (!normalizedQuery) return items || [];
+
+  return (items || []).filter(function (item) {
+    return (item.name || "").toLocaleLowerCase("sv").includes(normalizedQuery);
+  });
+}
+
 function renderCoachRosterSummary(items) {
   const list = document.getElementById("coachPlayerList");
   if (!list) return;
@@ -68,6 +77,7 @@ function renderCoachRosterSummary(items) {
 
     const card = document.createElement("article");
     card.className = "coach-roster-player";
+    card.dataset.playerId = item.id;
 
     const details = document.createElement("div");
     details.className = "coach-roster-details";
@@ -80,6 +90,45 @@ function renderCoachRosterSummary(items) {
     button.parentNode.insertBefore(card, button);
     card.appendChild(button);
     card.appendChild(details);
+  });
+}
+
+function setupCoachRosterSearch(items) {
+  const list = document.getElementById("coachPlayerList");
+  if (!list || document.getElementById("coachRosterSearch")) return;
+
+  const search = document.createElement("div");
+  search.className = "coach-roster-search";
+
+  const label = document.createElement("label");
+  label.htmlFor = "coachRosterSearch";
+  label.textContent = "Sök spelare";
+
+  const input = document.createElement("input");
+  input.id = "coachRosterSearch";
+  input.type = "search";
+  input.placeholder = "Skriv spelarens namn...";
+  input.autocomplete = "off";
+
+  const empty = document.createElement("p");
+  empty.className = "coach-roster-empty";
+  empty.textContent = "Ingen spelare matchar sökningen.";
+  empty.hidden = true;
+
+  search.appendChild(label);
+  search.appendChild(input);
+  list.parentNode.insertBefore(search, list);
+  list.parentNode.insertBefore(empty, list.nextSibling);
+
+  input.addEventListener("input", function () {
+    const visibleItems = filterCoachRosterItems(items, input.value);
+    const visibleIds = new Set(visibleItems.map(function (item) { return item.id; }));
+
+    list.querySelectorAll(".coach-roster-player").forEach(function (card) {
+      card.hidden = !visibleIds.has(card.dataset.playerId);
+    });
+
+    empty.hidden = visibleItems.length !== 0;
   });
 }
 
@@ -127,6 +176,7 @@ async function loadCoachRosterSummary() {
   );
 
   renderCoachRosterSummary(items);
+  setupCoachRosterSearch(items);
 }
 
 function waitForCoachRosterSummary(attempt) {
@@ -145,7 +195,12 @@ function waitForCoachRosterSummary(attempt) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachRosterSummary, formatRosterAssessmentDate, hasCompleteRosterCoachAssessment };
+  module.exports = {
+    buildCoachRosterSummary,
+    formatRosterAssessmentDate,
+    hasCompleteRosterCoachAssessment,
+    filterCoachRosterItems
+  };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
