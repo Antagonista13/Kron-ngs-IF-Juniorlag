@@ -19,762 +19,138 @@ body {
   padding-bottom: 90px;
 }
 
-button {
-  font-family: inherit;
-}
-
-/* HEADER */
-
-.hero {
-  background: var(--black);
-  color: var(--white);
-  padding: 20px;
-}
-
-.hero-content {
-  max-width: 700px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.logo {
-  width: 64px;
-  height: 64px;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero h1 {
-  margin: 0;
-  font-size: 21px;
-  letter-spacing: 1.5px;
-}
-
-.hero p {
-  margin: 5px 0 0;
-  color: #d6d6d6;
-  font-size: 12px;
-  letter-spacing: 3px;
-}
-
-/* MAIN */
-
-.container {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
-}
-
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
-
-/* HEADINGS */
-
-.welcome,
-.page-heading {
-  margin-bottom: 22px;
-}
-
-.welcome h2,
-.page-heading h2 {
-  margin: 0 0 6px;
-  font-size: 28px;
-}
-
-.welcome p,
-.page-heading p {
-  margin: 0;
-  color: var(--text-gray);
-}
-
-/* CARDS */
-
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.07);
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 16px;
-}
-
-.card-title h3 {
-  margin: 0;
-  font-size: 16px;
-}
-
-/* ACTIVITY */
-
-.activity {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.activity-icon {
-  width: 52px;
-  height: 52px;
-  background: #eeeeee;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-.activity strong {
-  font-size: 18px;
-}
-
-.activity p {
-  margin: 5px 0 0;
-  color: var(--text-gray);
-}
-
-/* FOCUS */
-
-.focus {
-  background: linear-gradient(135deg, #050505, #262626);
-  color: white;
-}
-
-.focus h2 {
-  margin: 0 0 16px;
-  font-size: 21px;
-}
-
-.focus-words {
-  margin: 0;
-  font-weight: bold;
-  letter-spacing: 1.5px;
-  font-size: 14px;
-}
-
-.focus-words span {
-  opacity: 0.4;
-  margin: 0 6px;
-}
-
-/* CHALLENGE */
-
-.challenge h2 {
-  margin: 0 0 10px;
-}
-
-.challenge p {
-  color: var(--text-gray);
-  line-height: 1.5;
-}
-
-.challenge button {
-  width: 100%;
-  border: none;
-  background: black;
-  color: white;
-  padding: 15px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-/* NEWS */
-
-.news-item p {
-  color: var(--text-gray);
-  line-height: 1.5;
-}
-
-/* CALENDAR */
-
-.calendar-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.calendar-item {
-  background: white;
-  border-radius: 18px;
-  padding: 15px;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
-}
-
-.date-box {
-  width: 58px;
-  min-width: 58px;
-  height: 62px;
-  background: black;
-  color: white;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.date-box strong {
-  font-size: 22px;
-}
-
-.date-box span {
-  font-size: 10px;
-  letter-spacing: 1px;
-}
-
-.calendar-info {
-  flex: 1;
-}
-
-.calendar-info h3 {
-  margin: 4px 0;
-  font-size: 16px;
-}
-
-.calendar-info p {
-  margin: 0;
-  color: var(--text-gray);
-  font-size: 14px;
-}
-
-.activity-type {
-  font-size: 10px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: #777;
-}
-
-.calendar-source {
-  text-align: center;
-  color: #888;
-  font-size: 12px;
-  padding: 18px;
-}
-
-/* DEVELOPMENT */
-
-.development-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.development-card {
-  background: white;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
-}
-
-.development-icon {
-  font-size: 28px;
-  margin-bottom: 12px;
-}
-
-.development-card h3 {
-  margin: 0 0 8px;
-}
-
-.development-card p {
-  margin: 0;
-  color: var(--text-gray);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-/* TEAM */
-
-.team-post h3 {
-  margin-top: 16px;
-}
-
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-}
-
-.post-header span {
-  color: #888;
-}
-
-.team-post p {
-  color: #555;
-  line-height: 1.5;
-}
-
-.quote {
-  background: #111;
-  color: white;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: bold;
-  text-align: center;
-  font-size: 13px;
-}
-
-/* PROFILE */
-
-.profile-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-}
-
-.profile-header h2 {
-  margin: 0 0 6px;
-}
-
-.profile-header p {
-  margin: 0;
-  color: var(--text-gray);
-}
-
-.profile-focus {
-  color: #555;
-  line-height: 1.5;
-}
-
-.profile-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 18px;
-}
-
-.stat-card {
-  background: black;
-  color: white;
-  border-radius: 18px;
-  padding: 20px;
-  text-align: center;
-}
-
-.stat-card strong {
-  display: block;
-  font-size: 28px;
-}
-
-.stat-card span {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-/* BOTTOM NAV */
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  background: rgba(0,0,0,0.97);
-
-  display: flex;
-  justify-content: space-around;
-
-  padding: 9px 5px 12px;
-
-  z-index: 1000;
-}
-
-.nav-item {
-  border: none;
-  background: transparent;
-
-  color: #777;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  gap: 3px;
-
-  min-width: 55px;
-
-  cursor: pointer;
-
-  padding: 4px;
-}
-
-.nav-item span {
-  font-size: 19px;
-}
-
-.nav-item small {
-  font-size: 10px;
-}
-
-.nav-item.active {
-  color: white;
-}
+button { font-family: inherit; }
+.hero { background: var(--black); color: var(--white); padding: 20px; }
+.hero-content { max-width: 700px; margin: auto; display: flex; align-items: center; gap: 16px; }
+.logo { width: 64px; height: 64px; background: white; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+.hero h1 { margin: 0; font-size: 21px; letter-spacing: 1.5px; }
+.hero p { margin: 5px 0 0; color: #d6d6d6; font-size: 12px; letter-spacing: 3px; }
+.container { max-width: 700px; margin: auto; padding: 20px; }
+.page { display: none; }
+.page.active { display: block; }
+.welcome, .page-heading { margin-bottom: 22px; }
+.welcome h2, .page-heading h2 { margin: 0 0 6px; font-size: 28px; }
+.welcome p, .page-heading p { margin: 0; color: var(--text-gray); }
+.card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.07); }
+.card-title { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+.card-title h3 { margin: 0; font-size: 16px; }
+.activity { display: flex; align-items: center; gap: 15px; }
+.activity-icon { width: 52px; height: 52px; background: #eeeeee; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.activity strong { font-size: 18px; }
+.activity p { margin: 5px 0 0; color: var(--text-gray); }
+.focus { background: linear-gradient(135deg, #050505, #262626); color: white; }
+.focus h2 { margin: 0 0 16px; font-size: 21px; }
+.focus-words { margin: 0; font-weight: bold; letter-spacing: 1.5px; font-size: 14px; }
+.focus-words span { opacity: 0.4; margin: 0 6px; }
+.challenge h2 { margin: 0 0 10px; }
+.challenge p { color: var(--text-gray); line-height: 1.5; }
+.challenge button { width: 100%; border: none; background: black; color: white; padding: 15px; border-radius: 14px; font-size: 15px; font-weight: bold; margin-top: 10px; }
+.news-item p { color: var(--text-gray); line-height: 1.5; }
+.calendar-list { display: flex; flex-direction: column; gap: 12px; }
+.calendar-item { background: white; border-radius: 18px; padding: 15px; display: flex; gap: 15px; align-items: center; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.date-box { width: 58px; min-width: 58px; height: 62px; background: black; color: white; border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.date-box strong { font-size: 22px; }
+.date-box span { font-size: 10px; letter-spacing: 1px; }
+.calendar-info { flex: 1; }
+.calendar-info h3 { margin: 4px 0; font-size: 16px; }
+.calendar-info p { margin: 0; color: var(--text-gray); font-size: 14px; }
+.activity-type { font-size: 10px; font-weight: bold; letter-spacing: 1px; color: #777; }
+.calendar-source { text-align: center; color: #888; font-size: 12px; padding: 18px; }
+.development-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.development-card { background: white; border-radius: 18px; padding: 22px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.development-icon { font-size: 28px; margin-bottom: 12px; }
+.development-card h3 { margin: 0 0 14px; font-size: 22px; }
+.development-card p { margin: 0 0 7px; color: var(--text-gray); font-size: 14px; font-weight: 500; line-height: 1.4; }
+.team-post h3 { margin-top: 16px; }
+.post-header { display: flex; justify-content: space-between; font-size: 12px; }
+.post-header span { color: #888; }
+.team-post p { color: #555; line-height: 1.5; }
+.quote { background: #111; color: white; padding: 14px; border-radius: 12px; font-weight: bold; text-align: center; font-size: 13px; }
+.profile-header { text-align: center; margin-bottom: 24px; }
+.profile-avatar { width: 80px; height: 80px; background: black; color: white; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+.profile-header h2 { margin: 0 0 6px; }
+.profile-header p { margin: 0; color: var(--text-gray); }
+.profile-focus { color: #555; line-height: 1.5; }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.stat-card { background: black; color: white; border-radius: 18px; padding: 20px; text-align: center; }
+.stat-card strong { display: block; font-size: 28px; }
+.stat-card span { font-size: 12px; opacity: 0.7; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.97); display: flex; justify-content: space-around; padding: 9px 5px 12px; z-index: 1000; }
+.nav-item { border: none; background: transparent; color: #777; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 55px; cursor: pointer; padding: 4px; }
+.nav-item span { font-size: 19px; }
+.nav-item small { font-size: 10px; }
+.nav-item.active { color: white; }
+.calendar-loading { background: white; padding: 25px; border-radius: 18px; text-align: center; color: #555; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.calendar-loading.error { color: #8b0000; }
+.calendar-card { background: #ffffff; color: #111111; border-radius: 18px; padding: 16px; margin-bottom: 14px; border-left: 6px solid #111111; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.calendar-card-date { font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+.calendar-card-type { font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 8px; }
+.calendar-card-title { font-size: 18px; font-weight: 800; line-height: 1.3; margin-bottom: 12px; }
+.calendar-card-details { font-size: 14px; line-height: 1.7; opacity: 0.8; }
+.calendar-card.match { border-left-width: 8px; }
+.calendar-card.match .calendar-card-type { font-weight: 900; }
+.calendar-card.training { border-left-style: solid; }
+.calendar-card.other { opacity: 0.9; }
+.next-activity { position: relative; padding: 20px; margin-bottom: 24px; transform: scale(1.01); box-shadow: 0 8px 24px rgba(0,0,0,0.14); }
+.next-activity-label { display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: 1.2px; margin-bottom: 12px; }
+.calendar-section-title { font-size: 13px; font-weight: 900; letter-spacing: 1.5px; margin: 28px 4px 14px; opacity: 0.7; }
+.calendar-card.next-activity .calendar-card-title { font-size: 22px; }
+.activity-location { margin-top: 4px; font-size: 13px; opacity: 0.75; }
+#nextActivityHome { align-items: flex-start; }
+#nextActivityHome .activity-icon { min-width: 58px; height: 58px; font-size: 27px; }
+.next-activity-info { flex: 1; min-width: 0; }
+.next-activity-type { font-size: 10px; font-weight: 900; letter-spacing: 1.2px; color: #777; margin-bottom: 5px; }
+#nextActivityHome strong { font-size: 17px; line-height: 1.35; display: block; }
+#nextActivityHome p { margin: 6px 0 0; font-size: 14px; }
+#nextActivityHome .activity-location { margin-top: 6px; font-size: 13px; color: #666; }
+.self-rating-stars { display: flex; gap: 5px; margin-bottom: 16px; }
+.rating-star { border: none; background: transparent; padding: 0; margin: 0; font-size: 29px; line-height: 1; color: #bdbdbd; cursor: pointer; transition: transform 0.15s ease; }
+.rating-star.selected { color: #111111; }
+.rating-star:hover { transform: scale(1.12); }
+.self-reflection { width: 100%; min-height: 78px; resize: vertical; border: 1px solid #d8d8d8; border-radius: 12px; padding: 11px; font-family: inherit; font-size: 14px; line-height: 1.4; margin-bottom: 16px; background: #fafafa; }
+.self-reflection:focus { outline: 2px solid #111111; outline-offset: 1px; background: #ffffff; }
+.development-card strong { display: block; font-size: 22px; letter-spacing: 1px; }
+.development-save-card { grid-column: 1 / -1; margin-top: 2px; text-align: center; }
+#saveDevelopmentButton { width: 100%; border: none; background: #080808; color: #ffffff; padding: 15px 18px; border-radius: 14px; font-size: 15px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; }
+#saveDevelopmentButton:hover { background: #222222; }
+#saveDevelopmentButton:disabled { opacity: 0.6; cursor: default; }
+#developmentSaveMessage { margin: 12px 0 0; color: #555555; font-size: 14px; }
+
+/* COACHLÄGE - ENDAST CSS, INGEN DOM-OMBYGGNAD */
+#coachDevelopmentView { background: transparent; box-shadow: none; padding: 0; }
+#coachDevelopmentView > h2 { margin: 0 0 6px; font-size: 28px; }
+#coachDevelopmentView > p { margin: 0 0 18px; color: var(--text-gray); }
+#coachPlayerList { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 18px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.coach-player-button { border: 1px solid #111; background: #fff; color: #111; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+.coach-player-button:hover, .coach-player-button:focus { background: #111; color: #fff; }
+#coachPlayerContext { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+#coachPlayerContext > h3 { margin-top: 0; font-size: 22px; }
+#coachFocusFeedbackControls { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+#coachFocusFeedbackControls h4 { margin: 0 0 12px; font-size: 18px; }
+#coachFocusFeedbackControls textarea, .coach-comment { width: 100%; border: 1px solid #cfcfcf; border-radius: 12px; padding: 11px; font: inherit; line-height: 1.4; resize: vertical; background: #fafafa; }
+#coachFocusFeedbackControls textarea:focus, .coach-comment:focus { outline: 2px solid #111; outline-offset: 1px; background: #fff; }
+#coachFocusFeedbackControls button, #saveCoachAssessment { border: none; background: #111; color: #fff; border-radius: 10px; padding: 10px 13px; font-weight: 700; cursor: pointer; margin: 8px 6px 6px 0; }
+#coachPlayerDevelopment > hr { border: 0; margin: 18px 0; }
+#coachPlayerDevelopment > p:first-of-type { background: #fff; border: 1px solid var(--border); border-radius: 18px 18px 0 0; padding: 20px 20px 10px; margin: 0; font-size: 20px; }
+.coach-development-area { background: #fff; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 18px 20px; }
+.coach-development-area + .coach-development-area { border-top: 1px solid var(--border); }
+.coach-development-area:last-of-type { border-bottom: 1px solid var(--border); border-radius: 0 0 18px 18px; margin-bottom: 18px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.coach-development-area h4 { margin: 0 0 16px; font-size: 19px; }
+.coach-development-area p { line-height: 1.45; }
+.coach-rating-stars { display: flex; gap: 4px; margin: 6px 0 12px; }
+.coach-rating-star { border: none; background: transparent; padding: 0 3px; font-size: 29px; cursor: pointer; }
 
 @media (min-width: 700px) {
-
-  .container {
-    padding: 30px;
-  }
-
-  .bottom-nav {
-    max-width: 700px;
-    margin: auto;
-    border-radius: 20px 20px 0 0;
-  }
-  .calendar-loading {
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  text-align: center;
-  color: #555;
-  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
+  .container { padding: 30px; }
+  .bottom-nav { max-width: 700px; margin: auto; border-radius: 20px 20px 0 0; }
 }
 
-.calendar-loading.error {
-  color: #8b0000;
-}
-  .calendar-loading {
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  text-align: center;
-  color: #555;
-  box-shadow: 0 5px 16px rgba(0,0,0,0.06);
-}
-
-.calendar-loading.error {
-  color: #8b0000;
-}
-
-}
-/* =========================
-   SPORTADMIN KALENDER
-========================= */
-
-.calendar-card {
-  background: #ffffff;
-  color: #111111;
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
-  border-left: 6px solid #111111;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.calendar-card-date {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-
-.calendar-card-type {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-
-.calendar-card-title {
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.3;
-  margin-bottom: 12px;
-}
-
-.calendar-card-details {
-  font-size: 14px;
-  line-height: 1.7;
-  opacity: 0.8;
-}
-
-/* MATCH */
-
-.calendar-card.match {
-  border-left-width: 8px;
-}
-
-.calendar-card.match .calendar-card-type {
-  font-weight: 900;
-}
-
-/* TRÄNING */
-
-.calendar-card.training {
-  border-left-style: solid;
-}
-
-/* ÖVRIGA AKTIVITETER */
-
-.calendar-card.other {
-  opacity: 0.9;
-}
-/* =========================
-   NÄSTA AKTIVITET
-========================= */
-
-.next-activity {
-  position: relative;
-  padding: 20px;
-  margin-bottom: 24px;
-  transform: scale(1.01);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-}
-
-.next-activity-label {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 1.2px;
-  margin-bottom: 12px;
-}
-
-
-/* =========================
-   SEKTIONER
-========================= */
-
-.calendar-section-title {
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  margin: 28px 4px 14px;
-  opacity: 0.7;
-}
-
-
-/* =========================
-   FÖRBÄTTRA DATUM
-========================= */
-
-.calendar-card-date {
-  text-transform: uppercase;
-}
-
-
-/* =========================
-   NÄSTA MATCH EXTRA TYDLIG
-========================= */
-
-.calendar-card.next-activity .calendar-card-title {
-  font-size: 22px;
-}
-/* =========================
-   NÄSTA AKTIVITET STARTSIDA
-========================= */
-
-.activity-location {
-  margin-top: 4px;
-  font-size: 13px;
-  opacity: 0.75;
-}
-
-#nextActivityHome strong {
-  display: block;
-  font-size: 16px;
-  line-height: 1.3;
-}
-
-#nextActivityHome p {
-  margin: 4px 0 0;
-}
-/* =========================
-   NÄSTA AKTIVITET - STARTSIDA
-========================= */
-
-#nextActivityHome {
-  align-items: flex-start;
-}
-
-#nextActivityHome .activity-icon {
-  min-width: 58px;
-  height: 58px;
-  font-size: 27px;
-}
-
-.next-activity-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.next-activity-type {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 1.2px;
-  color: #777;
-  margin-bottom: 5px;
-}
-
-#nextActivityHome strong {
-  font-size: 17px;
-  line-height: 1.35;
-  display: block;
-}
-
-#nextActivityHome p {
-  margin: 6px 0 0;
-  font-size: 14px;
-}
-
-#nextActivityHome .activity-location {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #666;
-}
-/* =========================
-   UTVECKLING - SJÄLVSKATTNING
-========================= */
-
-.development-card {
-  padding: 22px;
-}
-
-.development-card h3 {
-  font-size: 22px;
-  margin-bottom: 14px;
-}
-
-.development-card p {
-  margin: 0 0 7px;
-  color: var(--text-gray);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.self-rating-stars {
-  display: flex;
-  gap: 5px;
-  margin-bottom: 16px;
-}
-
-.rating-star {
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  font-size: 29px;
-  line-height: 1;
-  color: #bdbdbd;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.rating-star.selected {
-  color: #111111;
-}
-
-.rating-star:hover {
-  transform: scale(1.12);
-}
-
-.self-reflection {
-  width: 100%;
-  min-height: 78px;
-  resize: vertical;
-  border: 1px solid #d8d8d8;
-  border-radius: 12px;
-  padding: 11px;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1.4;
-  margin-bottom: 16px;
-  background: #fafafa;
-}
-
-.self-reflection:focus {
-  outline: 2px solid #111111;
-  outline-offset: 1px;
-  background: #ffffff;
-}
-
-.development-card strong {
-  display: block;
-  font-size: 22px;
-  letter-spacing: 1px;
-}
-
-.development-save-card {
-  grid-column: 1 / -1;
-  margin-top: 2px;
-  text-align: center;
-}
-
-#saveDevelopmentButton {
-  width: 100%;
-  border: none;
-  background: #080808;
-  color: #ffffff;
-  padding: 15px 18px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-}
-
-#saveDevelopmentButton:hover {
-  background: #222222;
-}
-
-#saveDevelopmentButton:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-#developmentSaveMessage {
-  margin: 12px 0 0;
-  color: #555555;
-  font-size: 14px;
-}
-
-/* Mobil */
 @media (max-width: 600px) {
-  .development-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .development-save-card {
-    grid-column: auto;
-  }
-
-  .rating-star {
-    font-size: 31px;
-  }
+  .development-grid { grid-template-columns: 1fr; }
+  .development-save-card { grid-column: auto; }
+  .rating-star { font-size: 31px; }
+  #coachPlayerContext, #coachPlayerList { padding: 16px; border-radius: 15px; }
+  #coachFocusFeedbackControls button { width: 100%; margin-right: 0; }
+  .coach-development-area { padding: 16px; }
 }
