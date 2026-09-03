@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge } = require('../team-challenge.js');
+const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge, shouldRefreshChallengeForAuthEvent } = require('../team-challenge.js');
 
 test('coach and admin can manage weekly challenge', () => {
   assert.equal(canManageTeamChallenge('coach'), true);
@@ -18,4 +18,10 @@ test('challenge view model includes completed state', () => {
   assert.deepEqual(buildTeamChallengeViewModel({ id: 'c1', title: '1000 TOUCHES', instruction: 'Träna.', completed: true }), {
     id: 'c1', title: '1000 TOUCHES', instruction: 'Träna.', completed: true
   });
+});
+
+test('weekly challenge refreshes when the signed-in user changes', () => {
+  assert.equal(shouldRefreshChallengeForAuthEvent('SIGNED_IN', { user: { id: 'coach' } }), true);
+  assert.equal(shouldRefreshChallengeForAuthEvent('SIGNED_OUT', null), true);
+  assert.equal(shouldRefreshChallengeForAuthEvent('TOKEN_REFRESHED', { user: { id: 'coach' } }), false);
 });
