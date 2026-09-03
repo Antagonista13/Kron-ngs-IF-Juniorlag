@@ -1,23 +1,37 @@
+function hasAllValues(row, fields) {
+  return Boolean(row) && fields.every(function(field) {
+    return row[field] !== null && row[field] !== undefined;
+  });
+}
 function buildPlayerDevelopmentTrend(rows) {
   const list = Array.isArray(rows) ? rows : [];
-  if (!list.length) return [];
-  const current = list[0] || {};
-  const previous = list[1] || {};
+  const selfFields = ['technique_self','game_understanding_self','physical_self','mentality_self'];
+  const coachFields = ['technique_coach','game_understanding_coach','physical_coach','mentality_coach'];
+  const selfRows = list.filter(function(row) { return hasAllValues(row, selfFields); });
+  const coachRows = list.filter(function(row) { return hasAllValues(row, coachFields); });
+  const selfCurrent = selfRows[0] || {};
+  const selfPrevious = selfRows[1] || {};
+  const coachCurrent = coachRows[0] || {};
+  const coachPrevious = coachRows[1] || {};
   const areas = [
     ['Teknik','technique_self','technique_coach'],
     ['Spelförståelse','game_understanding_self','game_understanding_coach'],
     ['Fys','physical_self','physical_coach'],
     ['Mentalitet','mentality_self','mentality_coach']
   ];
-  return areas.map(function(area) {
-    return {
-      label: area[0],
-      selfCurrent: current[area[1]] ?? null,
-      selfPrevious: list.length > 1 ? (previous[area[1]] ?? null) : null,
-      coachCurrent: current[area[2]] ?? null,
-      coachPrevious: list.length > 1 ? (previous[area[2]] ?? null) : null
-    };
-  });
+  return {
+    hasSelfPrevious: selfRows.length > 1,
+    hasCoachPrevious: coachRows.length > 1,
+    areas: areas.map(function(area) {
+      return {
+        label: area[0],
+        selfCurrent: selfRows.length ? (selfCurrent[area[1]] ?? null) : null,
+        selfPrevious: selfRows.length > 1 ? (selfPrevious[area[1]] ?? null) : null,
+        coachCurrent: coachRows.length ? (coachCurrent[area[2]] ?? null) : null,
+        coachPrevious: coachRows.length > 1 ? (coachPrevious[area[2]] ?? null) : null
+      };
+    })
+  };
 }
 function getDevelopmentTrendMountTarget() { return 'developmentPage'; }
 function trendStars(value) {
@@ -44,26 +58,27 @@ function ensurePlayerDevelopmentTrendCard() {
   developmentPage.appendChild(card);
   return card;
 }
-function renderPlayerDevelopmentTrend(model, hasPrevious) {
+function renderPlayerDevelopmentTrend(model) {
   const card = ensurePlayerDevelopmentTrendCard();
   if (!card) return;
+  const areas = model && Array.isArray(model.areas) ? model.areas : [];
   const heading = document.createElement('h3');
   heading.textContent = 'Min utveckling över tid';
   const intro = document.createElement('p');
   intro.className = 'profile-trend-intro';
-  intro.textContent = hasPrevious ? 'Senaste bedömningen jämförd med föregående.' : 'Din första bedömning är startpunkten. Jämförelsen fylls på vid nästa bedömning.';
+  intro.textContent = (model && (model.hasSelfPrevious || model.hasCoachPrevious)) ? 'Senaste jämförbara bedömningen jämförd med föregående.' : 'Din första bedömning är startpunkten. Jämförelsen fylls på vid nästa bedömning.';
   card.replaceChildren(heading, intro);
-  if (!model.length) {
+  if (!areas.length) {
     const empty = document.createElement('p'); empty.textContent = 'Ingen bedömning finns ännu.'; card.appendChild(empty); return;
   }
   const grid = document.createElement('div'); grid.className = 'profile-trend-grid';
-  model.forEach(function(item) {
+  areas.forEach(function(item) {
     const row = document.createElement('article'); row.className = 'profile-trend-row';
     const title = document.createElement('h4'); title.textContent = item.label;
     const self = document.createElement('div'); self.className = 'profile-trend-line';
-    self.innerHTML = '<span>Min skattning</span><strong>' + trendStars(item.selfCurrent) + '</strong>' + (hasPrevious ? '<small>' + trendChange(item.selfCurrent,item.selfPrevious) + '</small>' : '');
+    self.innerHTML = '<span>Min skattning</span><strong>' + trendStars(item.selfCurrent) + '</strong>' + (model.hasSelfPrevious ? '<small>' + trendChange(item.selfCurrent,item.selfPrevious) + '</small>' : '');
     const coach = document.createElement('div'); coach.className = 'profile-trend-line';
-    coach.innerHTML = '<span>Tränarens bedömning</span><strong>' + trendStars(item.coachCurrent) + '</strong>' + (hasPrevious ? '<small>' + trendChange(item.coachCurrent,item.coachPrevious) + '</small>' : '');
+    coach.innerHTML = '<span>Tränarens bedömning</span><strong>' + trendStars(item.coachCurrent) + '</strong>' + (model.hasCoachPrevious ? '<small>' + trendChange(item.coachCurrent,item.coachPrevious) + '</small>' : '');
     row.append(title,self,coach); grid.appendChild(row);
   });
   card.appendChild(grid);
@@ -77,9 +92,9 @@ async function loadPlayerDevelopmentTrend() {
   if (!profile || profile.role !== 'player') { const card=document.getElementById('profileDevelopmentTrend'); if(card) card.remove(); return; }
   const { data, error } = await window.kronangSupabase.from('development_assessments')
     .select('technique_self,technique_coach,game_understanding_self,game_understanding_coach,physical_self,physical_coach,mentality_self,mentality_coach,created_at')
-    .eq('player_id',user.id).order('created_at',{ascending:false}).limit(2);
+    .eq('player_id',user.id).order('created_at',{ascending:false}).limit(20);
   if (error) { console.error('Kunde inte hämta utveckling över tid:',error); return; }
-  renderPlayerDevelopmentTrend(buildPlayerDevelopmentTrend(data || []),(data || []).length > 1);
+  renderPlayerDevelopmentTrend(buildPlayerDevelopmentTrend(data || []));
 }
 function waitForPlayerDevelopmentTrend() {
   if (!window.kronangSupabase) { setTimeout(waitForPlayerDevelopmentTrend,100); return; }
@@ -87,5 +102,5 @@ function waitForPlayerDevelopmentTrend() {
   window.addEventListener('kronang-auth-changed',loadPlayerDevelopmentTrend);
   loadPlayerDevelopmentTrend();
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange, getDevelopmentTrendMountTarget };
+if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange, getDevelopmentTrendMountTarget, hasAllValues };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForPlayerDevelopmentTrend();
