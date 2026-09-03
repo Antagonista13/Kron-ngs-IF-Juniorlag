@@ -32,6 +32,14 @@ function latestByPlayer(rows, playerId, predicate) {
     })[0] || null;
 }
 
+function buildCoachRosterStatus(hasGoal, hasFocus, hasAssessment) {
+  return [
+    hasGoal ? "Mål ✓" : "Mål saknas",
+    hasFocus ? "Fokus ✓" : "Fokus saknas",
+    hasAssessment ? "Bedömning ✓" : "Bedömning saknas"
+  ].join(" · ");
+}
+
 function buildCoachRosterSummary(players, goals, focuses, assessments) {
   return (players || [])
     .map(function (player) {
@@ -42,15 +50,19 @@ function buildCoachRosterSummary(players, goals, focuses, assessments) {
         return row.lifecycle_status === "active";
       });
       const assessment = latestByPlayer(assessments, player.id, hasCompleteRosterCoachAssessment);
+      const hasGoal = Boolean(goal && goal.title);
+      const hasFocus = Boolean(focus && focus.focus_text);
+      const hasAssessment = Boolean(assessment);
 
       return {
         id: player.id,
         name: player.full_name || "Namnlös spelare",
-        goal: goal && goal.title ? goal.title : "Inget aktivt mål",
-        focus: focus && focus.focus_text ? focus.focus_text : "Inget aktivt fokus",
-        latestAssessment: assessment
+        goal: hasGoal ? goal.title : "Inget aktivt mål",
+        focus: hasFocus ? focus.focus_text : "Inget aktivt fokus",
+        latestAssessment: hasAssessment
           ? formatRosterAssessmentDate(assessment.created_at)
-          : "Ingen tränarbedömning"
+          : "Ingen tränarbedömning",
+        status: buildCoachRosterStatus(hasGoal, hasFocus, hasAssessment)
       };
     })
     .sort(function (a, b) {
@@ -79,6 +91,10 @@ function renderCoachRosterSummary(items) {
     card.className = "coach-roster-player";
     card.dataset.playerId = item.id;
 
+    const status = document.createElement("p");
+    status.className = "coach-roster-status";
+    status.textContent = item.status;
+
     const details = document.createElement("div");
     details.className = "coach-roster-details";
     details.innerHTML = `
@@ -89,6 +105,7 @@ function renderCoachRosterSummary(items) {
 
     button.parentNode.insertBefore(card, button);
     card.appendChild(button);
+    card.appendChild(status);
     card.appendChild(details);
   });
 }
@@ -199,7 +216,8 @@ if (typeof module !== "undefined" && module.exports) {
     buildCoachRosterSummary,
     formatRosterAssessmentDate,
     hasCompleteRosterCoachAssessment,
-    filterCoachRosterItems
+    filterCoachRosterItems,
+    buildCoachRosterStatus
   };
 }
 
