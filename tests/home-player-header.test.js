@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage } = require('../home-player-header.js');
+const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey } = require('../home-player-header.js');
 
 const player = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', player_number: 17, avatar_url: null });
 assert.strictEqual(player.name, 'Testspelare');
@@ -16,5 +16,8 @@ assert.ok(buildNavIcon('development').includes('<svg'));
 assert.ok(!buildNavIcon('profile').includes('👤'));
 assert.strictEqual(getHomeShortcutPage('activity'), 'calendarPage');
 assert.strictEqual(getHomeShortcutPage('unknown'), '');
+assert.strictEqual(isHomeActivationKey('Enter'), true);
+assert.strictEqual(isHomeActivationKey(' '), true);
+assert.strictEqual(isHomeActivationKey('Escape'), false);
 
 console.log('home-player-header tests passed');
