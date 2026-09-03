@@ -132,14 +132,16 @@ button { font-family: inherit; }
 #coachFocusFeedbackControls textarea:focus, .coach-comment:focus { outline: 2px solid #111; outline-offset: 1px; background: #fff; }
 #coachFocusFeedbackControls button, #saveCoachAssessment { border: none; background: #111; color: #fff; border-radius: 10px; padding: 10px 13px; font-weight: 700; cursor: pointer; margin: 8px 6px 6px 0; }
 #coachPlayerDevelopment > hr { border: 0; margin: 18px 0; }
-#coachPlayerDevelopment > p:first-of-type { background: #fff; border: 1px solid var(--border); border-radius: 18px 18px 0 0; padding: 20px 20px 10px; margin: 0; font-size: 20px; }
-.coach-development-area { background: #fff; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 18px 20px; }
+#coachPlayerDevelopment > p:first-of-type { margin: 24px 0 14px; padding: 0; font-size: 22px; font-weight: 800; }
+.coach-development-area { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 14px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
 .coach-development-area + .coach-development-area { border-top: 1px solid var(--border); }
-.coach-development-area:last-of-type { border-bottom: 1px solid var(--border); border-radius: 0 0 18px 18px; margin-bottom: 18px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
-.coach-development-area h4 { margin: 0 0 16px; font-size: 19px; }
-.coach-development-area p { line-height: 1.45; }
-.coach-rating-stars { display: flex; gap: 4px; margin: 6px 0 12px; }
+.coach-development-area:last-of-type { margin-bottom: 18px; }
+.coach-development-area h4 { margin: 0 0 16px; font-size: 20px; }
+.coach-development-area p { line-height: 1.45; margin: 10px 0; }
+.coach-rating-stars { display: flex; gap: 4px; margin: 8px 0 14px; }
 .coach-rating-star { border: none; background: transparent; padding: 0 3px; font-size: 29px; cursor: pointer; }
+.coach-comment { min-height: 96px; margin-top: 4px; }
+#saveCoachAssessment { width: 100%; margin: 4px 0 18px; padding: 14px 16px; border-radius: 12px; }
 
 @media (min-width: 700px) {
   .container { padding: 30px; }
@@ -152,5 +154,5 @@ button { font-family: inherit; }
   .rating-star { font-size: 31px; }
   #coachPlayerContext, #coachPlayerList { padding: 16px; border-radius: 15px; }
   #coachFocusFeedbackControls button { width: 100%; margin-right: 0; }
-  .coach-development-area { padding: 16px; }
+  .coach-development-area { padding: 16px; border-radius: 15px; }
 }
