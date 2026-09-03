@@ -1,0 +1,11 @@
+const assert = require('assert');
+const { buildTeamStaffMember } = require('../team-staff.js');
+const coach = buildTeamStaffMember({display_name:'Anna', staff_role:'Huvudtränare', phone:'0701234567', email:'anna@example.se', avatar_url:'https://example.se/a.jpg'});
+assert.strictEqual(coach.name, 'Anna');
+assert.strictEqual(coach.role, 'Huvudtränare');
+assert.strictEqual(coach.phoneHref, 'tel:0701234567');
+assert.strictEqual(coach.emailHref, 'mailto:anna@example.se');
+const noContact = buildTeamStaffMember({display_name:'Bo', staff_role:'Lagledare'});
+assert.strictEqual(noContact.phoneHref, '');
+assert.strictEqual(noContact.emailHref, '');
+console.log('team staff tests passed');
