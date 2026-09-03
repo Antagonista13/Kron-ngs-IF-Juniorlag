@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildPlayerDevelopmentTrend, getDevelopmentTrendMountTarget } = require('../profile-development-trend.js');
+const { buildPlayerDevelopmentTrend, getDevelopmentTrendMountTarget, buildTrendDisplay } = require('../profile-development-trend.js');
 
 test('compares latest and previous complete self and coach assessments independently', () => {
   const rows = [
@@ -32,6 +32,19 @@ test('uses null previous values when there is only one complete assessment of th
   assert.equal(result.areas[0].coachPrevious, null);
   assert.equal(result.hasSelfPrevious, false);
   assert.equal(result.hasCoachPrevious, false);
+});
+
+test('trend display makes current previous and change explicit', () => {
+  assert.deepEqual(buildTrendDisplay(1, 4), {
+    current: '★☆☆☆☆',
+    previous: '★★★★☆',
+    change: '−3'
+  });
+  assert.deepEqual(buildTrendDisplay(3, 3), {
+    current: '★★★☆☆',
+    previous: '★★★☆☆',
+    change: 'Oförändrat'
+  });
 });
 
 test('development trend belongs on the development page', () => {
