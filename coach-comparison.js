@@ -43,6 +43,12 @@ function comparisonStars(value) {
   return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
+function assessmentChangeLabel(current, previous) {
+  const change = current - previous;
+  if (change === 0) return "Oförändrat";
+  return change > 0 ? `+${change}` : `−${Math.abs(change)}`;
+}
+
 function renderCoachComparison(rows) {
   const comparison = buildCoachComparisonModel(rows);
   if (!comparison.length) return "";
@@ -58,6 +64,7 @@ function renderCoachComparison(rows) {
               <div>
                 <span>Nu: ${comparisonStars(item.current)}</span>
                 <span class="coach-comparison-previous">Tidigare: ${comparisonStars(item.previous)}</span>
+                <span class="coach-comparison-change">${assessmentChangeLabel(item.current, item.previous)}</span>
               </div>
             </div>
           `;
@@ -132,7 +139,7 @@ function waitForCoachComparison() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating };
+  module.exports = { buildCoachComparisonModel, shouldWaitForCoachAssessmentRender, hasCoachRating, assessmentChangeLabel };
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
