@@ -11,14 +11,7 @@
   --border: #e5e5e5;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--gray);
-  color: var(--black);
-  padding-bottom: 90px;
-}
-
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--gray); color: var(--black); padding-bottom: 90px; }
 button { font-family: inherit; }
 .hero { background: var(--black); color: var(--white); padding: 20px; }
 .hero-content { max-width: 700px; margin: auto; display: flex; align-items: center; gap: 16px; }
@@ -144,6 +137,20 @@ button { font-family: inherit; }
 .coach-comment { min-height: 72px; margin-top: 4px; }
 #saveCoachAssessment { width: 100%; margin: 4px 0 18px; padding: 14px 16px; border-radius: 12px; }
 
+/* TIDIGARE TRÄNARBEDÖMNINGAR */
+.coach-history-section { margin-top: 30px; }
+.coach-history-toggle { width: 100%; border: none; background: #111; color: #fff; border-radius: 12px; padding: 14px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+.coach-history-toggle:hover, .coach-history-toggle:focus { background: #252525; }
+.coach-history-list { margin-top: 22px; }
+.coach-history-list > h3 { margin: 0 0 16px; font-size: 24px; }
+.coach-history-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; box-shadow: 0 5px 16px rgba(0,0,0,0.06); }
+.coach-history-card > h4 { margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); font-size: 18px; }
+.coach-history-area { padding: 13px 0; }
+.coach-history-area + .coach-history-area { border-top: 1px solid #eeeeee; }
+.coach-history-area > strong { display: block; margin-bottom: 9px; font-size: 17px; }
+.coach-history-area p { margin: 6px 0; line-height: 1.45; }
+.coach-history-comment { margin-top: 10px !important; padding: 10px 12px; background: #f5f5f5; border-radius: 10px; color: #333; }
+
 @media (min-width: 700px) {
   .container { padding: 30px; }
   .bottom-nav { max-width: 700px; margin: auto; border-radius: 20px 20px 0 0; }
@@ -156,4 +163,6 @@ button { font-family: inherit; }
   #coachPlayerContext, #coachPlayerList { padding: 16px; border-radius: 15px; }
   #coachFocusFeedbackControls button { width: 100%; margin-right: 0; }
   .coach-development-area { padding: 16px; border-radius: 15px; }
+  .coach-comment { min-height: 68px; }
+  .coach-history-card { padding: 16px; border-radius: 15px; }
 }
