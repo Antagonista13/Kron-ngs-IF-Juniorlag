@@ -2,7 +2,8 @@ function buildHomePlayerHeader(profile) {
   const item = profile || {};
   const number = item.player_number === null || item.player_number === undefined || item.player_number === '' ? '' : '#' + item.player_number;
   const team = item.team || 'Kronängs IF Juniorlag';
-  return { name: item.full_name || 'Spelare', meta: team, playerNumber: number, avatarUrl: item.avatar_url || '' };
+  const roleLabel = item.role === 'coach' || item.role === 'admin' ? 'Ledare' : '';
+  return { name: item.full_name || 'Spelare', meta: team, playerNumber: roleLabel ? '' : number, roleLabel, avatarUrl: item.avatar_url || '' };
 }
 
 function buildNavIcon(type) {
@@ -71,13 +72,14 @@ function setupHomePlayerHeader() {
     if (model.avatarUrl) { const img=document.createElement('img'); img.src=model.avatarUrl; img.alt='Profilbild för '+model.name; avatar.appendChild(img); }
     else { avatar.innerHTML=buildNavIcon('profile'); avatar.setAttribute('title','Ingen profilbild vald'); }
     if (model.playerNumber) { const number=document.createElement('span'); number.className='home-player-number'; number.textContent=model.playerNumber; avatar.appendChild(number); }
+    if (model.roleLabel) { const role=document.createElement('span'); role.className='home-player-role-label'; role.textContent=model.roleLabel; avatar.appendChild(role); }
     avatar.addEventListener('click',function(){ const nav=document.querySelector('.nav-item[data-page="profilePage"]'); if(nav) nav.click(); });
     header.append(text,avatar);
   }
   async function load() {
     const {data:sessionData}=await window.kronangSupabase.auth.getSession(); const user=sessionData.session?sessionData.session.user:null; if(!user)return;
-    let result=await window.kronangSupabase.from('profiles').select('full_name, team, player_number, avatar_url').eq('id',user.id).maybeSingle();
-    if(result.error) result=await window.kronangSupabase.from('profiles').select('full_name, team').eq('id',user.id).maybeSingle();
+    let result=await window.kronangSupabase.from('profiles').select('full_name, team, role, player_number, avatar_url').eq('id',user.id).maybeSingle();
+    if(result.error) result=await window.kronangSupabase.from('profiles').select('full_name, team, role').eq('id',user.id).maybeSingle();
     if(result.data) render(buildHomePlayerHeader(result.data));
   }
   document.addEventListener('kronang:auth-signed-in',load); load();
