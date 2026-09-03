@@ -1,3 +1,7 @@
+#developmentPage:has(#coachDevelopmentView) .development-grid {
+  display: none;
+}
+
 #coachPlayerList {
   background: transparent;
   border: 0;
