@@ -44,6 +44,13 @@ function trendChange(current, previous) {
   if (diff === 0) return 'Oförändrat';
   return diff > 0 ? '+' + diff : '−' + Math.abs(diff);
 }
+function buildTrendDisplay(current, previous) {
+  return {
+    current: trendStars(current),
+    previous: trendStars(previous),
+    change: trendChange(current, previous)
+  };
+}
 function ensurePlayerDevelopmentTrendCard() {
   const developmentPage = document.getElementById(getDevelopmentTrendMountTarget());
   if (!developmentPage) return null;
@@ -57,6 +64,29 @@ function ensurePlayerDevelopmentTrendCard() {
   card.className = 'card profile-development-trend';
   developmentPage.appendChild(card);
   return card;
+}
+function buildTrendLine(label, current, previous, hasPrevious) {
+  const line = document.createElement('div');
+  line.className = 'profile-trend-line';
+  const heading = document.createElement('span');
+  heading.className = 'profile-trend-line-label';
+  heading.textContent = label;
+  const values = document.createElement('div');
+  values.className = 'profile-trend-values';
+  const display = buildTrendDisplay(current, previous);
+  const now = document.createElement('span');
+  now.innerHTML = '<small>Nu</small><strong>' + display.current + '</strong>';
+  values.appendChild(now);
+  if (hasPrevious) {
+    const before = document.createElement('span');
+    before.innerHTML = '<small>Tidigare</small><strong>' + display.previous + '</strong>';
+    const change = document.createElement('span');
+    change.className = 'profile-trend-change';
+    change.innerHTML = '<small>Förändring</small><strong>' + display.change + '</strong>';
+    values.append(before, change);
+  }
+  line.append(heading, values);
+  return line;
 }
 function renderPlayerDevelopmentTrend(model) {
   const card = ensurePlayerDevelopmentTrendCard();
@@ -75,11 +105,10 @@ function renderPlayerDevelopmentTrend(model) {
   areas.forEach(function(item) {
     const row = document.createElement('article'); row.className = 'profile-trend-row';
     const title = document.createElement('h4'); title.textContent = item.label;
-    const self = document.createElement('div'); self.className = 'profile-trend-line';
-    self.innerHTML = '<span>Min skattning</span><strong>' + trendStars(item.selfCurrent) + '</strong>' + (model.hasSelfPrevious ? '<small>' + trendChange(item.selfCurrent,item.selfPrevious) + '</small>' : '');
-    const coach = document.createElement('div'); coach.className = 'profile-trend-line';
-    coach.innerHTML = '<span>Tränarens bedömning</span><strong>' + trendStars(item.coachCurrent) + '</strong>' + (model.hasCoachPrevious ? '<small>' + trendChange(item.coachCurrent,item.coachPrevious) + '</small>' : '');
-    row.append(title,self,coach); grid.appendChild(row);
+    row.appendChild(title);
+    row.appendChild(buildTrendLine('Min skattning', item.selfCurrent, item.selfPrevious, model.hasSelfPrevious));
+    row.appendChild(buildTrendLine('Tränarens bedömning', item.coachCurrent, item.coachPrevious, model.hasCoachPrevious));
+    grid.appendChild(row);
   });
   card.appendChild(grid);
 }
@@ -102,5 +131,5 @@ function waitForPlayerDevelopmentTrend() {
   window.addEventListener('kronang-auth-changed',loadPlayerDevelopmentTrend);
   loadPlayerDevelopmentTrend();
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange, getDevelopmentTrendMountTarget, hasAllValues };
+if (typeof module !== 'undefined' && module.exports) module.exports = { buildPlayerDevelopmentTrend, trendChange, getDevelopmentTrendMountTarget, hasAllValues, buildTrendDisplay };
 if (typeof window !== 'undefined' && typeof document !== 'undefined') waitForPlayerDevelopmentTrend();
