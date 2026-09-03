@@ -159,7 +159,6 @@ function setupKronangCoach() {
         if (!assessment) {
           developmentContainer.innerHTML = `
             <hr>
-            <h3>${player.full_name}</h3>
             <p>Det finns ingen utvecklingsbedömning ännu.</p>
           `;
 
@@ -213,8 +212,6 @@ function setupKronangCoach() {
 
         let html = `
           <hr>
-
-          <h3>${player.full_name}</h3>
 
           <p>
             <strong>Spelarens självskattning</strong>
