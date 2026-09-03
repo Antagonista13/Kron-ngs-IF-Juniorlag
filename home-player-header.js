@@ -6,6 +6,13 @@ function buildHomePlayerHeader(profile) {
   return { name: item.full_name || 'Spelare', meta: team, playerNumber: roleLabel ? '' : number, roleLabel, avatarUrl: item.avatar_url || '' };
 }
 
+function mergeHomeProfileFields(base, numberRow, avatarRow) {
+  const result = Object.assign({}, base || {});
+  result.player_number = numberRow && numberRow.player_number !== undefined ? numberRow.player_number : '';
+  result.avatar_url = avatarRow && avatarRow.avatar_url ? avatarRow.avatar_url : '';
+  return result;
+}
+
 function buildNavIcon(type) {
   const common = 'viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
   const icons = {
@@ -77,13 +84,20 @@ function setupHomePlayerHeader() {
     header.append(text,avatar);
   }
   async function load() {
-    const {data:sessionData}=await window.kronangSupabase.auth.getSession(); const user=sessionData.session?sessionData.session.user:null; if(!user)return;
-    let result=await window.kronangSupabase.from('profiles').select('full_name, team, role, player_number, avatar_url').eq('id',user.id).maybeSingle();
-    if(result.error) result=await window.kronangSupabase.from('profiles').select('full_name, team, role').eq('id',user.id).maybeSingle();
-    if(result.data) render(buildHomePlayerHeader(result.data));
+    const {data:sessionData}=await window.kronangSupabase.auth.getSession();
+    const user=sessionData.session?sessionData.session.user:null;
+    if(!user)return;
+
+    const baseResult=await window.kronangSupabase.from('profiles').select('full_name, team, role').eq('id',user.id).maybeSingle();
+    if(!baseResult.data)return;
+
+    const numberResult=await window.kronangSupabase.from('profiles').select('player_number').eq('id',user.id).maybeSingle();
+    const avatarResult=await window.kronangSupabase.from('profiles').select('avatar_url').eq('id',user.id).maybeSingle();
+    const merged=mergeHomeProfileFields(baseResult.data, numberResult.error ? null : numberResult.data, avatarResult.error ? null : avatarResult.data);
+    render(buildHomePlayerHeader(merged));
   }
   document.addEventListener('kronang:auth-signed-in',load); load();
 }
 function waitForHomePlayerHeader(){ if(window.kronangSupabase){setupHomePlayerHeader();return;} setTimeout(waitForHomePlayerHeader,100); }
-if(typeof module!=='undefined'&&module.exports)module.exports={buildHomePlayerHeader,buildNavIcon,getHomeShortcutPage,isHomeActivationKey};
+if(typeof module!=='undefined'&&module.exports)module.exports={buildHomePlayerHeader,mergeHomeProfileFields,buildNavIcon,getHomeShortcutPage,isHomeActivationKey};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForHomePlayerHeader();
