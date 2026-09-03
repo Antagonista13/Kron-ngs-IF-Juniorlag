@@ -1,3 +1,9 @@
+function choosePlayerNumber(rosterRow, profileRow) {
+  if (rosterRow && rosterRow.shirt_number !== null && rosterRow.shirt_number !== undefined && rosterRow.shirt_number !== '') return rosterRow.shirt_number;
+  if (profileRow && profileRow.player_number !== null && profileRow.player_number !== undefined && profileRow.player_number !== '') return profileRow.player_number;
+  return '';
+}
+
 function buildHomePlayerHeader(profile) {
   const item = profile || {};
   const number = item.player_number === null || item.player_number === undefined || item.player_number === '' ? '' : '#' + item.player_number;
@@ -6,9 +12,9 @@ function buildHomePlayerHeader(profile) {
   return { name: item.full_name || 'Spelare', meta: team, playerNumber: roleLabel ? '' : number, roleLabel, avatarUrl: item.avatar_url || '' };
 }
 
-function mergeHomeProfileFields(base, numberRow, avatarRow) {
+function mergeHomeProfileFields(base, numberRow, avatarRow, rosterRow) {
   const result = Object.assign({}, base || {});
-  result.player_number = numberRow && numberRow.player_number !== undefined ? numberRow.player_number : '';
+  result.player_number = choosePlayerNumber(rosterRow, numberRow);
   result.avatar_url = avatarRow && avatarRow.avatar_url ? avatarRow.avatar_url : '';
   return result;
 }
@@ -93,11 +99,20 @@ function setupHomePlayerHeader() {
 
     const numberResult=await window.kronangSupabase.from('profiles').select('player_number').eq('id',user.id).maybeSingle();
     const avatarResult=await window.kronangSupabase.from('profiles').select('avatar_url').eq('id',user.id).maybeSingle();
-    const merged=mergeHomeProfileFields(baseResult.data, numberResult.error ? null : numberResult.data, avatarResult.error ? null : avatarResult.data);
+    let rosterRow=null;
+    if(baseResult.data.role==='player'){
+      const linkedResult=await window.kronangSupabase.from('players').select('shirt_number').eq('profile_id',user.id).eq('is_active',true).maybeSingle();
+      if(!linkedResult.error&&linkedResult.data)rosterRow=linkedResult.data;
+      if(!rosterRow&&baseResult.data.full_name){
+        const nameResult=await window.kronangSupabase.from('players').select('shirt_number').eq('full_name',baseResult.data.full_name).eq('is_active',true).maybeSingle();
+        if(!nameResult.error&&nameResult.data)rosterRow=nameResult.data;
+      }
+    }
+    const merged=mergeHomeProfileFields(baseResult.data, numberResult.error ? null : numberResult.data, avatarResult.error ? null : avatarResult.data, rosterRow);
     render(buildHomePlayerHeader(merged));
   }
   document.addEventListener('kronang:auth-signed-in',load); load();
 }
 function waitForHomePlayerHeader(){ if(window.kronangSupabase){setupHomePlayerHeader();return;} setTimeout(waitForHomePlayerHeader,100); }
-if(typeof module!=='undefined'&&module.exports)module.exports={buildHomePlayerHeader,mergeHomeProfileFields,buildNavIcon,getHomeShortcutPage,isHomeActivationKey};
+if(typeof module!=='undefined'&&module.exports)module.exports={choosePlayerNumber,buildHomePlayerHeader,mergeHomeProfileFields,buildNavIcon,getHomeShortcutPage,isHomeActivationKey};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForHomePlayerHeader();
