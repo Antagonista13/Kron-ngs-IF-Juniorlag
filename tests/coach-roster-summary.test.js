@@ -1,40 +1,34 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachRosterSummary, formatRosterAssessmentDate, filterCoachRosterItems, buildCoachRosterStatus } = require('../coach-roster-summary.js');
+const { buildCoachRosterSummary, formatRosterAssessmentDate, filterCoachRosterItems, buildCoachRosterStatus, buildCoachTeamOverview } = require('../coach-roster-summary.js');
 
 test('builds a compact coach roster summary for each player', () => {
-  const players = [
-    { id: 'p1', full_name: 'Testspelare' },
-    { id: 'p2', full_name: 'Anna Andersson' }
-  ];
-  const goals = [
-    { player_id: 'p1', title: 'Bli bättre skytt', status: 'active', created_at: '2026-09-02T08:00:00Z' }
-  ];
-  const focuses = [
-    { player_id: 'p1', focus_text: 'Bättre första touch', lifecycle_status: 'active', created_at: '2026-09-02T09:00:00Z' }
-  ];
-  const assessments = [
-    { player_id: 'p1', technique_coach: 3, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4, created_at: '2026-09-02T07:50:00Z' }
-  ];
+  const players = [{ id: 'p1', full_name: 'Testspelare' }, { id: 'p2', full_name: 'Anna Andersson' }];
+  const goals = [{ player_id: 'p1', title: 'Bli bättre skytt', status: 'active', created_at: '2026-09-02T08:00:00Z' }];
+  const focuses = [{ player_id: 'p1', focus_text: 'Bättre första touch', lifecycle_status: 'active', created_at: '2026-09-02T09:00:00Z' }];
+  const assessments = [{ player_id: 'p1', technique_coach: 3, game_understanding_coach: 3, physical_coach: 5, mentality_coach: 4, created_at: '2026-09-02T07:50:00Z' }];
 
   assert.deepEqual(buildCoachRosterSummary(players, goals, focuses, assessments), [
-    {
-      id: 'p2',
-      name: 'Anna Andersson',
-      goal: 'Inget aktivt mål',
-      focus: 'Inget aktivt fokus',
-      latestAssessment: 'Ingen tränarbedömning',
-      status: 'Mål saknas · Fokus saknas · Bedömning saknas'
-    },
-    {
-      id: 'p1',
-      name: 'Testspelare',
-      goal: 'Bli bättre skytt',
-      focus: 'Bättre första touch',
-      latestAssessment: '2 september 2026',
-      status: 'Mål ✓ · Fokus ✓ · Bedömning ✓'
-    }
+    { id: 'p2', name: 'Anna Andersson', goal: 'Inget aktivt mål', focus: 'Inget aktivt fokus', latestAssessment: 'Ingen tränarbedömning', status: 'Mål saknas · Fokus saknas · Bedömning saknas', hasGoal: false, hasFocus: false, hasAssessment: false },
+    { id: 'p1', name: 'Testspelare', goal: 'Bli bättre skytt', focus: 'Bättre första touch', latestAssessment: '2 september 2026', status: 'Mål ✓ · Fokus ✓ · Bedömning ✓', hasGoal: true, hasFocus: true, hasAssessment: true }
   ]);
+});
+
+test('builds a neutral team overview without ranking players', () => {
+  const items = [
+    { hasGoal: true, hasFocus: true, hasAssessment: true },
+    { hasGoal: true, hasFocus: false, hasAssessment: false },
+    { hasGoal: false, hasFocus: true, hasAssessment: false }
+  ];
+  assert.deepEqual(buildCoachTeamOverview(items), {
+    total: 3,
+    activeGoals: 2,
+    activeFocuses: 2,
+    assessed: 1,
+    missingGoals: 1,
+    missingFocuses: 1,
+    missingAssessments: 2
+  });
 });
 
 test('ignores self-assessment-only rows when finding latest trainer assessment', () => {
@@ -51,12 +45,7 @@ test('formats roster assessment dates in Swedish', () => {
 });
 
 test('filters coach roster by player name without caring about case or extra spaces', () => {
-  const items = [
-    { id: 'p1', name: 'Anna Andersson' },
-    { id: 'p2', name: 'Erik Berg' },
-    { id: 'p3', name: 'Testspelare' }
-  ];
-
+  const items = [{ id: 'p1', name: 'Anna Andersson' }, { id: 'p2', name: 'Erik Berg' }, { id: 'p3', name: 'Testspelare' }];
   assert.deepEqual(filterCoachRosterItems(items, '  ANNA '), [items[0]]);
   assert.deepEqual(filterCoachRosterItems(items, 'berg'), [items[1]]);
   assert.deepEqual(filterCoachRosterItems(items, ''), items);
