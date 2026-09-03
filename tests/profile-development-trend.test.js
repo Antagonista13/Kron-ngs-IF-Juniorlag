@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildPlayerDevelopmentTrend } = require('../profile-development-trend.js');
+const { buildPlayerDevelopmentTrend, getDevelopmentTrendMountTarget } = require('../profile-development-trend.js');
 
 test('compares latest and previous assessment for all four areas', () => {
   const rows = [
@@ -20,4 +20,8 @@ test('uses null for previous values when only one assessment exists', () => {
   assert.equal(model[0].selfPrevious, null);
   assert.equal(model[0].coachCurrent, 3);
   assert.equal(model[0].coachPrevious, null);
+});
+
+test('development trend belongs on the development page', () => {
+  assert.equal(getDevelopmentTrendMountTarget(), 'developmentPage');
 });
