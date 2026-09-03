@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachRosterSummary, formatRosterAssessmentDate, filterCoachRosterItems } = require('../coach-roster-summary.js');
+const { buildCoachRosterSummary, formatRosterAssessmentDate, filterCoachRosterItems, buildCoachRosterStatus } = require('../coach-roster-summary.js');
 
 test('builds a compact coach roster summary for each player', () => {
   const players = [
@@ -23,14 +23,16 @@ test('builds a compact coach roster summary for each player', () => {
       name: 'Anna Andersson',
       goal: 'Inget aktivt mål',
       focus: 'Inget aktivt fokus',
-      latestAssessment: 'Ingen tränarbedömning'
+      latestAssessment: 'Ingen tränarbedömning',
+      status: 'Mål saknas · Fokus saknas · Bedömning saknas'
     },
     {
       id: 'p1',
       name: 'Testspelare',
       goal: 'Bli bättre skytt',
       focus: 'Bättre första touch',
-      latestAssessment: '2 september 2026'
+      latestAssessment: '2 september 2026',
+      status: 'Mål ✓ · Fokus ✓ · Bedömning ✓'
     }
   ]);
 });
@@ -58,4 +60,10 @@ test('filters coach roster by player name without caring about case or extra spa
   assert.deepEqual(filterCoachRosterItems(items, '  ANNA '), [items[0]]);
   assert.deepEqual(filterCoachRosterItems(items, 'berg'), [items[1]]);
   assert.deepEqual(filterCoachRosterItems(items, ''), items);
+});
+
+test('builds a neutral status line from goal focus and assessment availability', () => {
+  assert.equal(buildCoachRosterStatus(true, true, true), 'Mål ✓ · Fokus ✓ · Bedömning ✓');
+  assert.equal(buildCoachRosterStatus(true, false, false), 'Mål ✓ · Fokus saknas · Bedömning saknas');
+  assert.equal(buildCoachRosterStatus(false, true, true), 'Mål saknas · Fokus ✓ · Bedömning ✓');
 });
