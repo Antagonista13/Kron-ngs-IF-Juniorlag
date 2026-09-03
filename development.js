@@ -93,7 +93,12 @@ function setupKronangDevelopment() {
     if (!canEditSelfAssessment()) removeSaveButton();
 
     const heading = developmentPage.querySelector(".page-heading h2");
-    if (heading && profile && profile.full_name) heading.textContent = "Din utveckling, " + profile.full_name;
+    const subtitle = developmentPage.querySelector(".page-heading p");
+    const headingContent = typeof window.getDevelopmentHeading === "function"
+      ? window.getDevelopmentHeading(currentRole, profile ? profile.full_name : "")
+      : { title: profile && profile.full_name ? "Din utveckling, " + profile.full_name : "Din utveckling", subtitle: "Träna smart. Utvecklas varje dag." };
+    if (heading) heading.textContent = headingContent.title;
+    if (subtitle) subtitle.textContent = headingContent.subtitle;
 
     const { data: assessment, error: assessmentError } = await window.kronangSupabase.from("development_assessments").select("*").eq("player_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
     if (assessmentError) { console.error("Utvecklingsfel:", assessmentError); return; }
