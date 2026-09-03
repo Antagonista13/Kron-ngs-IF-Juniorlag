@@ -20,6 +20,6 @@ function validateInvite(input) {
   if (!['', 'player', 'parent', 'coach'].includes(expectedRole)) return { ok: false, message: 'Välj en giltig förväntad roll.' };
   return { ok: true, message: '', value: { email, fullName, expectedRole } };
 }
-const api = { normalizeApprovalRole, validateApproval, validateInvite };
-if (typeof module !== 'undefined' && module.exports) module.exports = api;
-if (typeof window !== 'undefined') window.KronangAdminAccess = api;
+const adminAccessApi = { normalizeApprovalRole, validateApproval, validateInvite };
+if (typeof module !== 'undefined' && module.exports) module.exports = adminAccessApi;
+if (typeof window !== 'undefined') window.KronangAdminAccess = adminAccessApi;
