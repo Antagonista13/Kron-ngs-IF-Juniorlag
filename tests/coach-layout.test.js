@@ -8,6 +8,7 @@ test('defines the four coach tool blocks in the intended order', () => {
     contextTitle: 'Mål & fokus',
     feedbackTitle: 'Tränarens återkoppling',
     assessmentTitle: 'Självskattning & tränarbedömning',
-    cardClass: 'coach-tool-card'
+    cardClass: 'coach-tool-card',
+    assessmentIntroGap: 8
   });
 });
