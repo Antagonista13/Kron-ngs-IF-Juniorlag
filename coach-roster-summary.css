@@ -2,6 +2,37 @@
   display: none;
 }
 
+.coach-roster-search {
+  margin: 0 0 14px;
+}
+
+.coach-roster-search label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 800;
+  color: #111;
+}
+
+.coach-roster-search input {
+  width: 100%;
+  border: 1px solid #cfcfcf;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+  color: #111;
+}
+
+.coach-roster-search input:focus {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.coach-roster-empty {
+  margin: 4px 0 18px;
+  color: #666;
+}
+
 #coachPlayerList {
   background: transparent;
   border: 0;
