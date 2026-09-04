@@ -13,13 +13,16 @@ test('development player cards stay clean while keeping follow-up status',()=>{
 });
 
 test('click replaces the long worklist with the selected player profile',()=>{
+  const detailMode=src.indexOf("coachView.classList.add('coach-player-detail-open')");
   const hide=src.indexOf('host.hidden=true');
   const profile=src.indexOf("profileContainer.className='development-selected-profile'");
   const open=src.indexOf('await root.KronangDevelopmentProfile.openPlayerDevelopmentWorkflow({container:profileContainer');
-  assert.ok(hide>=0,'worklist must be hidden immediately');
+  assert.ok(detailMode>=0,'coach detail mode must be enabled so CSS shows the profile');
+  assert.ok(hide>detailMode,'worklist must be hidden after detail mode is enabled');
   assert.ok(profile>hide,'visible profile container must be created after hiding worklist');
   assert.ok(open>profile,'selected profile must load into the visible container');
   assert.match(src,/development-back-to-list/);
+  assert.match(src,/coachView\.classList\.remove\('coach-player-detail-open'\)/);
 });
 
 test('development player card has explicit interactive styling',()=>{
