@@ -36,6 +36,8 @@ jobs:
         run: node --test tests/team-posts.test.js
       - name: Mobile home tests
         run: node tests/home-mobile-layout.test.js
+      - name: Header polish tests
+        run: node --test tests/header-polish.test.js
       - name: Team focus style tests
         run: node tests/team-focus-style.test.js
       - name: Team staff tests
