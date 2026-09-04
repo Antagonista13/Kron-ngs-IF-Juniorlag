@@ -6,7 +6,8 @@ const source=fs.readFileSync('profile-avatar.js','utf8');
 
 test('profile image object path is stable and target scoped',()=>{
  assert.equal(avatar.buildProfileImageObjectPath('profile','abc','photo.JPG'),'profiles/abc/avatar.jpg');
- assert.equal(avatar.buildProfileImageObjectPath('staff',42,'portrait.png'),'staff/42/avatar.png');
+ assert.equal(avatar.buildProfileImageObjectPath('staff',42,'portrait.png'),'staff/42/avatar.jpg');
+ assert.equal(avatar.buildProfileImageObjectPath('player','p1','portrait.webp'),'players/p1/avatar.jpg');
 });
 
 test('admin image picker is mobile friendly and has square crop controls',()=>{
@@ -15,4 +16,5 @@ test('admin image picker is mobile friendly and has square crop controls',()=>{
  assert.match(source,/canvas/);
  assert.match(source,/admin_assign_profile_image/);
  assert.match(source,/admin_assign_staff_image/);
+ assert.match(source,/admin_assign_player_image/);
 });
