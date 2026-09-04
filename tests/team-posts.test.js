@@ -1,14 +1,22 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { canManageTeamPosts, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
+const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
 
-test('only coach and admin roles can manage team posts', () => {
+test('only coach and admin roles can create team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
   assert.equal(canManageTeamPosts('admin'), true);
   assert.equal(canManageTeamPosts('player'), false);
   assert.equal(canManageTeamPosts('parent'), false);
   assert.equal(canManageTeamPosts('pending'), false);
-  assert.equal(canManageTeamPosts(null), false);
+});
+
+test('post ownership follows the locked admin coach hierarchy', () => {
+  assert.equal(canManageSpecificTeamPost('admin','admin'), true);
+  assert.equal(canManageSpecificTeamPost('admin','coach'), true);
+  assert.equal(canManageSpecificTeamPost('coach','coach'), true);
+  assert.equal(canManageSpecificTeamPost('coach','admin'), false);
+  assert.equal(canManageSpecificTeamPost('player','coach'), false);
+  assert.equal(canManageSpecificTeamPost('parent','coach'), false);
 });
 
 test('parent can read team posts while pending cannot', () => {
@@ -41,8 +49,8 @@ test('normalizes optional image urls', () => {
   assert.equal(normalizeTeamPostImageUrl(null), '');
 });
 
-test('edit state preserves optional image url', () => {
-  assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true, image_url: ' https://example.com/a.jpg ' }), {
-    id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true, imageUrl: 'https://example.com/a.jpg'
+test('edit state preserves author role and optional image url', () => {
+  assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true, image_url: ' https://example.com/a.jpg ', author_role:'coach' }), {
+    id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true, imageUrl: 'https://example.com/a.jpg', authorRole:'coach'
   });
 });
