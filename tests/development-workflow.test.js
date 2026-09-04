@@ -5,6 +5,7 @@ const {
   latestMeaningfulDevelopmentAt,
   buildDevelopmentRosterItem,
   filterDevelopmentRosterItems,
+  buildLeaderDashboardSummary,
   validateDevelopmentEntry,
   validateGoalProposal
 } = require('../development-workflow.js');
@@ -27,6 +28,21 @@ test('worklist filters follow-up and missing goal states', () => {
   assert.deepEqual(filterDevelopmentRosterItems(items, '', 'needs-follow-up').map(x => x.id), ['1']);
   assert.deepEqual(filterDevelopmentRosterItems(items, '', 'missing-goal').map(x => x.id), ['2']);
   assert.deepEqual(filterDevelopmentRosterItems(items, '', 'recent').map(x => x.id), ['2']);
+});
+
+test('leader dashboard summarizes players and current development states', () => {
+  const items = [
+    { id: '1', needsFollowUp: true, hasGoal: true, hasFocus: true, recentlyUpdated: true },
+    { id: '2', needsFollowUp: false, hasGoal: false, hasFocus: true, recentlyUpdated: false },
+    { id: '3', needsFollowUp: true, hasGoal: true, hasFocus: false, recentlyUpdated: true }
+  ];
+  assert.deepEqual(buildLeaderDashboardSummary(items), {
+    totalPlayers: 3,
+    needsFollowUp: 2,
+    activeGoals: 2,
+    activeFocuses: 2,
+    recentlyUpdated: 2
+  });
 });
 
 test('registered development entry requires text and exact visibility', () => {
