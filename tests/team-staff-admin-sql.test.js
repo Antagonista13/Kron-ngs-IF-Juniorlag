@@ -3,9 +3,16 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path='supabase/migrations/202609040013_team_staff_admin_management.sql';
 
+test('staff migration creates the presentation table if earlier manual sql was never applied',()=>{
+ const sql=fs.readFileSync(path,'utf8').toLowerCase();
+ assert.match(sql,/create table if not exists public\.team_staff/);
+ assert.match(sql,/alter table public\.team_staff enable row level security/);
+ assert.match(sql,/same team/);
+});
+
 test('staff management migration keeps presentation staff independent from accounts',()=>{
  const sql=fs.readFileSync(path,'utf8').toLowerCase();
- assert.match(sql,/add column if not exists description text/);
+ assert.match(sql,/description text/);
  assert.doesNotMatch(sql,/profile_id\s+uuid\s+not null/);
  assert.match(sql,/sort_order/);
 });
