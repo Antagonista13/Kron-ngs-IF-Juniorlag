@@ -22,10 +22,8 @@ function canHideCalendarForProfile(profile){return Boolean(profile&&['admin','co
 function canRestoreCalendarForProfile(profile){return Boolean(profile&&profile.role==='admin'&&profile.is_active===true);}
 async function loadHiddenCalendarKeys(){
   if(!window.kronangSupabase)return new Set();
-  const profile=await getCalendarProfile();
-  if(!profile||!profile.team)return new Set();
-  const{data,error}=await window.kronangSupabase.from('calendar_hidden_events').select('external_event_key').eq('team',profile.team);
-  if(error){console.error('Kunde inte läsa dolda kalenderaktiviteter:',error);return new Set();}
+  const{data,error}=await window.kronangSupabase.rpc('list_calendar_hidden_keys');
+  if(error){console.error('Kunde inte läsa dolda kalendernycklar:',error);return new Set();}
   return new Set((data||[]).map(row=>row.external_event_key));
 }
 async function hideCalendarActivity(activity){
