@@ -8,5 +8,8 @@ assert.ok(roleStyle[1].includes('overflow:visible'), 'leader role label must not
 assert.ok(roleStyle[1].includes('background:'), 'leader role label should have a gold brush/ribbon background for contrast');
 assert.ok(roleStyle[1].includes('z-index:'), 'leader role label should render above the portrait');
 assert.ok(css.includes('.home-player-avatar.has-role-label{overflow:visible}'), 'leader portrait should allow the role label to extend outside the circle');
-assert.ok(css.includes('.home-player-avatar.has-role-label img{border-radius:50%}'), 'portrait image should remain circular when overflow is opened');
+const portraitStyle = css.match(/\.home-player-avatar\.has-role-label img\{([^}]*)\}/);
+assert.ok(portraitStyle, 'leader portrait image style should exist');
+assert.ok(portraitStyle[1].includes('border-radius:50%'), 'portrait image should remain circular when overflow is opened');
+assert.ok(portraitStyle[1].includes('clip-path:circle('), 'portrait image should stay clipped to a circle when the ribbon extends outside');
 console.log('home leader label style tests passed');
