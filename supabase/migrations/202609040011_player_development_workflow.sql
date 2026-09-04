@@ -108,7 +108,7 @@ begin
   if v_proposal.status <> 'pending' then raise exception 'Proposal already resolved'; end if;
   select profile_id into v_profile_id from public.players where id=v_proposal.player_id;
   if p_decision='accepted' then
-    update public.development_goals set status='replaced' where player_id=v_profile_id and status='active';
+    update public.development_goals set status = 'replaced' where player_id=v_profile_id and status='active';
     insert into public.development_goals(player_id,title,description,status)
       values(v_profile_id,v_proposal.proposed_goal_text,v_proposal.proposed_goal_text,'active');
   end if;
