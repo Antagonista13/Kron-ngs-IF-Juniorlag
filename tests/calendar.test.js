@@ -27,7 +27,7 @@ test('calendar management never writes to the external calendar source',()=>{
 });
 
 test('calendar migration grants hide to leaders and restore/list only to admin',()=>{
- const sql=fs.readFileSync('supabase/migrations/202609040018_calendar_hidden_events.sql','utf8').toLowerCase();
+ const sql=fs.readFileSync('supabase/migrations/202609040019_calendar_hidden_events.sql','utf8').toLowerCase();
  assert.match(sql,/calendar_hidden_events/);
  assert.match(sql,/hide_calendar_event/);
  assert.match(sql,/restore_calendar_event/);
