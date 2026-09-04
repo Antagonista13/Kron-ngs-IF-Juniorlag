@@ -2,6 +2,8 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const index=fs.readFileSync('index.html','utf8');
+const role=fs.readFileSync('development-role.js','utf8');
+const workflowCss=fs.readFileSync('development-workflow.css','utf8');
 
 test('development workflow assets load in dependency order',()=>{
   const model=index.indexOf('development-workflow.js?v=1');
@@ -15,4 +17,21 @@ test('development workflow assets load in dependency order',()=>{
 test('development navigation includes unread dot hook',()=>{
   assert.match(index,/development-unread-dot/);
   assert.match(index,/nav-icon-wrap/);
+});
+
+test('development summary cards use shared monochrome line icons',()=>{
+  assert.match(role,/developmentGoalSummary:'goal'/);
+  assert.match(role,/developmentFocusSummary:'focus'/);
+  assert.match(role,/developmentGoalHistory:'goal-history'/);
+  assert.match(role,/developmentFocusHistory:'focus-history'/);
+  assert.match(role,/development-card-icon/);
+  assert.match(workflowCss,/\.development-card-icon/);
+  assert.match(workflowCss,/stroke:currentColor/);
+});
+
+test('wide development layout starts goal and focus on the same top row',()=>{
+  assert.match(workflowCss,/#developmentGoalSummary\{grid-column:1;grid-row:2\}/);
+  assert.match(workflowCss,/#developmentFocusSummary\{grid-column:2;grid-row:2\}/);
+  assert.match(workflowCss,/#developmentGoalHistory\{grid-column:1;grid-row:3\}/);
+  assert.match(workflowCss,/#developmentFocusHistory\{grid-column:2;grid-row:3\}/);
 });
