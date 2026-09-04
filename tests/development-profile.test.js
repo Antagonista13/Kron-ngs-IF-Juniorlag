@@ -1,0 +1,6 @@
+const test=require('node:test');const assert=require('node:assert/strict');
+const {buildDevelopmentProfileModel,canRegisterDevelopmentFollowUp,canProposeDevelopmentGoal,canEditOwnDevelopmentGoal}=require('../development-profile.js');
+test('leaders get coach actions and player does not',()=>{assert.equal(canRegisterDevelopmentFollowUp('coach'),true);assert.equal(canRegisterDevelopmentFollowUp('admin'),true);assert.equal(canRegisterDevelopmentFollowUp('player'),false);assert.equal(canProposeDevelopmentGoal('coach'),true);});
+test('player can edit own goal only',()=>{assert.equal(canEditOwnDevelopmentGoal('player',true),true);assert.equal(canEditOwnDevelopmentGoal('player',false),false);assert.equal(canEditOwnDevelopmentGoal('parent',true),false);});
+test('leaders-only entries are excluded from player profile model',()=>{const model=buildDevelopmentProfileModel({role:'player',player:{id:'p1'},entries:[{id:'a',visibility:'player_visible',comment:'Synlig'},{id:'b',visibility:'leaders_only',comment:'Intern'}]});assert.deepEqual(model.entries.map(x=>x.id),['a']);});
+test('parent receives no personal development model',()=>{const model=buildDevelopmentProfileModel({role:'parent',player:{id:'p1'},entries:[{id:'a',visibility:'player_visible'}]});assert.equal(model.allowed,false);assert.deepEqual(model.entries,[]);});

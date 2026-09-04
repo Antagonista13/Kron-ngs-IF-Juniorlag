@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');
+const {hasUnreadDevelopmentNotifications,notificationMatchesEntity}=require('../development-notifications.js');
+test('red dot derives only from unread items',()=>{assert.equal(hasUnreadDevelopmentNotifications([{id:'1',read_at:null}]),true);assert.equal(hasUnreadDevelopmentNotifications([{id:'1',read_at:'2026-09-04T12:00:00Z'}]),false);});
+test('notification matches its related development entity',()=>{assert.equal(notificationMatchesEntity({entity_type:'development_entry',entity_id:'e1'},'development_entry','e1'),true);assert.equal(notificationMatchesEntity({entity_type:'goal_proposal',entity_id:'g1'},'development_entry','g1'),false);});

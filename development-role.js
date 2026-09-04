@@ -1,36 +1,7 @@
-function isLeaderRoleLocal(role) {
-  if (typeof window !== "undefined" && window.KronangPermissions) return window.KronangPermissions.isLeaderRole(role);
-  return role === "coach" || role === "admin";
-}
-
-function canEditSelfAssessment(role) {
-  return role === "player";
-}
-
-function shouldShowPlayerDevelopmentCards(role) {
-  return role === "player";
-}
-
-function getDevelopmentHeading(role, fullName) {
-  if (isLeaderRoleLocal(role)) {
-    return {
-      title: "Juniorlagets utveckling",
-      subtitle: "Följ spelarnas mål, fokus och utveckling över tid."
-    };
-  }
-
-  return {
-    title: fullName ? "Din utveckling, " + fullName : "Din utveckling",
-    subtitle: "Träna smart. Utvecklas varje dag."
-  };
-}
-
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { canEditSelfAssessment, shouldShowPlayerDevelopmentCards, getDevelopmentHeading };
-}
-
-if (typeof window !== "undefined") {
-  window.canEditSelfAssessment = canEditSelfAssessment;
-  window.shouldShowPlayerDevelopmentCards = shouldShowPlayerDevelopmentCards;
-  window.getDevelopmentHeading = getDevelopmentHeading;
-}
+function isLeaderRoleLocal(role){if(typeof window!=="undefined"&&window.KronangPermissions)return window.KronangPermissions.isLeaderRole(role);return role==="coach"||role==="admin";}
+function canEditSelfAssessment(role){return role==="player";}
+function shouldShowPlayerDevelopmentCards(role){return role==="player";}
+function getDevelopmentHeading(role,fullName){if(isLeaderRoleLocal(role))return{title:"Juniorlagets utveckling",subtitle:"Följ spelarnas mål, fokus och utveckling över tid."};return{title:fullName?"Din utveckling, "+fullName:"Din utveckling",subtitle:"Träna smart. Utvecklas varje dag."};}
+function loadDevelopmentWorkflowAssets(){if(typeof document==='undefined')return;if(!document.querySelector('link[data-development-workflow]')){const link=document.createElement('link');link.rel='stylesheet';link.href='development-workflow.css?v=1';link.dataset.developmentWorkflow='1';document.head.appendChild(link);}const nav=document.querySelector('.nav-item[data-page="developmentPage"]');if(nav&&!nav.querySelector('.development-unread-dot')){const icon=nav.querySelector('span');if(icon){icon.classList.add('nav-icon-wrap');const dot=document.createElement('i');dot.className='development-unread-dot';dot.hidden=true;dot.setAttribute('aria-hidden','true');icon.appendChild(dot);}}const scripts=['development-workflow.js?v=1','development-profile.js?v=1','development-notifications.js?v=1','coach-development-worklist.js?v=1'];function next(i){if(i>=scripts.length)return;const base=scripts[i].split('?')[0];if(document.querySelector('script[src^="'+base+'"]')){next(i+1);return;}const s=document.createElement('script');s.src=scripts[i];s.onload=()=>next(i+1);document.head.appendChild(s);}next(0);}
+if(typeof module!=="undefined"&&module.exports)module.exports={canEditSelfAssessment,shouldShowPlayerDevelopmentCards,getDevelopmentHeading};
+if(typeof window!=="undefined"){window.canEditSelfAssessment=canEditSelfAssessment;window.shouldShowPlayerDevelopmentCards=shouldShowPlayerDevelopmentCards;window.getDevelopmentHeading=getDevelopmentHeading;loadDevelopmentWorkflowAssets();}
