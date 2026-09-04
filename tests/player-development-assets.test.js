@@ -9,11 +9,11 @@ const profile=fs.readFileSync('development-profile.js','utf8');
 
 test('development workflow assets load in dependency order',()=>{
   const model=index.indexOf('development-workflow.js?v=1');
-  const profileScript=index.indexOf('development-profile.js?v=1');
-  const notifications=index.indexOf('development-notifications.js?v=1');
-  const worklistScript=index.indexOf('coach-development-worklist.js?v=1');
+  const profileScript=index.indexOf('development-profile.js?v=2');
+  const notifications=index.indexOf('development-notifications.js?v=2');
+  const worklistScript=index.indexOf('coach-development-worklist.js?v=2');
   assert.ok(model>=0&&profileScript>model&&notifications>profileScript&&worklistScript>notifications);
-  assert.match(index,/development-workflow\.css\?v=2/);
+  assert.match(index,/development-workflow\.css\?v=3/);
 });
 
 test('development navigation includes unread dot hook',()=>{
