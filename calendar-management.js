@@ -15,11 +15,11 @@ async function getCalendarProfile(){
   const{data:s}=await window.kronangSupabase.auth.getSession();
   const user=s&&s.session&&s.session.user;
   if(!user)return null;
-  const{data}=await window.kronangSupabase.from('profiles').select('id,role,status,is_active,team').eq('id',user.id).maybeSingle();
+  const{data}=await window.kronangSupabase.from('profiles').select('id,role,is_active,team').eq('id',user.id).maybeSingle();
   return data||null;
 }
-function canHideCalendarForProfile(profile){return Boolean(profile&&['admin','coach'].includes(profile.role)&&(profile.status==='active'||profile.is_active===true));}
-function canRestoreCalendarForProfile(profile){return Boolean(profile&&profile.role==='admin'&&(profile.status==='active'||profile.is_active===true));}
+function canHideCalendarForProfile(profile){return Boolean(profile&&['admin','coach'].includes(profile.role)&&profile.is_active===true);}
+function canRestoreCalendarForProfile(profile){return Boolean(profile&&profile.role==='admin'&&profile.is_active===true);}
 async function loadHiddenCalendarKeys(){
   if(!window.kronangSupabase)return new Set();
   const profile=await getCalendarProfile();
