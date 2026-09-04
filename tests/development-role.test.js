@@ -1,3 +1,4 @@
+const fs = require('fs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const developmentRole = require('../development-role.js');
@@ -40,4 +41,10 @@ test('leaders use dashboard mode while players use personal development mode', (
   assert.equal(developmentRole.getDevelopmentViewMode('coach'), 'leader-dashboard');
   assert.equal(developmentRole.getDevelopmentViewMode('player'), 'player-development');
   assert.equal(developmentRole.getDevelopmentViewMode('parent'), 'hidden');
+});
+
+test('development page applies role visibility to the personal card grid', () => {
+  const source = fs.readFileSync('development.js', 'utf8');
+  assert.ok(source.includes('shouldShowPlayerDevelopmentCards(currentRole)'));
+  assert.ok(source.includes('developmentGrid.hidden'));
 });
