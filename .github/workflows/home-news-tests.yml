@@ -31,6 +31,8 @@ jobs:
           node --check development-profile.js
           node --check development-notifications.js
           node --check coach-development-worklist.js
+          node --check calendar-management.js
+          node --check calendar-runtime.js
       - name: Home tests
         run: node tests/home-player-header.test.js
       - name: Team post tests
@@ -71,6 +73,8 @@ jobs:
         run: node --test tests/team-challenge.test.js
       - name: Role permission tests
         run: node --test tests/role-permissions.test.js
+      - name: Calendar 2.0 tests
+        run: node --test tests/calendar.test.js
       - name: Browser script compatibility tests
         run: node --test tests/browser-script-order.test.js
       - name: Navigation scroll tests
@@ -94,5 +98,5 @@ jobs:
       - name: Security leak checks
         run: |
           if grep -R "SUPABASE_SERVICE_ROLE_KEY" -- *.js tests 2>/dev/null; then exit 1; fi
-          if grep -R "SUPABASE_SERVICE_ROLE_KEY" supabase/migrations/202609040011_player_development_workflow.sql supabase/migrations/202609040012_bidirectional_development_notifications.sql supabase/migrations/202609040013_team_staff_admin_management.sql supabase/migrations/202609040014_lock_down_team_staff_rpcs.sql supabase/migrations/202609040015_fix_team_staff_active_checks.sql supabase/migrations/202609040016_admin_profile_images.sql supabase/migrations/202609040017_player_profile_images.sql supabase/migrations/202609040018_team_posts_editor_permissions.sql 2>/dev/null; then exit 1; fi
-          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql supabase/migrations/202609040010_admin_access_saved_at.sql supabase/migrations/202609040011_player_development_workflow.sql supabase/migrations/202609040012_bidirectional_development_notifications.sql supabase/migrations/202609040013_team_staff_admin_management.sql supabase/migrations/202609040014_lock_down_team_staff_rpcs.sql supabase/migrations/202609040015_fix_team_staff_active_checks.sql supabase/migrations/202609040016_admin_profile_images.sql supabase/migrations/202609040017_player_profile_images.sql supabase/migrations/202609040018_team_posts_editor_permissions.sql 2>/dev/null; then exit 1; fi
+          if grep -R "SUPABASE_SERVICE_ROLE_KEY" supabase/migrations/202609040011_player_development_workflow.sql supabase/migrations/202609040012_bidirectional_development_notifications.sql supabase/migrations/202609040013_team_staff_admin_management.sql supabase/migrations/202609040014_lock_down_team_staff_rpcs.sql supabase/migrations/202609040015_fix_team_staff_active_checks.sql supabase/migrations/202609040016_admin_profile_images.sql supabase/migrations/202609040017_player_profile_images.sql supabase/migrations/202609040018_team_posts_editor_permissions.sql supabase/migrations/202609040019_calendar_hidden_events.sql 2>/dev/null; then exit 1; fi
+          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js calendar-management.js calendar-runtime.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql supabase/migrations/202609040010_admin_access_saved_at.sql supabase/migrations/202609040011_player_development_workflow.sql supabase/migrations/202609040012_bidirectional_development_notifications.sql supabase/migrations/202609040013_team_staff_admin_management.sql supabase/migrations/202609040014_lock_down_team_staff_rpcs.sql supabase/migrations/202609040015_fix_team_staff_active_checks.sql supabase/migrations/202609040016_admin_profile_images.sql supabase/migrations/202609040017_player_profile_images.sql supabase/migrations/202609040018_team_posts_editor_permissions.sql supabase/migrations/202609040019_calendar_hidden_events.sql 2>/dev/null; then exit 1; fi
