@@ -31,18 +31,8 @@ function formatAdminSavedAt(value) {
   if (!value) return '';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
-  const dateText = new Intl.DateTimeFormat('sv-SE', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Europe/Stockholm'
-  }).format(date);
-  const timeText = new Intl.DateTimeFormat('sv-SE', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Europe/Stockholm'
-  }).format(date);
+  const dateText = new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/Stockholm' }).format(date);
+  const timeText = new Intl.DateTimeFormat('sv-SE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Stockholm' }).format(date);
   return `Senast sparad: ${dateText}, ${timeText}`;
 }
 function escapeHtml(value) {
@@ -50,6 +40,10 @@ function escapeHtml(value) {
 }
 function roleOptions(selected) {
   return [['player','Spelare'],['parent','Förälder'],['coach','Ledare']].map(([value,label]) => `<option value="${value}"${selected===value?' selected':''}>${label}</option>`).join('');
+}
+function selectablePlayersForUser(players, selectedPlayerId) {
+  const selected = selectedPlayerId == null ? '' : String(selectedPlayerId);
+  return (players || []).filter((row) => !row.profile_id || String(row.id) === selected);
 }
 function openPage(pageId) {
   document.querySelectorAll('.page').forEach((page) => page.classList.toggle('active', page.id === pageId));
@@ -88,10 +82,11 @@ function setupAdminPage() {
   }
   async function loadPlayers() {
     const result = await window.kronangSupabase.from('players').select('id,full_name,shirt_number,profile_id,is_active').eq('is_active', true).order('full_name', { ascending: true });
-    availablePlayers = (result.data || []).filter((row) => !row.profile_id);
+    availablePlayers = result.data || [];
   }
   function playerOptions(selected) {
-    return '<option value="">Välj spelare…</option>' + availablePlayers.map((row) => `<option value="${escapeHtml(row.id)}"${selected===row.id?' selected':''}>${escapeHtml(row.full_name)}${row.shirt_number ? ' #' + escapeHtml(row.shirt_number) : ''}</option>`).join('');
+    const players = selectablePlayersForUser(availablePlayers, selected);
+    return '<option value="">Välj spelare…</option>' + players.map((row) => `<option value="${escapeHtml(row.id)}"${String(selected)===String(row.id)?' selected':''}>${escapeHtml(row.full_name)}${row.shirt_number ? ' #' + escapeHtml(row.shirt_number) : ''}</option>`).join('');
   }
   function renderOverview() {
     const host = document.getElementById('adminOverview');
@@ -190,11 +185,7 @@ function setupAdminPage() {
       event.preventDefault();
       const message = document.getElementById('adminInviteMessage');
       const button = inviteForm.querySelector('button[type="submit"]');
-      const validation = access.validateInvite({
-        fullName: document.getElementById('adminInviteName').value,
-        email: document.getElementById('adminInviteEmail').value,
-        expectedRole: document.getElementById('adminInviteRole').value
-      });
+      const validation = access.validateInvite({ fullName: document.getElementById('adminInviteName').value, email: document.getElementById('adminInviteEmail').value, expectedRole: document.getElementById('adminInviteRole').value });
       if (!validation.ok) { message.textContent = validation.message; return; }
       button.disabled = true; message.textContent = 'Skickar inbjudan…';
       const result = await window.kronangSupabase.functions.invoke('invite-user', { body: validation.value });
@@ -211,6 +202,6 @@ function setupAdminPage() {
   activate();
 }
 function waitForAdminPage() { if (window.kronangSupabase) setupAdminPage(); else setTimeout(waitForAdminPage, 100); }
-const adminPageApi = { adminRoleLabel, buildAdminUserModel, buildAdminOverview, formatAdminSavedAt };
+const adminPageApi = { adminRoleLabel, buildAdminUserModel, buildAdminOverview, formatAdminSavedAt, selectablePlayersForUser };
 if (typeof module !== 'undefined' && module.exports) module.exports = adminPageApi;
 if (typeof window !== 'undefined') { window.KronangAdminPage = adminPageApi; if (typeof document !== 'undefined') waitForAdminPage(); }
