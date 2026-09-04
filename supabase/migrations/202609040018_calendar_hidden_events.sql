@@ -20,7 +20,7 @@ using (
     select 1 from public.profiles p
     where p.id=auth.uid()
       and p.team=calendar_hidden_events.team
-      and p.status='active'
+      and p.is_active=true
       and p.role in ('admin','coach','player','parent')
   )
 );
@@ -36,7 +36,7 @@ as $$
 declare v_profile public.profiles; v_row public.calendar_hidden_events;
 begin
   select * into v_profile from public.profiles where id=auth.uid();
-  if v_profile.id is null or v_profile.status <> 'active' or v_profile.role not in ('admin','coach') then raise exception 'Not authorized'; end if;
+  if v_profile.id is null or v_profile.is_active is not true or v_profile.role not in ('admin','coach') then raise exception 'Not authorized'; end if;
   if length(btrim(coalesce(p_external_event_key,'')))=0 then raise exception 'External event key required'; end if;
   insert into public.calendar_hidden_events(team,external_event_key,title,start_at,end_at,hidden_by)
   values(v_profile.team,btrim(p_external_event_key),nullif(btrim(coalesce(p_title,'')),''),p_start_at,p_end_at,v_profile.id)
@@ -52,7 +52,7 @@ as $$
 declare v_profile public.profiles;
 begin
   select * into v_profile from public.profiles where id=auth.uid();
-  if v_profile.id is null or v_profile.status <> 'active' or v_profile.role = 'admin' is not true then raise exception 'Not authorized'; end if;
+  if v_profile.id is null or v_profile.is_active is not true or v_profile.role = 'admin' is not true then raise exception 'Not authorized'; end if;
   return query select * from public.calendar_hidden_events where team=v_profile.team order by hidden_at desc;
 end;$$;
 
@@ -62,7 +62,7 @@ as $$
 declare v_profile public.profiles;
 begin
   select * into v_profile from public.profiles where id=auth.uid();
-  if v_profile.id is null or v_profile.status <> 'active' or v_profile.role = 'admin' is not true then raise exception 'Not authorized'; end if;
+  if v_profile.id is null or v_profile.is_active is not true or v_profile.role = 'admin' is not true then raise exception 'Not authorized'; end if;
   delete from public.calendar_hidden_events where id=p_hidden_event_id and team=v_profile.team;
 end;$$;
 
