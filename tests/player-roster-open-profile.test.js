@@ -13,7 +13,7 @@ test('linked roster player exposes profile navigation target', () => {
 
 test('roster card click opens linked player development profile without stealing action clicks', () => {
   assert.match(source, /card\.addEventListener\('click'/);
-  assert.match(source, /event\.target\.closest\('button,a'/);
+  assert.match(source, /event\.target\.closest\('button,a,input,select,textarea,label'\)/);
   assert.match(source, /coach-player-button/);
   assert.match(source, /developmentPage/);
 });
