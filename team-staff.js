@@ -34,9 +34,10 @@ function buildStaffSaveRequest(member){
 }
 
 function normalizeStaffEmail(value){return String(value||'').trim().toLowerCase();}
-function buildStaffInviteRequest(member){
+function normalizeStaffInviteRole(value){return value==='parent'?'parent':'coach';}
+function buildStaffInviteRequest(member,expectedRole){
   const item=member||{};
-  return {fullName:String(item.name||'').trim(),email:normalizeStaffEmail(item.email),expectedRole:'coach'};
+  return {fullName:String(item.name||'').trim(),email:normalizeStaffEmail(item.email),expectedRole:normalizeStaffInviteRole(expectedRole)};
 }
 function canOfferStaffInvite(member,knownRows){
   const email=normalizeStaffEmail(member&&member.email);
@@ -62,7 +63,7 @@ let teamStaffInviteRows=[];
 function createStaffEditor(member,onSaved,onCancel){
   const item=member||{id:null,name:'',role:'',description:'',phone:'',email:'',avatarPath:'',sortOrder:100};
   const form=document.createElement('form');form.className='team-staff-editor';
-  form.innerHTML='<label>Namn<input name="name" required maxlength="120"></label><label>Roll / uppgift<input name="role" required maxlength="120" placeholder="Exempel: Kioskansvarig"></label><label>Kort beskrivning<textarea name="description" rows="3" maxlength="500" placeholder="Vad ansvarar personen för?"></textarea></label><div class="team-staff-editor-grid"><label>Telefon<input name="phone" inputmode="tel"></label><label>E-post<input name="email" type="email" inputmode="email"></label></div><label class="team-staff-invite-option" data-invite-option hidden><span><input type="checkbox" name="inviteToApp"> Bjud in till appen</span><small>Skickar en personlig inbjudan och föreslår rollen Ledare.</small></label><div class="team-staff-editor-actions"><button type="submit">SPARA</button><button type="button" class="secondary" data-cancel>AVBRYT</button></div><p class="team-staff-editor-message" aria-live="polite"></p>';
+  form.innerHTML='<label>Namn<input name="name" required maxlength="120"></label><label>Roll / uppgift<input name="role" required maxlength="120" placeholder="Exempel: Kioskansvarig"></label><label>Kort beskrivning<textarea name="description" rows="3" maxlength="500" placeholder="Vad ansvarar personen för?"></textarea></label><div class="team-staff-editor-grid"><label>Telefon<input name="phone" inputmode="tel"></label><label>E-post<input name="email" type="email" inputmode="email"></label></div><label class="team-staff-invite-option" data-invite-option hidden><span><input type="checkbox" name="inviteToApp"> Bjud in till appen</span><small>Skickar en personlig inbjudan till appen.</small><span class="team-staff-invite-role">Behörighet <select name="inviteRole"><option value="coach">Ledare</option><option value="parent">Förälder</option></select></span></label><div class="team-staff-editor-actions"><button type="submit">SPARA</button><button type="button" class="secondary" data-cancel>AVBRYT</button></div><p class="team-staff-editor-message" aria-live="polite"></p>';
   form.elements.name.value=item.name||'';form.elements.role.value=item.role||'';form.elements.description.value=item.description||'';form.elements.phone.value=item.phone||'';form.elements.email.value=item.email||'';
   const inviteOption=form.querySelector('[data-invite-option]');
   const syncInviteOption=()=>{const allowed=canOfferStaffInvite({email:form.elements.email.value},teamStaffInviteRows);inviteOption.hidden=!allowed;if(!allowed)form.elements.inviteToApp.checked=false;};
@@ -78,7 +79,7 @@ function createStaffEditor(member,onSaved,onCancel){
       const {error}=await window.kronangSupabase.rpc('admin_save_team_staff',request);if(error)throw error;
       if(shouldInvite){
         submit.textContent='BJUDER IN…';
-        const inviteRequest=buildStaffInviteRequest({name:request.p_display_name,email:request.p_email});
+        const inviteRequest=buildStaffInviteRequest({name:request.p_display_name,email:request.p_email},form.elements.inviteRole.value);
         const inviteResult=await window.kronangSupabase.functions.invoke('invite-user',{body:inviteRequest});
         if(inviteResult.error){message.textContent='Personen är sparad, men inbjudan kunde inte skickas.';submit.disabled=false;submit.textContent='SPARA';return;}
         teamStaffInviteRows.push({email:inviteRequest.email});
@@ -134,5 +135,5 @@ async function loadTeamStaff(){
 }
 
 function waitForTeamStaff(){if(window.kronangSupabase){loadTeamStaff();return;}setTimeout(waitForTeamStaff,100);}
-if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest,buildStaffInviteRequest,canOfferStaffInvite,nextStaffSortOrder};
+if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest,normalizeStaffInviteRole,buildStaffInviteRequest,canOfferStaffInvite,nextStaffSortOrder};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForTeamStaff();
