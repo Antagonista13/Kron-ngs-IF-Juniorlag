@@ -62,6 +62,8 @@ jobs:
         run: node tests/admin-role-schema.test.js
       - name: Admin user RPC tests
         run: node tests/admin-user-rpcs.test.js
+      - name: Admin save timestamp SQL tests
+        run: node --test tests/admin-save-feedback-sql.test.js
       - name: Permission SQL tests
         run: node tests/permissions-sql.test.js
       - name: Access gate tests
@@ -75,4 +77,4 @@ jobs:
       - name: Security leak checks
         run: |
           if grep -R "SUPABASE_SERVICE_ROLE_KEY" -- *.js tests 2>/dev/null; then exit 1; fi
-          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql 2>/dev/null; then exit 1; fi
+          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql supabase/migrations/202609040010_admin_access_saved_at.sql 2>/dev/null; then exit 1; fi

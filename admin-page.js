@@ -15,6 +15,7 @@ function buildAdminUserModel(row) {
     playerId: item.player_id || null,
     invitationStatus: item.invitation_status || '',
     expectedRole: item.expected_role || '',
+    accessUpdatedAt: item.access_updated_at || '',
     locked: role === 'admin'
   };
 }
@@ -26,6 +27,24 @@ function buildAdminOverview(rows) {
     leaders: items.filter((item) => item.isActive && (item.role === 'admin' || item.role === 'coach')).length
   };
 }
+function formatAdminSavedAt(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const dateText = new Intl.DateTimeFormat('sv-SE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Europe/Stockholm'
+  }).format(date);
+  const timeText = new Intl.DateTimeFormat('sv-SE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Stockholm'
+  }).format(date);
+  return `Senast sparad: ${dateText}, ${timeText}`;
+}
 function escapeHtml(value) {
   return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
@@ -35,6 +54,8 @@ function roleOptions(selected) {
 function openPage(pageId) {
   document.querySelectorAll('.page').forEach((page) => page.classList.toggle('active', page.id === pageId));
   document.querySelectorAll('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.page === pageId));
+  if (typeof window !== 'undefined' && window.KronangNavigation && typeof window.KronangNavigation.scrollPageTop === 'function') window.KronangNavigation.scrollPageTop();
+  else if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
 }
 function ensureAdminProfileEntry() {
   const profilePage = document.getElementById('profilePage');
@@ -114,21 +135,37 @@ function setupAdminPage() {
     const users = currentRows.map(buildAdminUserModel).filter((item) => item.role !== 'pending');
     host.innerHTML = users.map((item) => {
       if (item.locked) return `<article class="admin-user-card locked"><div class="admin-user-head"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.email)}</span></div><span class="admin-locked">LÅST ADMIN</span></div><p>${escapeHtml(item.displayTitle || item.roleLabel)}</p></article>`;
-      return `<article class="admin-user-card" data-user-id="${escapeHtml(item.id)}"><div class="admin-user-head"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.email)}</span></div><span>${escapeHtml(item.roleLabel)}</span></div><label>Roll<select data-field="role">${roleOptions(item.role)}</select></label><label data-player-field${item.role==='player'?'':' hidden'}>Spelare<select data-field="player">${playerOptions(item.playerId)}</select></label><label data-title-field${item.role==='coach'?'':' hidden'}>Visningstitel<input data-field="title" value="${escapeHtml(item.displayTitle)}"></label><label class="admin-active-toggle"><input type="checkbox" data-field="active"${item.isActive?' checked':''}> Aktiv åtkomst</label><p class="admin-card-message" aria-live="polite"></p><button type="button" data-action="save">SPARA</button></article>`;
+      const savedAt = formatAdminSavedAt(item.accessUpdatedAt);
+      return `<article class="admin-user-card" data-user-id="${escapeHtml(item.id)}"><div class="admin-user-head"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.email)}</span></div><span>${escapeHtml(item.roleLabel)}</span></div><label>Roll<select data-field="role">${roleOptions(item.role)}</select></label><label data-player-field${item.role==='player'?'':' hidden'}>Spelare<select data-field="player">${playerOptions(item.playerId)}</select></label><label data-title-field${item.role==='coach'?'':' hidden'}>Visningstitel<input data-field="title" value="${escapeHtml(item.displayTitle)}"></label><label class="admin-active-toggle"><input type="checkbox" data-field="active"${item.isActive?' checked':''}> Aktiv åtkomst</label><p class="admin-card-message" aria-live="polite"></p><button type="button" data-action="save">SPARA</button><p class="admin-saved-at" aria-live="polite">${escapeHtml(savedAt)}</p></article>`;
     }).join('');
     host.querySelectorAll('[data-user-id]').forEach((card) => {
       const role = card.querySelector('[data-field="role"]');
       const sync = () => { card.querySelector('[data-player-field]').hidden = role.value !== 'player'; card.querySelector('[data-title-field]').hidden = role.value !== 'coach'; };
       role.addEventListener('change', sync); sync();
       card.querySelector('[data-action="save"]').addEventListener('click', async function () {
+        const button = this;
         const message = card.querySelector('.admin-card-message');
+        const savedAt = card.querySelector('.admin-saved-at');
         const validation = access.validateApproval({ role: role.value, playerId: card.querySelector('[data-field="player"]').value, displayTitle: card.querySelector('[data-field="title"]').value });
         if (!validation.ok) { message.textContent = validation.message; return; }
-        this.disabled = true; message.textContent = '';
+        button.disabled = true;
+        button.classList.remove('saved');
+        button.textContent = 'SPARAR…';
+        message.textContent = '';
         const value = validation.value;
         const result = await window.kronangSupabase.rpc('admin_update_user_access', { p_profile_id: card.dataset.userId, p_role: value.role, p_player_id: value.playerId, p_display_title: value.displayTitle, p_is_active: card.querySelector('[data-field="active"]').checked });
-        if (result.error) message.textContent = 'Kunde inte spara ändringen.'; else { message.textContent = 'Sparat.'; await loadAll(); }
-        this.disabled = false;
+        if (result.error) {
+          button.disabled = false;
+          button.textContent = 'SPARA';
+          message.textContent = 'Kunde inte spara ändringen.';
+          return;
+        }
+        const savedIso = new Date().toISOString();
+        savedAt.textContent = formatAdminSavedAt(savedIso);
+        button.textContent = 'SPARAT ✓';
+        button.classList.add('saved');
+        await new Promise((resolve) => setTimeout(resolve, 1800));
+        await loadAll();
       });
     });
   }
@@ -174,6 +211,6 @@ function setupAdminPage() {
   activate();
 }
 function waitForAdminPage() { if (window.kronangSupabase) setupAdminPage(); else setTimeout(waitForAdminPage, 100); }
-const adminPageApi = { adminRoleLabel, buildAdminUserModel, buildAdminOverview };
+const adminPageApi = { adminRoleLabel, buildAdminUserModel, buildAdminOverview, formatAdminSavedAt };
 if (typeof module !== 'undefined' && module.exports) module.exports = adminPageApi;
 if (typeof window !== 'undefined') { window.KronangAdminPage = adminPageApi; if (typeof document !== 'undefined') waitForAdminPage(); }
