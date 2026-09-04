@@ -22,8 +22,15 @@ test('admin staff ui has explicit edit add remove and reorder actions',()=>{
  assert.match(source,/confirm\(/);
 });
 
-test('staff invite request is normalized and always targets coach role',()=>{
- assert.deepEqual(staff.buildStaffInviteRequest({name:' Test Testsson ',email:' TEST@example.com '}),{fullName:'Test Testsson',email:'test@example.com',expectedRole:'coach'});
+test('staff invite supports choosing coach or parent access',()=>{
+ assert.equal(staff.normalizeStaffInviteRole('coach'),'coach');
+ assert.equal(staff.normalizeStaffInviteRole('parent'),'parent');
+ assert.equal(staff.normalizeStaffInviteRole('admin'),'coach');
+ assert.deepEqual(staff.buildStaffInviteRequest({name:' Test Testsson ',email:' TEST@example.com '},'parent'),{fullName:'Test Testsson',email:'test@example.com',expectedRole:'parent'});
+ assert.deepEqual(staff.buildStaffInviteRequest({name:' Test Testsson ',email:' TEST@example.com '},'coach'),{fullName:'Test Testsson',email:'test@example.com',expectedRole:'coach'});
+ assert.match(source,/Behörighet/);
+ assert.match(source,/<option value="coach">Ledare<\/option>/);
+ assert.match(source,/<option value="parent">Förälder<\/option>/);
 });
 
 test('invite is only offered for a new email address',()=>{
