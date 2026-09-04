@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const sqlPath = 'supabase/migrations/202609040011_player_development_workflow.sql';
+const bidirectionalPath = 'supabase/migrations/202609040012_bidirectional_development_notifications.sql';
 
 test('migration defines development workflow entities and RPCs', () => {
   const sql = fs.readFileSync(sqlPath, 'utf8').toLowerCase();
@@ -42,4 +43,24 @@ test('leader entry RPC requires comment and only player-visible entries notify',
   const sql = fs.readFileSync(sqlPath, 'utf8').toLowerCase();
   assert.match(sql, /length\(btrim\(p_comment\)\)/);
   assert.match(sql, /p_visibility = 'player_visible'/);
+});
+
+test('2.0 migration notifies active leaders about player-owned development changes', () => {
+  const sql = fs.readFileSync(bidirectionalPath, 'utf8').toLowerCase();
+  for (const token of ['player_goal_changed', 'player_focus_changed', 'player_self_assessment_changed']) {
+    assert.match(sql, new RegExp(token));
+  }
+  assert.match(sql, /role in \('admin','coach'\)/);
+  assert.match(sql, /status = 'active'/);
+  assert.match(sql, /players/);
+  assert.match(sql, /profile_id/);
+  assert.doesNotMatch(sql, /role in \([^)]*'parent'/);
+});
+
+test('2.0 notification source identity prevents duplicate unread events', () => {
+  const sql = fs.readFileSync(bidirectionalPath, 'utf8').toLowerCase();
+  assert.match(sql, /source_key/);
+  assert.match(sql, /unique/);
+  assert.match(sql, /where read_at is null/);
+  assert.match(sql, /recipient_profile_id = auth\.uid\(\)/);
 });
