@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { canEditSelfAssessment, shouldShowPlayerDevelopmentCards, getDevelopmentHeading } = require('../development-role.js');
+const developmentRole = require('../development-role.js');
+const { canEditSelfAssessment, shouldShowPlayerDevelopmentCards, getDevelopmentHeading } = developmentRole;
 
 test('only player role can edit and save self assessment', () => {
   assert.equal(canEditSelfAssessment('player'), true);
@@ -31,4 +32,12 @@ test('development heading is adapted to player and leader roles', () => {
     title: 'Din utveckling, Testspelare',
     subtitle: 'Träna smart. Utvecklas varje dag.'
   });
+});
+
+test('leaders use dashboard mode while players use personal development mode', () => {
+  assert.equal(typeof developmentRole.getDevelopmentViewMode, 'function');
+  assert.equal(developmentRole.getDevelopmentViewMode('admin'), 'leader-dashboard');
+  assert.equal(developmentRole.getDevelopmentViewMode('coach'), 'leader-dashboard');
+  assert.equal(developmentRole.getDevelopmentViewMode('player'), 'player-development');
+  assert.equal(developmentRole.getDevelopmentViewMode('parent'), 'hidden');
 });
