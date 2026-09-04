@@ -102,8 +102,8 @@ Publiceringsflödet ska vara enkelt: `+ NYTT INLÄGG` → skriv → valfri bild 
 
 - Admin kan skapa, redigera och ta bort alla inlägg.
 - Tränare kan skapa inlägg.
-- Tränare kan redigera och ta bort inlägg som är skapade av Admin? Nej.
 - Tränare kan redigera och ta bort inlägg skapade av tränare, oavsett vilken tränare som skapade dem.
+- Tränare får aldrig redigera eller ta bort ett Admin-inlägg.
 - Admin-inlägg får endast redigeras eller tas bort av Admin.
 - Spelare och föräldrar kan endast läsa.
 
@@ -140,7 +140,7 @@ Om appen i framtiden får egna lokalt skapade kalenderaktiviteter kan dessa tas 
 | Ta bort Admin-inlägg | Ja | Nej | Nej | Nej |
 | Dölja kalenderaktivitet | Ja | Ja | Nej | Nej |
 | Återställa dold kalenderaktivitet | Ja | Nej | Nej | Nej |
-| Se personlig utveckling | Alla spelare | Alla spelare | Egen | Nej |
+| Se personlig utveckling | Alla spelare i laget | Alla spelare i laget | Egen | Nej |
 | Skriva ledarkommentar/uppföljning | Ja | Ja | Nej | Nej |
 | Få utvecklingsnotiser | Ja, som ledare | Ja | Ja, egna | Nej |
 
