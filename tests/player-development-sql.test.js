@@ -51,7 +51,7 @@ test('2.0 migration notifies active leaders about player-owned development chang
     assert.match(sql, new RegExp(token));
   }
   assert.match(sql, /role in \('admin','coach'\)/);
-  assert.match(sql, /status = 'active'/);
+  assert.match(sql, /is_active is true/);
   assert.match(sql, /players/);
   assert.match(sql, /profile_id/);
   assert.doesNotMatch(sql, /role in \([^)]*'parent'/);
@@ -63,4 +63,12 @@ test('2.0 notification source identity prevents duplicate unread events', () => 
   assert.match(sql, /unique/);
   assert.match(sql, /where read_at is null/);
   assert.match(sql, /recipient_profile_id = auth\.uid\(\)/);
+});
+
+test('player-owned writes notify leaders in the same database transaction', () => {
+  const sql = fs.readFileSync(bidirectionalPath, 'utf8').toLowerCase();
+  assert.match(sql, /create or replace function public\.create_my_development_goal/);
+  assert.match(sql, /create or replace function public\.create_my_development_focus/);
+  assert.match(sql, /create or replace function public\.save_player_self_assessment/);
+  assert.match(sql, /perform public\.notify_leaders_of_player_development/);
 });
