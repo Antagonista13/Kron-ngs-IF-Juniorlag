@@ -21,5 +21,5 @@ assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'leader
 assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'profile image should keep its current 48px size');
 assert.ok(/player-roster-card-actions button\{min-height:30px/.test(css), 'roster edit buttons should be compact on mobile');
 assert.ok(index.includes('player-roster.css?v=3'), 'roster css version must remain current for the compact layout');
-assert.ok(index.includes('player-roster.js?v=4'), 'roster js version must be bumped so mobile Safari receives player-profile navigation');
+assert.ok(index.includes('player-roster.js?v=5'), 'roster js version must be bumped so mobile Safari receives direct development navigation');
 console.log('player roster ui tests passed');
