@@ -13,10 +13,13 @@ assert.equal(shouldUseCompactLeaderTeamView('parent'), false, 'parent should kee
 
 const js = fs.readFileSync('player-roster.js', 'utf8');
 const css = fs.readFileSync('player-roster.css', 'utf8');
-assert.ok(js.includes("classList.add('leader-team-view')") || js.includes('classList.add("leader-team-view")'), 'leader/admin role should explicitly activate the compact team class');
+const index = fs.readFileSync('index.html', 'utf8');
+assert.ok(js.includes("classList.toggle('leader-team-view'") || js.includes('classList.toggle("leader-team-view"'), 'leader/admin role should explicitly activate the compact team class');
 assert.ok(css.includes('#teamPage.leader-team-view.active'), 'compact layout should be tied to the explicit leader-team-view class');
 assert.ok(!css.includes('#teamPage:has(#playerRosterSection).active'), 'compact layout must not depend on :has()');
 assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'leader tools should render two by two on mobile');
-assert.ok(css.includes('.player-roster-avatar{width:48px;height:48px'), 'profile image should keep its current 48px size');
-assert.ok(css.includes('.player-roster-card-actions button{min-height:30px'), 'roster edit buttons should be compact on mobile');
+assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'profile image should keep its current 48px size');
+assert.ok(/player-roster-card-actions button\{min-height:30px/.test(css), 'roster edit buttons should be compact on mobile');
+assert.ok(index.includes('player-roster.css?v=3'), 'roster css version must be bumped so mobile Safari receives the new layout');
+assert.ok(index.includes('player-roster.js?v=3'), 'roster js version must be bumped so mobile Safari receives the role activation fix');
 console.log('player roster ui tests passed');
