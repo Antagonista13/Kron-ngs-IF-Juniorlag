@@ -21,7 +21,8 @@ test('only active admin can mutate staff through secure rpcs',()=>{
  const sql=fs.readFileSync(path,'utf8').toLowerCase();
  for(const fn of ['admin_save_team_staff','admin_remove_team_staff','admin_reorder_team_staff']) assert.match(sql,new RegExp(fn));
  assert.match(sql,/current_profile_role\(\) <> 'admin'/);
- assert.match(sql,/current_profile_status\(\) <> 'active'/);
+ assert.match(sql,/not public\.current_profile_active\(\)/);
+ assert.doesNotMatch(sql,/current_profile_status/);
  assert.match(sql,/revoke all on function public\.admin_/);
  assert.match(sql,/grant execute on function public\.admin_/);
 });
