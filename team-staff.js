@@ -33,6 +33,17 @@ function buildStaffSaveRequest(member){
   };
 }
 
+function normalizeStaffEmail(value){return String(value||'').trim().toLowerCase();}
+function buildStaffInviteRequest(member){
+  const item=member||{};
+  return {fullName:String(item.name||'').trim(),email:normalizeStaffEmail(item.email),expectedRole:'coach'};
+}
+function canOfferStaffInvite(member,knownRows){
+  const email=normalizeStaffEmail(member&&member.email);
+  if(!email)return false;
+  return !(knownRows||[]).some(row=>normalizeStaffEmail(row&&row.email)===email);
+}
+
 function nextStaffSortOrder(members){
   const orders=(members||[]).map(x=>Number(x&&x.sortOrder)).filter(Number.isFinite);
   return orders.length?Math.max.apply(null,orders)+10:10;
@@ -46,18 +57,34 @@ function canAdminManageStaff(role){
   return Boolean(window.KronangPermissions&&window.KronangPermissions.canManageStaff?window.KronangPermissions.canManageStaff(role):role==='admin');
 }
 
+let teamStaffInviteRows=[];
+
 function createStaffEditor(member,onSaved,onCancel){
   const item=member||{id:null,name:'',role:'',description:'',phone:'',email:'',avatarPath:'',sortOrder:100};
   const form=document.createElement('form');form.className='team-staff-editor';
-  form.innerHTML='<label>Namn<input name="name" required maxlength="120"></label><label>Roll / uppgift<input name="role" required maxlength="120" placeholder="Exempel: Kioskansvarig"></label><label>Kort beskrivning<textarea name="description" rows="3" maxlength="500" placeholder="Vad ansvarar personen för?"></textarea></label><div class="team-staff-editor-grid"><label>Telefon<input name="phone" inputmode="tel"></label><label>E-post<input name="email" type="email" inputmode="email"></label></div><div class="team-staff-editor-actions"><button type="submit">SPARA</button><button type="button" class="secondary" data-cancel>AVBRYT</button></div><p class="team-staff-editor-message" aria-live="polite"></p>';
+  form.innerHTML='<label>Namn<input name="name" required maxlength="120"></label><label>Roll / uppgift<input name="role" required maxlength="120" placeholder="Exempel: Kioskansvarig"></label><label>Kort beskrivning<textarea name="description" rows="3" maxlength="500" placeholder="Vad ansvarar personen för?"></textarea></label><div class="team-staff-editor-grid"><label>Telefon<input name="phone" inputmode="tel"></label><label>E-post<input name="email" type="email" inputmode="email"></label></div><label class="team-staff-invite-option" data-invite-option hidden><span><input type="checkbox" name="inviteToApp"> Bjud in till appen</span><small>Skickar en personlig inbjudan och föreslår rollen Ledare.</small></label><div class="team-staff-editor-actions"><button type="submit">SPARA</button><button type="button" class="secondary" data-cancel>AVBRYT</button></div><p class="team-staff-editor-message" aria-live="polite"></p>';
   form.elements.name.value=item.name||'';form.elements.role.value=item.role||'';form.elements.description.value=item.description||'';form.elements.phone.value=item.phone||'';form.elements.email.value=item.email||'';
+  const inviteOption=form.querySelector('[data-invite-option]');
+  const syncInviteOption=()=>{const allowed=canOfferStaffInvite({email:form.elements.email.value},teamStaffInviteRows);inviteOption.hidden=!allowed;if(!allowed)form.elements.inviteToApp.checked=false;};
+  form.elements.email.addEventListener('input',syncInviteOption);syncInviteOption();
   form.querySelector('[data-cancel]').addEventListener('click',()=>onCancel&&onCancel());
   form.addEventListener('submit',async ev=>{
     ev.preventDefault();const submit=form.querySelector('[type=submit]'),message=form.querySelector('.team-staff-editor-message');
     const request=buildStaffSaveRequest({id:item.id,name:form.elements.name.value,role:form.elements.role.value,description:form.elements.description.value,phone:form.elements.phone.value,email:form.elements.email.value,avatarPath:item.avatarPath,sortOrder:item.sortOrder});
     if(!request.p_display_name||!request.p_staff_role){message.textContent='Namn och roll måste fyllas i.';return;}
+    const shouldInvite=Boolean(form.elements.inviteToApp.checked&&canOfferStaffInvite({email:request.p_email},teamStaffInviteRows));
     submit.disabled=true;submit.textContent='SPARAR…';message.textContent='';
-    try{const {error}=await window.kronangSupabase.rpc('admin_save_team_staff',request);if(error)throw error;onSaved&&await onSaved();}
+    try{
+      const {error}=await window.kronangSupabase.rpc('admin_save_team_staff',request);if(error)throw error;
+      if(shouldInvite){
+        submit.textContent='BJUDER IN…';
+        const inviteRequest=buildStaffInviteRequest({name:request.p_display_name,email:request.p_email});
+        const inviteResult=await window.kronangSupabase.functions.invoke('invite-user',{body:inviteRequest});
+        if(inviteResult.error){message.textContent='Personen är sparad, men inbjudan kunde inte skickas.';submit.disabled=false;submit.textContent='SPARA';return;}
+        teamStaffInviteRows.push({email:inviteRequest.email});
+      }
+      onSaved&&await onSaved();
+    }
     catch(err){console.error('Kunde inte spara ledare:',err);message.textContent='Det gick inte att spara. Försök igen.';submit.disabled=false;submit.textContent='SPARA';}
   });
   return form;
@@ -98,12 +125,14 @@ async function loadTeamStaff(){
   if(!window.kronangSupabase)return;
   const {data:sessionData}=await window.kronangSupabase.auth.getSession();const user=sessionData.session?sessionData.session.user:null;if(!user)return;
   const {data:profile}=await window.kronangSupabase.from('profiles').select('team,role').eq('id',user.id).maybeSingle();if(!profile||!profile.team)return;
+  const isAdmin=canAdminManageStaff(profile.role);
+  if(isAdmin){const known=await window.kronangSupabase.rpc('admin_list_users');teamStaffInviteRows=known.error?[]:(known.data||[]);}else teamStaffInviteRows=[];
   const {data,error}=await window.kronangSupabase.from('team_staff').select('id, display_name, staff_role, description, phone, email, avatar_url, sort_order').eq('team',profile.team).eq('is_active',true).order('sort_order',{ascending:true}).order('display_name',{ascending:true});
-  if(error){console.warn('Ledarstaben kunde inte hämtas ännu:',error.message||error);renderStaffRows([],canAdminManageStaff(profile.role));return;}
+  if(error){console.warn('Ledarstaben kunde inte hämtas ännu:',error.message||error);renderStaffRows([],isAdmin);return;}
   const rows=await Promise.all((data||[]).map(async row=>{const path=row.avatar_url||'';const url=window.KronangProfileAvatar?await window.KronangProfileAvatar.resolveProfileImageUrl(path):path;return Object.assign({},row,{avatar_path:path,avatar_url:url});}));
-  renderStaffRows(rows,canAdminManageStaff(profile.role));
+  renderStaffRows(rows,isAdmin);
 }
 
 function waitForTeamStaff(){if(window.kronangSupabase){loadTeamStaff();return;}setTimeout(waitForTeamStaff,100);}
-if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest,nextStaffSortOrder};
+if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest,buildStaffInviteRequest,canOfferStaffInvite,nextStaffSortOrder};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForTeamStaff();
