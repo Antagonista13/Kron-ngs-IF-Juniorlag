@@ -16,7 +16,7 @@ test('role-specific admin fields stay hidden when hidden attribute is set', () =
 
 test('admin page stylesheet uses a fresh cache version', () => {
   assert.notEqual(
-    html.indexOf('admin-page.css?v=3'),
+    html.indexOf('admin-page.css?v=4'),
     -1,
     'index.html must load the current admin stylesheet with a fresh cache version'
   );
