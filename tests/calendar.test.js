@@ -1,7 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const {stableExternalEventKey,filterHiddenActivities}=require('../calendar-management.js');
+const {stableExternalEventKey,filterHiddenActivities,escapeCalendarHtml}=require('../calendar-management.js');
 
 test('uses SportAdmin UID as stable external key when available',()=>{
  assert.equal(stableExternalEventKey({uid:'sportadmin-123',startRaw:'20260905T110000',summary:'Träning'}),'uid:sportadmin-123');
@@ -17,6 +17,10 @@ test('falls back to deterministic fingerprint without UID',()=>{
 test('hidden external keys are removed before rendering',()=>{
  const activities=[{externalKey:'uid:a'},{externalKey:'uid:b'}];
  assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);
+});
+
+test('escapes external calendar text before html rendering',()=>{
+ assert.equal(escapeCalendarHtml('<img src=x onerror=alert(1)> & "x"'),'&lt;img src=x onerror=alert(1)&gt; &amp; &quot;x&quot;');
 });
 
 test('calendar management uses server RPCs and never writes to the external calendar source',()=>{
@@ -47,6 +51,7 @@ test('calendar runtime shows leader hide and admin restore controls',()=>{
  assert.match(runtime,/VISA DOLDA AKTIVITETER/);
  assert.match(runtime,/ÅTERSTÄLL/);
  assert.match(runtime,/filterHiddenActivities/);
+ assert.match(runtime,/escapeCalendarHtml/);
  assert.match(runtime,/loadNextActivityHome/);
 });
 
