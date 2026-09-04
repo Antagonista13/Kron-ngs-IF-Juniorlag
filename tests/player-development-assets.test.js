@@ -5,13 +5,14 @@ const index=fs.readFileSync('index.html','utf8');
 const role=fs.readFileSync('development-role.js','utf8');
 const workflowCss=fs.readFileSync('development-workflow.css','utf8');
 const worklist=fs.readFileSync('coach-development-worklist.js','utf8');
+const profile=fs.readFileSync('development-profile.js','utf8');
 
 test('development workflow assets load in dependency order',()=>{
   const model=index.indexOf('development-workflow.js?v=1');
-  const profile=index.indexOf('development-profile.js?v=1');
+  const profileScript=index.indexOf('development-profile.js?v=1');
   const notifications=index.indexOf('development-notifications.js?v=1');
   const worklistScript=index.indexOf('coach-development-worklist.js?v=1');
-  assert.ok(model>=0&&profile>model&&notifications>profile&&worklistScript>notifications);
+  assert.ok(model>=0&&profileScript>model&&notifications>profileScript&&worklistScript>notifications);
   assert.match(index,/development-workflow\.css\?v=2/);
 });
 
@@ -29,6 +30,8 @@ test('coach worklist exposes a clear unread marker per player',()=>{
 test('exact unread development items receive a visible highlight',()=>{
   assert.match(workflowCss,/\.development-unread-item/);
   assert.match(workflowCss,/\.development-new/);
+  assert.match(profile,/data-entity-type="development_goal"/);
+  assert.match(profile,/data-entity-type="development_focus"/);
 });
 
 test('development summary cards use shared monochrome line icons',()=>{
