@@ -20,6 +20,9 @@ assert.ok(!css.includes('#teamPage:has(#playerRosterSection).active'), 'compact 
 assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'leader tools should render two by two on mobile');
 assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'profile image should keep its current 48px size');
 assert.ok(/player-roster-card-actions button\{min-height:30px/.test(css), 'roster edit buttons should be compact on mobile');
+assert.ok(js.includes("avatar.classList.add('is-placeholder')"), 'missing profile images should use placeholder state');
+assert.ok(js.includes('BILD KOMMER'), 'missing profile images should say BILD KOMMER');
+assert.ok(css.includes('.player-roster-avatar.is-placeholder'), 'placeholder avatar should have dedicated styling');
 assert.ok(index.includes('player-roster.css?v=3'), 'roster css version must remain current for the compact layout');
 assert.ok(index.includes('player-roster.js?v=5'), 'roster js version must be bumped so mobile Safari receives direct development navigation');
 console.log('player roster ui tests passed');
