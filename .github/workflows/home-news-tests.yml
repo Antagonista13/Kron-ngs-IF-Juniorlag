@@ -94,7 +94,7 @@ jobs:
       - name: Role content visibility tests
         run: node --test tests/role-content-visibility.test.js
       - name: Admin view tests
-        run: node --test tests/admin-access.test.js tests/admin-page-model.test.js tests/admin-invite-loader.test.js tests/admin-field-visibility.test.js
+        run: node --test tests/admin-access.test.js tests/admin-page-model.test.js tests/admin-invite-loader.test.js tests/admin-field-visibility.test.js tests/admin-account-linking-ux.test.js
       - name: Invite function tests
         run: node tests/invite-function.test.js
       - name: Security leak checks
