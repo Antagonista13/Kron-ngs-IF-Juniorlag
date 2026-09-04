@@ -9,7 +9,8 @@ test('development area cards use monochrome svg line icons instead of emojis',()
   assert.match(development,/data-development-area-icon="game-understanding"/);
   assert.match(development,/data-development-area-icon="physical"/);
   assert.match(development,/data-development-area-icon="mentality"/);
-  assert.match(development,/<svg[^>]*viewBox="0 0 24 24"/);
+  assert.match(development,/viewBox="0 0 24 24"/);
+  assert.match(development,/<svg \$\{common\}>/);
   assert.match(development,/stroke="currentColor"/);
   assert.match(development,/fill="none"/);
 });
