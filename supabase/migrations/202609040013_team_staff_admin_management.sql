@@ -1,0 +1,60 @@
+-- Juniorlag 2.0: Admin-managed presentation roster for LAGET.
+alter table public.team_staff add column if not exists description text;
+
+-- Presentation staff remains independent of app accounts: no profile_id is required.
+
+create or replace function public.admin_save_team_staff(
+  p_id bigint,
+  p_display_name text,
+  p_staff_role text,
+  p_description text default null,
+  p_phone text default null,
+  p_email text default null,
+  p_avatar_url text default null,
+  p_sort_order integer default 100
+)
+returns public.team_staff
+language plpgsql security definer set search_path=public
+as $$
+declare v_team text; v_row public.team_staff;
+begin
+  if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+  select team into v_team from public.profiles where id=auth.uid();
+  if v_team is null then raise exception 'Team missing'; end if;
+  if length(btrim(coalesce(p_display_name,'')))=0 or length(btrim(coalesce(p_staff_role,'')))=0 then raise exception 'Name and role required'; end if;
+  if p_id is null then
+    insert into public.team_staff(team,display_name,staff_role,description,phone,email,avatar_url,sort_order,is_active)
+    values(v_team,btrim(p_display_name),btrim(p_staff_role),nullif(btrim(coalesce(p_description,'')),''),nullif(btrim(coalesce(p_phone,'')),''),nullif(btrim(coalesce(p_email,'')),''),nullif(btrim(coalesce(p_avatar_url,'')),''),coalesce(p_sort_order,100),true)
+    returning * into v_row;
+  else
+    update public.team_staff set display_name=btrim(p_display_name),staff_role=btrim(p_staff_role),description=nullif(btrim(coalesce(p_description,'')),''),phone=nullif(btrim(coalesce(p_phone,'')),''),email=nullif(btrim(coalesce(p_email,'')),''),avatar_url=nullif(btrim(coalesce(p_avatar_url,'')),''),sort_order=coalesce(p_sort_order,sort_order),updated_at=now()
+    where id=p_id and team=v_team returning * into v_row;
+    if v_row.id is null then raise exception 'Staff member not found'; end if;
+  end if;
+  return v_row;
+end;$$;
+
+create or replace function public.admin_remove_team_staff(p_id bigint)
+returns void language plpgsql security definer set search_path=public as $$
+declare v_team text;
+begin
+ if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+ select team into v_team from public.profiles where id=auth.uid();
+ update public.team_staff set is_active=false,updated_at=now() where id=p_id and team=v_team;
+end;$$;
+
+create or replace function public.admin_reorder_team_staff(p_id bigint,p_sort_order integer)
+returns void language plpgsql security definer set search_path=public as $$
+declare v_team text;
+begin
+ if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+ select team into v_team from public.profiles where id=auth.uid();
+ update public.team_staff set sort_order=p_sort_order,updated_at=now() where id=p_id and team=v_team and is_active=true;
+end;$$;
+
+revoke all on function public.admin_save_team_staff(bigint,text,text,text,text,text,text,integer) from public;
+revoke all on function public.admin_remove_team_staff(bigint) from public;
+revoke all on function public.admin_reorder_team_staff(bigint,integer) from public;
+grant execute on function public.admin_save_team_staff(bigint,text,text,text,text,text,text,integer) to authenticated;
+grant execute on function public.admin_remove_team_staff(bigint) to authenticated;
+grant execute on function public.admin_reorder_team_staff(bigint,integer) to authenticated;
