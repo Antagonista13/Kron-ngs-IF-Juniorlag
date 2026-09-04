@@ -19,7 +19,7 @@ test('hidden external keys are removed before rendering',()=>{
  assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);
 });
 
-test('calendar management never writes to SportAdmin',()=>{
+test('calendar management never writes to the external calendar source',()=>{
  const js=fs.readFileSync('calendar-management.js','utf8').toLowerCase();
  assert.doesNotMatch(js,/sportadmin.*(delete|update|post|put|patch)/);
  assert.match(js,/hide_calendar_event/);
@@ -27,7 +27,7 @@ test('calendar management never writes to SportAdmin',()=>{
 });
 
 test('calendar migration grants hide to leaders and restore/list only to admin',()=>{
- const sql=fs.readFileSync('supabase/migrations/202609040016_calendar_hidden_events.sql','utf8').toLowerCase();
+ const sql=fs.readFileSync('supabase/migrations/202609040018_calendar_hidden_events.sql','utf8').toLowerCase();
  assert.match(sql,/calendar_hidden_events/);
  assert.match(sql,/hide_calendar_event/);
  assert.match(sql,/restore_calendar_event/);
