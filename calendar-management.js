@@ -53,6 +53,6 @@ async function restoreCalendarActivity(id){
   if(error){console.error('Kunde inte återställa aktivitet:',error);return false;}
   return true;
 }
-const api={stableExternalEventKey,filterHiddenActivities,loadHiddenCalendarKeys,hideCalendarActivity,listHiddenCalendarActivities,restoreCalendarActivity,canHideCalendarForProfile,canRestoreCalendarForProfile};
+const api={stableExternalEventKey,filterHiddenActivities,getCalendarProfile,loadHiddenCalendarKeys,hideCalendarActivity,listHiddenCalendarActivities,restoreCalendarActivity,canHideCalendarForProfile,canRestoreCalendarForProfile};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 if(typeof window!=='undefined')window.KronangCalendarManagement=api;
