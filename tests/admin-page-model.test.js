@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildAdminUserModel, buildAdminOverview, formatAdminSavedAt, accountLinkLabel, accountLinkHelp, suggestPlayerForAccount } = require('../admin-page.js');
+const { buildAdminUserModel, buildAdminOverview, formatAdminSavedAt } = require('../admin-page.js');
+const { accountLinkLabel, accountLinkHelp, suggestPlayerForAccount } = require('../admin-account-linking.js');
 
 test('admin user is locked from ordinary role controls', () => {
   const model = buildAdminUserModel({ profile_id: 'a1', full_name: 'Admin', email: 'a@example.com', role: 'admin', is_active: true });
