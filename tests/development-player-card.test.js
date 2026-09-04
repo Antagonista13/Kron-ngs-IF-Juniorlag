@@ -12,13 +12,14 @@ test('development player cards stay clean while keeping follow-up status',()=>{
   assert.doesNotMatch(src,/>Senast uppföljd: /);
 });
 
-test('click gives immediate opening feedback before profile fetch completes',()=>{
-  const feedback=src.indexOf("detail.innerHTML='<p class=\"development-opening\">Hämtar utvecklingsprofil...");
-  const scroll=src.indexOf('detail.scrollIntoView');
-  const open=src.indexOf('await root.KronangDevelopmentProfile.openPlayerDevelopmentWorkflow');
-  assert.ok(feedback>=0);
-  assert.ok(scroll>feedback);
-  assert.ok(open>scroll);
+test('click replaces the long worklist with the selected player profile',()=>{
+  const hide=src.indexOf('host.hidden=true');
+  const profile=src.indexOf("profileContainer.className='development-selected-profile'");
+  const open=src.indexOf('await root.KronangDevelopmentProfile.openPlayerDevelopmentWorkflow({container:profileContainer');
+  assert.ok(hide>=0,'worklist must be hidden immediately');
+  assert.ok(profile>hide,'visible profile container must be created after hiding worklist');
+  assert.ok(open>profile,'selected profile must load into the visible container');
+  assert.match(src,/development-back-to-list/);
 });
 
 test('development player card has explicit interactive styling',()=>{
