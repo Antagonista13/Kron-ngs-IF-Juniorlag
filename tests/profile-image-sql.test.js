@@ -21,5 +21,5 @@ test('profile image bucket is private with authenticated read and admin-only wri
  assert.match(sql,/for insert/);
  assert.match(sql,/for update/);
  assert.match(sql,/for delete/);
- assert.match(sql,/current_profile_role\(\) = 'admin'/);
+ assert.match(sql,/current_profile_role\(\)\s*=\s*'admin'/);
 });
