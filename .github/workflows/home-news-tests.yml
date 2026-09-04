@@ -24,6 +24,10 @@ jobs:
           node --check access-gate.js
           node --check admin-access.js
           node --check admin-page.js
+          node --check development-workflow.js
+          node --check development-profile.js
+          node --check development-notifications.js
+          node --check coach-development-worklist.js
       - name: Home tests
         run: node tests/home-player-header.test.js
       - name: Team post tests
@@ -50,6 +54,8 @@ jobs:
         run: node --test tests/auth-navigation.test.js tests/auth-password.test.js
       - name: Development role tests
         run: node --test tests/development-role.test.js
+      - name: Player development workflow tests
+        run: node --test tests/development-workflow.test.js tests/development-profile.test.js tests/development-notifications.test.js tests/player-development-sql.test.js tests/player-development-assets.test.js
       - name: Team challenge tests
         run: node --test tests/team-challenge.test.js
       - name: Role permission tests
@@ -77,4 +83,5 @@ jobs:
       - name: Security leak checks
         run: |
           if grep -R "SUPABASE_SERVICE_ROLE_KEY" -- *.js tests 2>/dev/null; then exit 1; fi
-          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql supabase/migrations/202609040010_admin_access_saved_at.sql 2>/dev/null; then exit 1; fi
+          if grep -R "SUPABASE_SERVICE_ROLE_KEY" supabase/migrations/202609040011_player_development_workflow.sql 2>/dev/null; then exit 1; fi
+          if grep -R -Ei "personnummer|målsman|allergi" admin-*.js role-permissions.js access-gate.js supabase/migrations/202609030007_admin_roles_and_invitations.sql supabase/migrations/202609030008_admin_user_rpcs.sql supabase/migrations/202609030009_permissions_rls.sql supabase/migrations/202609040010_admin_access_saved_at.sql supabase/migrations/202609040011_player_development_workflow.sql 2>/dev/null; then exit 1; fi
