@@ -17,6 +17,9 @@ function setupKronangDevelopment() {
   function canEditSelfAssessment() {
     return typeof window.canEditSelfAssessment === "function" ? window.canEditSelfAssessment(currentRole) : currentRole === "player";
   }
+  function shouldShowPlayerCards() {
+    return typeof window.shouldShowPlayerDevelopmentCards === "function" ? window.shouldShowPlayerDevelopmentCards(currentRole) : currentRole === "player";
+  }
   function formatRating(value) { if (value === null || value === undefined) return "—"; return "★".repeat(value) + "☆".repeat(5 - value); }
   function renderSelfRating(value, areaIndex) {
     let html = '<div class="self-rating-stars">';
@@ -67,10 +70,14 @@ function setupKronangDevelopment() {
     const user = sessionData.session.user;
     const { data: profile, error: profileError } = await window.kronangSupabase.from("profiles").select("full_name, role, team").eq("id", user.id).maybeSingle();
     if (profileError) { console.error("Profilfel i utveckling:", profileError); return; }
-    currentRole = profile ? profile.role : null; if (!canEditSelfAssessment()) removeSaveButton();
+    currentRole = profile ? profile.role : null;
+    const showPlayerCards = shouldShowPlayerDevelopmentCards(currentRole);
+    developmentGrid.hidden = !showPlayerCards;
+    if (!canEditSelfAssessment()) removeSaveButton();
     const heading = developmentPage.querySelector(".page-heading h2"); const subtitle = developmentPage.querySelector(".page-heading p");
     const headingContent = typeof window.getDevelopmentHeading === "function" ? window.getDevelopmentHeading(currentRole, profile ? profile.full_name : "") : { title: profile && profile.full_name ? "Din utveckling, " + profile.full_name : "Din utveckling", subtitle: "Träna smart. Utvecklas varje dag." };
     if (heading) heading.textContent = headingContent.title; if (subtitle) subtitle.textContent = headingContent.subtitle;
+    if (!showPlayerCards) return;
     const { data: assessment, error: assessmentError } = await window.kronangSupabase.from("development_assessments").select("*").eq("player_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
     if (assessmentError) { console.error("Utvecklingsfel:", assessmentError); return; } renderCards(assessment);
   }
