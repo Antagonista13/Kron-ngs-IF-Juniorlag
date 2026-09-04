@@ -11,9 +11,11 @@ test('linked roster player exposes profile navigation target', () => {
   assert.equal(roster.getRosterProfileTarget({ profile_id: null }), '');
 });
 
-test('roster card click opens linked player development profile without stealing action clicks', () => {
+test('roster card click opens the 2.0 development player card by roster id', () => {
   assert.match(source, /card\.addEventListener\('click'/);
   assert.match(source, /event\.target\.closest\('button,a,input,select,textarea,label'\)/);
-  assert.match(source, /coach-player-button/);
+  assert.match(source, /development-player-open/);
+  assert.match(source, /data-player-id/);
+  assert.match(source, /player\.id/);
   assert.match(source, /developmentPage/);
 });
