@@ -49,7 +49,7 @@ language plpgsql security definer set search_path=public
 as $$
 declare v_team text; v_row public.team_staff;
 begin
-  if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+  if public.current_profile_role() <> 'admin' or not public.current_profile_active() then raise exception 'Not authorized'; end if;
   select team into v_team from public.profiles where id=auth.uid();
   if v_team is null then raise exception 'Team missing'; end if;
   if length(btrim(coalesce(p_display_name,'')))=0 or length(btrim(coalesce(p_staff_role,'')))=0 then raise exception 'Name and role required'; end if;
@@ -69,7 +69,7 @@ create or replace function public.admin_remove_team_staff(p_id bigint)
 returns void language plpgsql security definer set search_path=public as $$
 declare v_team text;
 begin
- if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+ if public.current_profile_role() <> 'admin' or not public.current_profile_active() then raise exception 'Not authorized'; end if;
  select team into v_team from public.profiles where id=auth.uid();
  update public.team_staff set is_active=false,updated_at=now() where id=p_id and team=v_team;
 end;$$;
@@ -78,7 +78,7 @@ create or replace function public.admin_reorder_team_staff(p_id bigint,p_sort_or
 returns void language plpgsql security definer set search_path=public as $$
 declare v_team text;
 begin
- if public.current_profile_role() <> 'admin' or public.current_profile_status() <> 'active' then raise exception 'Not authorized'; end if;
+ if public.current_profile_role() <> 'admin' or not public.current_profile_active() then raise exception 'Not authorized'; end if;
  select team into v_team from public.profiles where id=auth.uid();
  update public.team_staff set sort_order=p_sort_order,updated_at=now() where id=p_id and team=v_team and is_active=true;
 end;$$;
