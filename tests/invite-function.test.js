@@ -11,7 +11,10 @@ assert.ok(edge.indexOf("role !== 'admin'") < edge.indexOf('inviteUserByEmail'), 
 const serviceRoleName = 'SUPABASE_' + 'SERVICE_ROLE_KEY';
 assert.ok(edge.includes(serviceRoleName), 'service role is only used in the Edge Function');
 assert.ok(edge.includes("['', 'player', 'parent', 'coach']"), 'expected role must be constrained');
-const clientFiles = ['admin-access.js', 'admin-page.js'];
+assert.ok(edge.includes("from('user_invitations')"), 'existing invitations must be checked before sending');
+assert.ok(edge.includes('listUsers'), 'existing auth users must be checked before sending');
+assert.ok(edge.includes('Already invited or registered'), 'duplicate invitations must return a clear conflict');
+const clientFiles = ['admin-access.js', 'admin-page.js', 'team-staff.js'];
 for (const file of clientFiles) {
   assert.equal(fs.readFileSync(path.join(__dirname, '..', file), 'utf8').includes(serviceRoleName), false, file + ' must not contain service role key');
 }
