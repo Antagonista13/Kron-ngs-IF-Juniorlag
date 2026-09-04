@@ -33,6 +33,11 @@ function buildStaffSaveRequest(member){
   };
 }
 
+function nextStaffSortOrder(members){
+  const orders=(members||[]).map(x=>Number(x&&x.sortOrder)).filter(Number.isFinite);
+  return orders.length?Math.max.apply(null,orders)+10:10;
+}
+
 function buildStaffFallbackIcon(){
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5"/></svg>';
 }
@@ -63,14 +68,14 @@ function renderStaffRows(rows,isAdmin){
   let section=document.getElementById('teamStaffSection');
   if(!section){section=document.createElement('section');section.id='teamStaffSection';section.className='team-staff-section';page.appendChild(section);}
   section.innerHTML='';
+  const members=(rows||[]).map(buildTeamStaffMember).filter(member=>member.name);
   const heading=document.createElement('div');heading.className='team-staff-heading';heading.innerHTML='<span>LAGET</span><h2>Ledarstaben</h2><p>Snabb kontakt när du behöver få tag i någon.</p>';
   if(isAdmin){const manage=document.createElement('button');manage.type='button';manage.className='team-staff-manage-button';manage.textContent='REDIGERA STAB';heading.appendChild(manage);manage.addEventListener('click',()=>{section.classList.toggle('editing');manage.textContent=section.classList.contains('editing')?'KLAR':'REDIGERA STAB';});}
   section.appendChild(heading);
 
-  if(isAdmin){const add=document.createElement('button');add.type='button';add.className='team-staff-add-button';add.textContent='+ LÄGG TILL PERSON';section.appendChild(add);const editorHost=document.createElement('div');editorHost.className='team-staff-editor-host';section.appendChild(editorHost);add.addEventListener('click',()=>{editorHost.replaceChildren(createStaffEditor(null,loadTeamStaff,()=>editorHost.replaceChildren()));});}
+  if(isAdmin){const add=document.createElement('button');add.type='button';add.className='team-staff-add-button';add.textContent='+ LÄGG TILL PERSON';section.appendChild(add);const editorHost=document.createElement('div');editorHost.className='team-staff-editor-host';section.appendChild(editorHost);add.addEventListener('click',()=>{const blank={id:null,name:'',role:'',description:'',phone:'',email:'',avatarPath:'',sortOrder:nextStaffSortOrder(members)};editorHost.replaceChildren(createStaffEditor(blank,loadTeamStaff,()=>editorHost.replaceChildren()));});}
 
   const list=document.createElement('div');list.className='team-staff-list';section.appendChild(list);
-  const members=(rows||[]).map(buildTeamStaffMember).filter(member=>member.name);
   members.forEach((member,index)=>{
     const card=document.createElement('article');card.className='team-staff-card';card.dataset.staffId=member.id;
     const avatar=document.createElement('div');avatar.className='team-staff-avatar';
@@ -81,7 +86,7 @@ function renderStaffRows(rows,isAdmin){
     if(isAdmin){const admin=document.createElement('div');admin.className='team-staff-admin-actions';const edit=document.createElement('button');edit.type='button';edit.textContent='Redigera';const image=document.createElement('button');image.type='button';image.textContent='Bild';const up=document.createElement('button');up.type='button';up.textContent='↑';up.disabled=index===0;const down=document.createElement('button');down.type='button';down.textContent='↓';down.disabled=index===members.length-1;const remove=document.createElement('button');remove.type='button';remove.textContent='Ta bort';admin.append(edit,image,up,down,remove);card.appendChild(admin);
       edit.addEventListener('click',()=>{let host=card.querySelector('.team-staff-inline-editor');if(!host){host=document.createElement('div');host.className='team-staff-inline-editor';card.appendChild(host);}host.replaceChildren(createStaffEditor(member,loadTeamStaff,()=>host.remove()));});
       image.addEventListener('click',()=>{if(window.KronangProfileAvatar)window.KronangProfileAvatar.openAdminProfileImagePicker({targetType:'staff',targetId:member.id,name:member.name,currentPath:member.avatarPath,onSaved:loadTeamStaff});});
-      async function reorder(targetIndex){const target=members[targetIndex];if(!target)return;const currentOrder=member.sortOrder,targetOrder=target.sortOrder;await Promise.all([window.kronangSupabase.rpc('admin_reorder_team_staff',{p_id:member.id,p_sort_order:targetOrder}),window.kronangSupabase.rpc('admin_reorder_team_staff',{p_id:target.id,p_sort_order:currentOrder})]);await loadTeamStaff();}
+      async function reorder(targetIndex){const target=members[targetIndex];if(!target)return;let currentOrder=member.sortOrder,targetOrder=target.sortOrder;if(currentOrder===targetOrder){currentOrder=(index+1)*10;targetOrder=(targetIndex+1)*10;}await Promise.all([window.kronangSupabase.rpc('admin_reorder_team_staff',{p_id:member.id,p_sort_order:targetOrder}),window.kronangSupabase.rpc('admin_reorder_team_staff',{p_id:target.id,p_sort_order:currentOrder})]);await loadTeamStaff();}
       up.addEventListener('click',()=>reorder(index-1));down.addEventListener('click',()=>reorder(index+1));remove.addEventListener('click',async()=>{if(!confirm('Ta bort '+member.name+' från ledarstaben?'))return;const {error}=await window.kronangSupabase.rpc('admin_remove_team_staff',{p_id:member.id});if(error){console.error('Kunde inte ta bort ledare:',error);return;}await loadTeamStaff();});
     }
     list.appendChild(card);
@@ -100,5 +105,5 @@ async function loadTeamStaff(){
 }
 
 function waitForTeamStaff(){if(window.kronangSupabase){loadTeamStaff();return;}setTimeout(waitForTeamStaff,100);}
-if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest};
+if(typeof module!=='undefined'&&module.exports)module.exports={buildTeamStaffMember,buildStaffSaveRequest,nextStaffSortOrder};
 if(typeof window!=='undefined'&&typeof document!=='undefined')waitForTeamStaff();
