@@ -38,7 +38,7 @@ jobs:
           node tests/home-player-header.test.js
           node tests/home-leader-label-style.test.js
       - name: Team post tests
-        run: node --test tests/team-posts.test.js
+        run: node --test tests/team-posts.test.js tests/team-post-compact.test.js
       - name: News 2.0 SQL tests
         run: node --test tests/team-post-editor-sql.test.js
       - name: Mobile home tests
