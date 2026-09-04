@@ -14,3 +14,10 @@ test('development area cards use monochrome svg line icons instead of emojis',()
   assert.match(development,/stroke="currentColor"/);
   assert.match(development,/fill="none"/);
 });
+
+test('physical and mentality cards include smaller inline subtitles',()=>{
+  assert.match(development,/subtitle: "kondition, snabbhet och styrka"/);
+  assert.match(development,/subtitle: "inställning, vilja och psyke"/);
+  assert.match(development,/development-area-subtitle/);
+  assert.match(development,/\(\$\{area\.subtitle\}\)/);
+});
