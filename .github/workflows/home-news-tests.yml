@@ -24,6 +24,7 @@ jobs:
           node --check access-gate.js
           node --check admin-access.js
           node --check admin-page.js
+          node --check development-role.js
           node --check development-workflow.js
           node --check development-profile.js
           node --check development-notifications.js
@@ -53,7 +54,7 @@ jobs:
       - name: Auth tests
         run: node --test tests/auth-navigation.test.js tests/auth-password.test.js
       - name: Development role tests
-        run: node --test tests/development-role.test.js
+        run: node --test tests/development-role.test.js tests/development-asset-loading.test.js
       - name: Player development workflow tests
         run: node --test tests/development-workflow.test.js tests/development-profile.test.js tests/development-notifications.test.js tests/player-development-sql.test.js tests/player-development-assets.test.js
       - name: Team challenge tests
