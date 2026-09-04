@@ -34,5 +34,22 @@ test('calendar migration grants hide to leaders and restore/list only to admin',
  assert.match(sql,/list_hidden_calendar_events/);
  assert.match(sql,/role in \('admin','coach'\)/);
  assert.match(sql,/role = 'admin'/);
+ assert.match(sql,/calendar_hidden_events_hidden_by_idx/);
  assert.doesNotMatch(sql,/sportadmin/);
+});
+
+test('calendar runtime shows leader hide and admin restore controls',()=>{
+ const runtime=fs.readFileSync('calendar-runtime.js','utf8');
+ assert.match(runtime,/DÖLJ AKTIVITET/);
+ assert.match(runtime,/VISA DOLDA AKTIVITETER/);
+ assert.match(runtime,/ÅTERSTÄLL/);
+ assert.match(runtime,/filterHiddenActivities/);
+ assert.match(runtime,/loadNextActivityHome/);
+});
+
+test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{
+ const html=fs.readFileSync('index.html','utf8');
+ for(const asset of ['calendar-management.js?v=1','calendar-runtime.js?v=1','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
+ assert.ok(html.indexOf('calendar-management.js?v=1')<html.indexOf('script.js?v=9'));
+ assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=1'));
 });
