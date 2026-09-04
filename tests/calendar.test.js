@@ -19,20 +19,23 @@ test('hidden external keys are removed before rendering',()=>{
  assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);
 });
 
-test('calendar management never writes to the external calendar source',()=>{
+test('calendar management uses server RPCs and never writes to the external calendar source',()=>{
  const js=fs.readFileSync('calendar-management.js','utf8').toLowerCase();
  assert.doesNotMatch(js,/sportadmin.*(delete|update|post|put|patch)/);
+ assert.match(js,/list_calendar_hidden_keys/);
  assert.match(js,/hide_calendar_event/);
  assert.match(js,/restore_calendar_event/);
+ assert.doesNotMatch(js,/from\('calendar_hidden_events'\)\.select/);
 });
 
-test('calendar migration grants hide to leaders and restore/list only to admin',()=>{
+test('calendar migration grants hide to leaders, key-read to active roles and full restore/list only to admin',()=>{
  const sql=fs.readFileSync('supabase/migrations/202609040019_calendar_hidden_events.sql','utf8').toLowerCase();
  assert.match(sql,/calendar_hidden_events/);
+ assert.match(sql,/list_calendar_hidden_keys/);
  assert.match(sql,/hide_calendar_event/);
  assert.match(sql,/restore_calendar_event/);
  assert.match(sql,/list_hidden_calendar_events/);
- assert.match(sql,/role in \('admin','coach'\)/);
+ assert.match(sql,/role not in \('admin','coach'\)/);
  assert.match(sql,/role = 'admin'/);
  assert.match(sql,/calendar_hidden_events_hidden_by_idx/);
  assert.doesNotMatch(sql,/sportadmin/);
