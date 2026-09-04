@@ -18,3 +18,27 @@ test('role matrix is default deny', () => {
   assert.equal(p.canViewNews('pending'), false);
   assert.equal(p.canViewNews(null), false);
 });
+
+test('juniorlag 2.0 privileged actions follow the locked role hierarchy', () => {
+  assert.equal(p.canManageStaff('admin'), true);
+  assert.equal(p.canManageStaff('coach'), false);
+  assert.equal(p.canManageProfileImages('admin'), true);
+  assert.equal(p.canManageProfileImages('player'), false);
+
+  assert.equal(p.canCreateTeamPost('admin'), true);
+  assert.equal(p.canCreateTeamPost('coach'), true);
+  assert.equal(p.canCreateTeamPost('player'), false);
+  assert.equal(p.canCreateTeamPost('parent'), false);
+
+  assert.equal(p.canManageTeamPost('admin', 'admin'), true);
+  assert.equal(p.canManageTeamPost('admin', 'coach'), true);
+  assert.equal(p.canManageTeamPost('coach', 'coach'), true);
+  assert.equal(p.canManageTeamPost('coach', 'admin'), false);
+  assert.equal(p.canManageTeamPost('player', 'coach'), false);
+
+  assert.equal(p.canHideCalendarEvent('admin'), true);
+  assert.equal(p.canHideCalendarEvent('coach'), true);
+  assert.equal(p.canHideCalendarEvent('player'), false);
+  assert.equal(p.canRestoreCalendarEvent('admin'), true);
+  assert.equal(p.canRestoreCalendarEvent('coach'), false);
+});
