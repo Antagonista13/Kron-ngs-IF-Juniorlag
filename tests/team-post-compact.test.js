@@ -16,7 +16,7 @@ test('team post preview keeps short text and truncates long text',()=>{
 
 test('team post cards support compact and expanded states',()=>{
   assert.match(js,/team-post-preview/);
-  assert.match(js,/data-action='?toggle'?|data\.action='toggle'/);
+  assert.match(js,/dataset\.action='toggle'/);
   assert.match(js,/team-post-expanded/);
   assert.match(css,/\.team-posts-list \.team-post\{[^}]*padding:/);
   assert.match(css,/\.team-post-preview\{[^}]*display:-webkit-box/);
