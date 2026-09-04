@@ -34,7 +34,9 @@ jobs:
           node --check calendar-management.js
           node --check calendar-runtime.js
       - name: Home tests
-        run: node tests/home-player-header.test.js
+        run: |
+          node tests/home-player-header.test.js
+          node tests/home-leader-label-style.test.js
       - name: Team post tests
         run: node --test tests/team-posts.test.js
       - name: News 2.0 SQL tests
