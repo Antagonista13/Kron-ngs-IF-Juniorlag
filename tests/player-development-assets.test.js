@@ -9,7 +9,7 @@ test('development workflow assets load in dependency order',()=>{
   const notifications=index.indexOf('development-notifications.js?v=1');
   const worklist=index.indexOf('coach-development-worklist.js?v=1');
   assert.ok(model>=0&&profile>model&&notifications>profile&&worklist>notifications);
-  assert.match(index,/development-workflow\.css\?v=1/);
+  assert.match(index,/development-workflow\.css\?v=2/);
 });
 
 test('development navigation includes unread dot hook',()=>{
