@@ -21,3 +21,15 @@ test('admin staff ui has explicit edit add remove and reorder actions',()=>{
  assert.match(source,/admin_reorder_team_staff/);
  assert.match(source,/confirm\(/);
 });
+
+test('staff invite request is normalized and always targets coach role',()=>{
+ assert.deepEqual(staff.buildStaffInviteRequest({name:' Test Testsson ',email:' TEST@example.com '}),{fullName:'Test Testsson',email:'test@example.com',expectedRole:'coach'});
+});
+
+test('invite is only offered for a new email address',()=>{
+ assert.equal(staff.canOfferStaffInvite({email:'test@example.com'},[]),true);
+ assert.equal(staff.canOfferStaffInvite({email:''},[]),false);
+ assert.equal(staff.canOfferStaffInvite({email:'test@example.com'},[{email:'TEST@example.com'}]),false);
+ assert.match(source,/Bjud in till appen/);
+ assert.match(source,/functions\.invoke\('invite-user'/);
+});

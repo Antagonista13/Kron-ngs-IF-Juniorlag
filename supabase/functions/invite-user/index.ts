@@ -53,6 +53,20 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 
+  const { data: existingInvites, error: existingInviteError } = await serviceClient
+    .from('user_invitations')
+    .select('id,email,status')
+    .ilike('email', email)
+    .in('status', ['pending', 'accepted'])
+    .limit(1);
+  if (existingInviteError) return json({ error: 'Could not verify invitation status' }, 500);
+  if (existingInvites && existingInvites.length) return json({ error: 'Already invited or registered' }, 409);
+
+  const { data: usersPage, error: listUsersError } = await serviceClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (listUsersError) return json({ error: 'Could not verify user status' }, 500);
+  const alreadyRegistered = (usersPage.users || []).some((user) => String(user.email || '').trim().toLowerCase() === email);
+  if (alreadyRegistered) return json({ error: 'Already invited or registered' }, 409);
+
   const { error: inviteError } = await serviceClient.auth.admin.inviteUserByEmail(email, {
     data: { full_name: fullName }
   });
