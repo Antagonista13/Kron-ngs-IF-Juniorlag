@@ -10,6 +10,8 @@ create table if not exists public.calendar_hidden_events (
   unique(team, external_event_key)
 );
 
+create index if not exists calendar_hidden_events_hidden_by_idx on public.calendar_hidden_events(hidden_by);
+
 alter table public.calendar_hidden_events enable row level security;
 
 drop policy if exists "calendar hidden events same team read" on public.calendar_hidden_events;
@@ -18,7 +20,7 @@ on public.calendar_hidden_events for select to authenticated
 using (
   exists (
     select 1 from public.profiles p
-    where p.id=auth.uid()
+    where p.id=(select auth.uid())
       and p.team=calendar_hidden_events.team
       and p.is_active=true
       and p.role in ('admin','coach','player','parent')
