@@ -3,7 +3,6 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const index=fs.readFileSync('index.html','utf8');
 const role=fs.readFileSync('development-role.js','utf8');
-const icons=fs.readFileSync('development-card-icons.js','utf8');
 const workflowCss=fs.readFileSync('development-workflow.css','utf8');
 
 test('development workflow assets load in dependency order',()=>{
@@ -21,12 +20,11 @@ test('development navigation includes unread dot hook',()=>{
 });
 
 test('development summary cards use shared monochrome line icons',()=>{
-  assert.match(role,/development-card-icons\.js\?v=1/);
-  assert.match(icons,/developmentGoalSummary:'goal'/);
-  assert.match(icons,/developmentFocusSummary:'focus'/);
-  assert.match(icons,/developmentGoalHistory:'goal-history'/);
-  assert.match(icons,/developmentFocusHistory:'focus-history'/);
-  assert.match(icons,/development-card-icon/);
+  assert.match(role,/developmentGoalSummary:'goal'/);
+  assert.match(role,/developmentFocusSummary:'focus'/);
+  assert.match(role,/developmentGoalHistory:'goal-history'/);
+  assert.match(role,/developmentFocusHistory:'focus-history'/);
+  assert.match(role,/development-card-icon/);
   assert.match(workflowCss,/\.development-card-icon/);
   assert.match(workflowCss,/stroke:currentColor/);
 });
