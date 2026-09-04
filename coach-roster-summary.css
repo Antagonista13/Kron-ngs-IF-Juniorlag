@@ -18,6 +18,14 @@
 .coach-roster-filters button.active { background:#111; border-color:#111; color:#fff; }
 .coach-roster-empty { margin:4px 0 18px; color:#666; }
 #coachPlayerList { background:transparent; border:0; border-radius:0; padding:0; margin-bottom:18px; box-shadow:none; }
+#developmentWorklistRows { display:grid; gap:10px; }
+.development-player-card { width:100%; display:flex; align-items:center; justify-content:space-between; gap:14px; text-align:left; border:1px solid #e5e5e5; border-radius:14px; padding:15px 16px; background:#fff; color:#111; box-shadow:0 4px 14px rgba(0,0,0,.04); cursor:pointer; font:inherit; }
+.development-player-card:hover,.development-player-card:focus-visible { border-color:#aaa; outline:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+.development-player-card-main { min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
+.development-player-card-main strong { font-size:16px; line-height:1.25; }
+.development-player-card .coach-follow-up-due { color:#a41414; font-size:13px; line-height:1.2; font-weight:800; }
+.development-player-card-arrow { flex:0 0 auto; font-size:28px; line-height:1; font-weight:400; color:#777; }
+.development-opening { margin:18px 0; color:#666; }
 .coach-roster-player { border:1px solid #e5e5e5; border-radius:14px; padding:14px; margin-bottom:12px; background:#fff; box-shadow:0 5px 16px rgba(0,0,0,0.04); }
 .coach-roster-player .coach-player-button { width:100%; text-align:left; margin:0 0 10px; }
 .coach-roster-status { margin:0 0 10px; padding:8px 10px; border-radius:9px; background:#f2f2f2; color:#444; font-size:14px; font-weight:700; line-height:1.35; }
