@@ -20,6 +20,11 @@ test('only admin may access the administration page', () => {
   ['coach','player','parent','pending'].forEach(role => assert.ok(!allowedPagesForRole(role).includes('adminPage')));
 });
 
+test('admin access gate asset cache is bumped for the live fix', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /access-gate\.js\?v=3/);
+});
+
 test('pending and unknown roles receive no app pages', () => {
   assert.deepEqual(allowedPagesForRole('pending'), []);
   assert.deepEqual(allowedPagesForRole('unknown'), []);
