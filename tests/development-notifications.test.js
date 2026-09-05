@@ -5,7 +5,8 @@ const {
   groupUnreadByPlayer,
   unreadLabelForEvent,
   unreadNotificationForEntity,
-  homeGoalProposalAlertModel
+  homeGoalProposalAlertModel,
+  shouldMarkUnreadOnEntityOpen
 }=require('../development-notifications.js');
 
 test('red dot derives only from unread items',()=>{
@@ -53,4 +54,9 @@ test('home alert points players to an unread goal proposal',()=>{
   assert.equal(model.visible,true);
   assert.equal(model.text,'Du har ett nytt målförslag att svara på');
   assert.equal(model.entityId,'g1');
+});
+
+test('goal proposal stays unread until the player answers',()=>{
+  assert.equal(shouldMarkUnreadOnEntityOpen('goal_proposal'),false);
+  assert.equal(shouldMarkUnreadOnEntityOpen('development_entry'),true);
 });
