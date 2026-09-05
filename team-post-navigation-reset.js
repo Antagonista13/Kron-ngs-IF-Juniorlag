@@ -16,16 +16,26 @@ function handleTeamPostNavigation(pageId,targetDocument){
   return true;
 }
 
+function dispatchTeamPageOpened(doc){
+  if(!doc||typeof doc.dispatchEvent!=='function')return false;
+  const EventCtor=typeof CustomEvent==='function'?CustomEvent:null;
+  if(!EventCtor)return false;
+  doc.dispatchEvent(new EventCtor('kronang:team-page-opened'));
+  return true;
+}
+
 function attachTeamPostNavigationReset(targetDocument){
   const doc=targetDocument||(typeof document!=='undefined'?document:null);
   if(!doc||typeof doc.addEventListener!=='function')return false;
   doc.addEventListener('click',function(event){
     const target=event&&event.target;
     const nav=target&&typeof target.closest==='function'?target.closest('.nav-item[data-page]'):null;
-    if(nav&&nav.dataset)handleTeamPostNavigation(nav.dataset.page,doc);
+    if(!nav||!nav.dataset)return;
+    if(nav.dataset.page==='teamPage')dispatchTeamPageOpened(doc);
+    else handleTeamPostNavigation(nav.dataset.page,doc);
   });
   return true;
 }
 
-if(typeof module!=='undefined'&&module.exports)module.exports={handleTeamPostNavigation,attachTeamPostNavigationReset};
+if(typeof module!=='undefined'&&module.exports)module.exports={handleTeamPostNavigation,attachTeamPostNavigationReset,dispatchTeamPageOpened};
 if(typeof window!=='undefined'&&typeof document!=='undefined')attachTeamPostNavigationReset(document);
