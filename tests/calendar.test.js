@@ -1,7 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const {stableExternalEventKey,filterHiddenActivities,escapeCalendarHtml}=require('../calendar-management.js');
+const {stableExternalEventKey,filterHiddenActivities,filterCurrentOrFutureActivities,escapeCalendarHtml}=require('../calendar-management.js');
 
 test('uses SportAdmin UID as stable external key when available',()=>{
  assert.equal(stableExternalEventKey({uid:'sportadmin-123',startRaw:'20260905T110000',summary:'Träning'}),'uid:sportadmin-123');
@@ -17,6 +17,21 @@ test('falls back to deterministic fingerprint without UID',()=>{
 test('hidden external keys are removed before rendering',()=>{
  const activities=[{externalKey:'uid:a'},{externalKey:'uid:b'}];
  assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);
+});
+
+test('completed activities are removed while ongoing and future activities remain',()=>{
+ const now=new Date('2026-09-05T14:00:00+02:00');
+ const completed={summary:'Domare',date:new Date('2026-09-05T10:00:00+02:00'),endDate:new Date('2026-09-05T11:00:00+02:00')};
+ const ongoing={summary:'Träning',date:new Date('2026-09-05T13:30:00+02:00'),endDate:new Date('2026-09-05T15:00:00+02:00')};
+ const future={summary:'Match',date:new Date('2026-09-06T12:00:00+02:00'),endDate:new Date('2026-09-06T14:00:00+02:00')};
+ assert.deepEqual(filterCurrentOrFutureActivities([completed,ongoing,future],now),[ongoing,future]);
+});
+
+test('activity without end time stops being current at its start time',()=>{
+ const now=new Date('2026-09-05T14:00:00+02:00');
+ const started={summary:'Domare',date:new Date('2026-09-05T11:00:00+02:00'),endDate:null};
+ const future={summary:'Träning',date:new Date('2026-09-05T18:00:00+02:00'),endDate:null};
+ assert.deepEqual(filterCurrentOrFutureActivities([started,future],now),[future]);
 });
 
 test('escapes external calendar text before html rendering',()=>{
@@ -51,6 +66,7 @@ test('calendar runtime shows leader hide and admin restore controls',()=>{
  assert.match(runtime,/VISA DOLDA AKTIVITETER/);
  assert.match(runtime,/ÅTERSTÄLL/);
  assert.match(runtime,/filterHiddenActivities/);
+ assert.match(runtime,/filterCurrentOrFutureActivities/);
  assert.match(runtime,/escapeCalendarHtml/);
  assert.match(runtime,/loadNextActivityHome/);
 });
