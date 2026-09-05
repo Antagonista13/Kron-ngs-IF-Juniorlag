@@ -29,11 +29,13 @@ test('activateHome switches from profile to home and scrolls to top', () => {
   assert.ok(ui.events.includes('scroll:0:0'));
 });
 
-test('SIGNED_IN activates home and announces account refresh', () => {
+test('SIGNED_IN resets transient ui, activates home and announces account refresh', () => {
   const ui = makeUi();
   handleAuthNavigation('SIGNED_IN', { user: { id: 'player' } }, ui.win, ui.doc);
   assert.equal(ui.pages[0].classList.contains('active'), true);
+  assert.ok(ui.events.includes('kronang:app-start-reset'));
   assert.ok(ui.events.includes('kronang:auth-signed-in'));
+  assert.ok(ui.events.indexOf('kronang:app-start-reset') < ui.events.indexOf('kronang:auth-signed-in'));
 });
 
 test('SIGNED_OUT announces account reset', () => {

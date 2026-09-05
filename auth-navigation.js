@@ -19,18 +19,24 @@ function dispatchAuthEvent(targetDocument, name, session) {
   targetDocument.dispatchEvent(event);
 }
 
+function resetAppStartState(targetDocument) {
+  dispatchAuthEvent(targetDocument, 'kronang:app-start-reset', null);
+}
+
 function handleAuthNavigation(eventName, session, targetWindow, targetDocument) {
   if (eventName === 'SIGNED_IN') {
+    resetAppStartState(targetDocument);
     activateHome(targetWindow, targetDocument);
     dispatchAuthEvent(targetDocument, 'kronang:auth-signed-in', session);
   } else if (eventName === 'SIGNED_OUT') {
+    resetAppStartState(targetDocument);
     dispatchAuthEvent(targetDocument, 'kronang:auth-signed-out', null);
   }
 }
 
 function goHomeAfterLogin(targetWindow, targetDocument) { return activateHome(targetWindow, targetDocument); }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { activateHome, handleAuthNavigation, goHomeAfterLogin };
+if (typeof module !== 'undefined' && module.exports) module.exports = { activateHome, handleAuthNavigation, goHomeAfterLogin, resetAppStartState };
 if (typeof window !== 'undefined') {
   window.goHomeAfterLogin = function () { return activateHome(window, document); };
   window.handleKronangAuthNavigation = function (eventName, session) { return handleAuthNavigation(eventName, session, window, document); };

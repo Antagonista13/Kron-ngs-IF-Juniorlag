@@ -62,3 +62,9 @@ test('publish button matches the gold framed leader tool buttons', () => {
   assert.match(css, /\.team-post-submit\{[^}]*border:2px solid #7b632f[^}]*border-radius:12px[^}]*background:#111/i);
   assert.ok(index.includes('team-posts.css?v=11'), 'team post css cache version should be bumped');
 });
+
+test('team post composer closes when a new app session starts', () => {
+  const source = fs.readFileSync('team-posts.js', 'utf8');
+  assert.match(source, /kronang:app-start-reset/);
+  assert.match(source, /teamPostForm[^\n]*hidden\s*=\s*true/);
+});
