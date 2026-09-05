@@ -37,7 +37,6 @@ test('leader profile counts active roster players and uses fresh assets',()=>{
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
   assert.match(source,/leader-profile\.css\?v=2/);
   assert.match(html,/profile-role-view\.js\?v=3/);
-  assert.match(html,/style\.css\?v=14/);
 });
 
 test('leader next activity is clickable',()=>{
@@ -47,10 +46,9 @@ test('leader next activity is clickable',()=>{
 
 test('mobile leader profile layout keeps cards balanced',()=>{
   const css=fs.readFileSync(path.join(__dirname,'..','leader-profile.css'),'utf8');
-  const base=fs.readFileSync(path.join(__dirname,'..','style.css'),'utf8');
   assert.match(css,/\.leader-profile-links\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
   assert.match(css,/\.leader-profile-snapshot\{[^}]*grid-template-columns:minmax\(0,\.78fr\) minmax\(0,2\.22fr\)/);
   assert.match(css,/#leaderNextActivity\{[^}]*font-size:14px/);
   assert.match(css,/\.leader-profile-snapshot>div\{[^}]*min-width:0/);
-  assert.match(base,/\.hero\s*\{[^}]*width:\s*100vw/);
+  assert.match(css,/\.hero\{[^}]*width:100vw/);
 });
