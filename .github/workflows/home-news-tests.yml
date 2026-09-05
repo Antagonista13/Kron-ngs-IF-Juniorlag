@@ -64,6 +64,8 @@ jobs:
         run: node tests/player-seed-privacy.test.js
       - name: Player roster tests
         run: node tests/player-roster.test.js
+      - name: Player public profile tests
+        run: node tests/player-public-profile.test.js
       - name: Player roster UI tests
         run: node --test tests/player-roster-ui.test.js tests/player-roster-open-profile.test.js
       - name: Player shirt number source tests
