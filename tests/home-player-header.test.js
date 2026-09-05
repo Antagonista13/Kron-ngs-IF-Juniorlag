@@ -1,6 +1,6 @@
 const fs = require('fs');
 const assert = require('assert');
-const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey, getHomeVisibleCards } = require('../home-player-header.js');
+const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey, getHomeVisibleCards, navIconSelectorForPage } = require('../home-player-header.js');
 
 const player = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', role: 'player', player_number: 17, avatar_url: null });
 assert.strictEqual(player.name, 'Testspelare');
@@ -29,6 +29,8 @@ assert.ok(buildNavIcon('home').includes('<svg'));
 assert.ok(buildNavIcon('development').includes('<svg'));
 assert.ok(buildNavIcon('team').includes('<svg'));
 assert.ok(!buildNavIcon('profile').includes('👤'));
+assert.strictEqual(navIconSelectorForPage('developmentPage'), '.nav-icon-wrap > span');
+assert.strictEqual(navIconSelectorForPage('homePage'), 'span');
 assert.strictEqual(getHomeShortcutPage('activity'), 'calendarPage');
 assert.strictEqual(getHomeShortcutPage('challenge'), 'developmentPage');
 assert.strictEqual(getHomeShortcutPage('news'), 'teamPage');
