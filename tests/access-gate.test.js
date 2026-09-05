@@ -49,7 +49,7 @@ test('parent profile removes player-only development sections and shows parent i
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(index, /id="parentProfileInfo"/);
   assert.match(index, /data-player-profile-section/);
-  assert.match(index, /profile-role-view\.js\?v=4/);
+  assert.match(index, /profile-role-view\.js\?v=5/);
 
   const profileRole = fs.readFileSync(path.join(root, 'profile-role-view.js'), 'utf8');
   assert.match(profileRole, /role\s*===\s*['"]parent['"]/);
