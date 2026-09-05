@@ -14,8 +14,9 @@ assert.strictEqual(roster.getPlayerCardDestination('coach',player),'development'
 assert.strictEqual(roster.getPlayerCardDestination('admin',player),'development');
 
 const source=fs.readFileSync(require.resolve('../player-roster.js'),'utf8');
-assert.match(source,/name="position"/);
-assert.match(source,/name="team_role"/);
+assert.match(source,/makeRosterSelect\('Position','position'/);
+assert.match(source,/makeRosterSelect\('Lagroll','team_role'/);
 assert.match(source,/position,team_role/);
 assert.match(source,/player-public-profile/);
+assert.match(source,/if\(role\)\{const badge=/, 'role badge must only be created when a role exists');
 console.log('player public profile tests passed');
