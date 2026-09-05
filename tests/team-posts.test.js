@@ -56,9 +56,9 @@ test('edit state preserves author role and optional image url', () => {
   });
 });
 
-test('publish button is visually outlined as the primary action', () => {
+test('publish button matches the gold framed leader tool buttons', () => {
   const css = fs.readFileSync('team-posts.css', 'utf8');
   const index = fs.readFileSync('index.html', 'utf8');
-  assert.match(css, /\.team-post-submit\{[^}]*border:[^;}]*(#d0a85e|rgb\(208,\s*168,\s*94\))/i);
-  assert.ok(index.includes('team-posts.css?v=10'), 'team post css cache version should be bumped');
+  assert.match(css, /\.team-post-submit\{[^}]*border:2px solid #7b632f[^}]*border-radius:12px[^}]*background:#111/i);
+  assert.ok(index.includes('team-posts.css?v=11'), 'team post css cache version should be bumped');
 });
