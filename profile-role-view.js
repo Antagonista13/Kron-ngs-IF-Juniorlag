@@ -14,9 +14,12 @@ function leaderSnapshotPresentation(playerCount,nextActivityText){
   const activity=String(nextActivityText||'').trim();
   return {playerCount:playerCount==null?'–':String(playerCount),nextActivity:activity&&!/Hämtar/i.test(activity)?activity:'–'};
 }
+function currentLeaderRole(){return document.body&&document.body.dataset?document.body.dataset.accessRole:'';}
+function refreshCurrentLeaderProfile(){const role=currentLeaderRole();if(role==='coach'||role==='admin')refreshLeaderProfile(role).catch(function(error){console.error('Ledarprofil:',error);});}
 function openProfilePage(pageId) {
   document.querySelectorAll('.page').forEach(function(page){page.classList.toggle('active',page.id===pageId);});
   document.querySelectorAll('.nav-item').forEach(function(button){button.classList.toggle('active',button.dataset.page===pageId);});
+  if(pageId==='profilePage')refreshCurrentLeaderProfile();
   if (typeof window!=='undefined'&&window.KronangNavigation&&typeof window.KronangNavigation.scrollPageTop==='function') window.KronangNavigation.scrollPageTop();
 }
 function ensureLeaderProfile() {
@@ -59,5 +62,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports={profileRolePresen
 if(typeof document!=='undefined'){
   if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=2';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
   document.addEventListener('kronang:access-state',function(event){applyProfileRoleView(event.detail&&event.detail.role?event.detail.role:'pending');});
-  const initialRole=document.body&&document.body.dataset?document.body.dataset.accessRole:'';if(initialRole)applyProfileRoleView(initialRole);
+  document.addEventListener('kronang:next-activity-updated',refreshCurrentLeaderProfile);
+  document.addEventListener('click',function(event){const button=event.target.closest('.nav-item[data-page="profilePage"]');if(button)refreshCurrentLeaderProfile();});
+  const initialRole=currentLeaderRole();if(initialRole)applyProfileRoleView(initialRole);
 }
