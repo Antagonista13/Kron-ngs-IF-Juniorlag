@@ -10,6 +10,15 @@ function filterHiddenActivities(activities,hiddenKeys){
   const hidden=hiddenKeys instanceof Set?hiddenKeys:new Set(hiddenKeys||[]);
   return(activities||[]).filter(activity=>!hidden.has(activity.externalKey||stableExternalEventKey(activity)));
 }
+function filterCurrentOrFutureActivities(activities,now){
+  const current=now instanceof Date?now:new Date(now||Date.now());
+  return(activities||[]).filter(activity=>{
+    const start=activity&&activity.date instanceof Date?activity.date:null;
+    const end=activity&&activity.endDate instanceof Date?activity.endDate:null;
+    if(!start)return false;
+    return (end||start)>=current;
+  });
+}
 function escapeCalendarHtml(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 async function getCalendarProfile(){
   if(!window.kronangSupabase)return null;
@@ -52,6 +61,6 @@ async function restoreCalendarActivity(id){
   if(error){console.error('Kunde inte återställa aktivitet:',error);return false;}
   return true;
 }
-const api={stableExternalEventKey,filterHiddenActivities,escapeCalendarHtml,getCalendarProfile,loadHiddenCalendarKeys,hideCalendarActivity,listHiddenCalendarActivities,restoreCalendarActivity,canHideCalendarForProfile,canRestoreCalendarForProfile};
+const api={stableExternalEventKey,filterHiddenActivities,filterCurrentOrFutureActivities,escapeCalendarHtml,getCalendarProfile,loadHiddenCalendarKeys,hideCalendarActivity,listHiddenCalendarActivities,restoreCalendarActivity,canHideCalendarForProfile,canRestoreCalendarForProfile};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 if(typeof window!=='undefined')window.KronangCalendarManagement=api;
