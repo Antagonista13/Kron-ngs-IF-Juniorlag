@@ -32,7 +32,7 @@ function ensureLeaderProfile() {
 async function refreshLeaderProfile(role){
   if(typeof window==='undefined'||!window.kronangSupabase||!(role==='coach'||role==='admin'))return;
   const db=window.kronangSupabase;
-  const players=await db.from('players').select('id',{count:'exact',head:true}).eq('active',true);
+  const players=await db.from('players').select('id',{count:'exact',head:true}).eq('is_active',true);
   const nextSource=document.querySelector('#nextActivityHome strong');
   const snapshot=leaderSnapshotPresentation(players.count,nextSource&&nextSource.textContent);
   const playerCount=document.getElementById('leaderPlayerCount');if(playerCount)playerCount.textContent=snapshot.playerCount;
@@ -57,7 +57,7 @@ function applyProfileRoleView(role) {
 }
 if(typeof module!=='undefined'&&module.exports)module.exports={profileRolePresentation,leaderSnapshotPresentation,applyProfileRoleView};
 if(typeof document!=='undefined'){
-  if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=1';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
+  if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=2';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
   document.addEventListener('kronang:access-state',function(event){applyProfileRoleView(event.detail&&event.detail.role?event.detail.role:'pending');});
   const initialRole=document.body&&document.body.dataset?document.body.dataset.accessRole:'';if(initialRole)applyProfileRoleView(initialRole);
 }
