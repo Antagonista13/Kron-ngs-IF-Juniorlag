@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('fs');
 const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
 
 test('only coach and admin roles can create team posts', () => {
@@ -53,4 +54,11 @@ test('edit state preserves author role and optional image url', () => {
   assert.deepEqual(buildTeamPostEditState({ id: 'abc', title: ' Träning ', body: ' Kom i tid ', is_pinned: true, image_url: ' https://example.com/a.jpg ', author_role:'coach' }), {
     id: 'abc', title: 'Träning', body: 'Kom i tid', isPinned: true, imageUrl: 'https://example.com/a.jpg', authorRole:'coach'
   });
+});
+
+test('publish button is visually outlined as the primary action', () => {
+  const css = fs.readFileSync('team-posts.css', 'utf8');
+  const index = fs.readFileSync('index.html', 'utf8');
+  assert.match(css, /\.team-post-submit\{[^}]*border:[^;}]*(#d0a85e|rgb\(208,\s*168,\s*94\))/i);
+  assert.ok(index.includes('team-posts.css?v=10'), 'team post css cache version should be bumped');
 });
