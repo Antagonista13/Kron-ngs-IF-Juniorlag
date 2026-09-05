@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
-const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
+const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl, handleTeamPostNavigation } = require('../team-posts.js');
 
 test('only coach and admin roles can create team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
@@ -67,4 +67,27 @@ test('team post composer closes when a new app session starts', () => {
   const source = fs.readFileSync('team-posts.js', 'utf8');
   assert.match(source, /kronang:app-start-reset/);
   assert.match(source, /teamPostForm[^\n]*hidden\s*=\s*true/);
+});
+
+test('leaving Laget closes and resets an open team post composer', () => {
+  const fields = {
+    '#teamPostTitle': { value: 'Test' },
+    '#teamPostBody': { value: 'Text' },
+    '#teamPostPinned': { checked: true },
+    '#teamPostImage': { value: 'fake.jpg' },
+    '#teamPostImagePreview': { innerHTML: '<img>' },
+    '#saveTeamPost': { textContent: 'PUBLICERAR…' },
+    '#teamPostMessage': { textContent: 'Test' },
+    '#teamPostForm': { hidden: false }
+  };
+  const composer = { dataset: { currentImageUrl: 'x' }, querySelector: selector => fields[selector] || null };
+  const doc = { getElementById: id => id === 'teamPostComposer' ? composer : null };
+
+  assert.equal(handleTeamPostNavigation('homePage', doc), true);
+  assert.equal(fields['#teamPostForm'].hidden, true);
+  assert.equal(fields['#teamPostTitle'].value, '');
+  assert.equal(fields['#teamPostBody'].value, '');
+  assert.equal(fields['#teamPostPinned'].checked, false);
+  assert.equal(composer.dataset.currentImageUrl, '');
+  assert.equal(handleTeamPostNavigation('teamPage', doc), false);
 });
