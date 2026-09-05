@@ -22,6 +22,7 @@ assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'profile ima
 assert.ok(/player-roster-card-actions button\{min-height:30px/.test(css), 'roster edit buttons should be compact on mobile');
 assert.ok(css.includes('.player-roster-avatar:not(:has(img))::after'), 'missing roster images should have a visible placeholder label');
 assert.ok(css.includes('content:"BILD\\A KOMMER"'), 'missing roster images should say BILD KOMMER');
-assert.ok(index.includes('player-roster.css?v=4'), 'roster css version must be bumped so mobile Safari receives the placeholder');
+assert.ok(css.includes('#teamPostComposer:has(#teamPostForm:not([hidden]))>#openTeamPostComposer{display:none}'), 'open post button must disappear while the editor is open so its 100% height cannot stretch the mobile grid row');
+assert.ok(index.includes('player-roster.css?v=5'), 'roster css version must be bumped so mobile Safari receives the composer layout fix');
 assert.ok(index.includes('player-roster.js?v=5'), 'roster js version must remain current for direct development navigation');
 console.log('player roster ui tests passed');
