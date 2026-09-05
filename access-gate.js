@@ -45,10 +45,20 @@ function renderAccessStatusScreen(state) {
 function applyAccessState(state) {
   if (typeof document === 'undefined') return;
   const allowed = new Set(state.allowedPages || []);
-  document.querySelectorAll('.page').forEach(function (page) { page.hidden = !allowed.has(page.id); });
-  document.querySelectorAll('.nav-item[data-page]').forEach(function (button) { button.hidden = !allowed.has(button.dataset.page); });
+  document.body.dataset.accessRole = state.role || 'pending';
+  document.querySelectorAll('.page').forEach(function (page) {
+    const visible = allowed.has(page.id);
+    page.hidden = !visible;
+    page.style.display = visible ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-item[data-page]').forEach(function (button) {
+    const visible = allowed.has(button.dataset.page);
+    button.hidden = !visible;
+    button.style.display = visible ? '' : 'none';
+  });
   document.body.classList.remove('access-resolving');
   document.body.classList.toggle('access-blocked', state.status !== 'active');
+  document.dispatchEvent(new CustomEvent('kronang:access-state', { detail: state }));
   if (state.status !== 'active') { renderAccessStatusScreen(state); return; }
   removeAccessStatusScreen();
   const activePage = document.querySelector('.page.active');
