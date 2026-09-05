@@ -10,6 +10,10 @@ function profileRolePresentation(role) {
     subtitle: isLeader ? 'Din ledarprofil och dina verktyg.' : isParent ? 'Här hittar du information kopplad till ditt konto.' : 'Din utveckling börjar med dig.'
   };
 }
+function leaderSnapshotPresentation(playerCount,nextActivityText){
+  const activity=String(nextActivityText||'').trim();
+  return {playerCount:playerCount==null?'–':String(playerCount),nextActivity:activity&&!/Hämtar/i.test(activity)?activity:'–'};
+}
 function openProfilePage(pageId) {
   document.querySelectorAll('.page').forEach(function(page){page.classList.toggle('active',page.id===pageId);});
   document.querySelectorAll('.nav-item').forEach(function(button){button.classList.toggle('active',button.dataset.page===pageId);});
@@ -19,7 +23,7 @@ function ensureLeaderProfile() {
   const page=document.getElementById('profilePage'); if(!page)return null;
   let root=document.getElementById('leaderProfile'); if(root)return root;
   root=document.createElement('section'); root.id='leaderProfile'; root.className='leader-profile'; root.hidden=true;
-  root.innerHTML='<section class="leader-profile-card"><p class="leader-profile-kicker">MIN ROLL</p><h3 class="leader-profile-role" id="leaderProfileRole"></h3><p>Ledare i Kronängs IF Juniorlag</p></section><section class="leader-profile-card"><h3>Mina snabblänkar</h3><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button><button type="button" id="leaderAdminQuickLink">ADMINISTRATION</button></div></section><section class="leader-profile-card"><h3>Laget just nu</h3><div class="leader-profile-snapshot"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></div></section><section class="leader-profile-card leader-admin-status" id="leaderAdminStatus" hidden><p class="leader-profile-kicker">ADMINISTRATION</p><h3 id="leaderPendingAccess">Allt är klart</h3><p id="leaderPendingAccessText">Inga konton väntar på åtkomst.</p></section><section class="leader-profile-card leader-profile-account"><h3>Mitt konto</h3><p id="leaderAccountEmail">Inloggat konto</p></section>';
+  root.innerHTML='<section class="leader-profile-card"><p class="leader-profile-kicker">MIN ROLL</p><h3 class="leader-profile-role" id="leaderProfileRole"></h3><p>Ledare i Kronängs IF Juniorlag</p></section><section class="leader-profile-card"><h3>Mina snabblänkar</h3><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button><button type="button" id="leaderAdminQuickLink">ADMINISTRATION</button></div></section><section class="leader-profile-card"><h3>Laget just nu</h3><div class="leader-profile-snapshot"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></div></section><section class="leader-profile-card leader-admin-status" id="leaderAdminStatus" hidden><p class="leader-profile-kicker">ADMINISTRATION</p><h3 id="leaderPendingAccess">Allt är klart</h3><p id="leaderPendingAccessText">Inga konton väntar på åtkomst.</p></section>';
   page.appendChild(root);
   root.addEventListener('click',function(event){const pageButton=event.target.closest('[data-profile-page]');if(pageButton)openProfilePage(pageButton.dataset.profilePage);if(event.target.closest('#leaderAdminQuickLink')){const adminEntry=document.getElementById('openAdminPage');if(adminEntry)adminEntry.click();else openProfilePage('adminPage');}});
   return root;
@@ -28,9 +32,10 @@ async function refreshLeaderProfile(role){
   if(typeof window==='undefined'||!window.kronangSupabase||!(role==='coach'||role==='admin'))return;
   const db=window.kronangSupabase;
   const players=await db.from('players').select('id',{count:'exact',head:true}).eq('active',true);
-  const playerCount=document.getElementById('leaderPlayerCount');if(playerCount)playerCount.textContent=players.count==null?'–':String(players.count);
-  const nextSource=document.querySelector('#nextActivityHome strong');const next=document.getElementById('leaderNextActivity');if(next)next.textContent=nextSource&&nextSource.textContent&&!/Hämtar/i.test(nextSource.textContent)?'1':'–';
-  const session=await db.auth.getSession();const user=session.data&&session.data.session&&session.data.session.user;const email=document.getElementById('leaderAccountEmail');if(email&&user)email.textContent=user.email||'Inloggat konto';
+  const nextSource=document.querySelector('#nextActivityHome strong');
+  const snapshot=leaderSnapshotPresentation(players.count,nextSource&&nextSource.textContent);
+  const playerCount=document.getElementById('leaderPlayerCount');if(playerCount)playerCount.textContent=snapshot.playerCount;
+  const next=document.getElementById('leaderNextActivity');if(next)next.textContent=snapshot.nextActivity;
   if(role==='admin'){
     const pending=await db.from('profiles').select('id',{count:'exact',head:true}).eq('role','pending');const count=pending.count||0;
     const title=document.getElementById('leaderPendingAccess');const text=document.getElementById('leaderPendingAccessText');
@@ -49,7 +54,7 @@ function applyProfileRoleView(role) {
   const subtitle=document.getElementById('profileSubtitle');if(subtitle)subtitle.textContent=view.subtitle;
   refreshLeaderProfile(role).catch(function(error){console.error('Ledarprofil:',error);});
 }
-if(typeof module!=='undefined'&&module.exports)module.exports={profileRolePresentation,applyProfileRoleView};
+if(typeof module!=='undefined'&&module.exports)module.exports={profileRolePresentation,leaderSnapshotPresentation,applyProfileRoleView};
 if(typeof document!=='undefined'){
   if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=1';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
   document.addEventListener('kronang:access-state',function(event){applyProfileRoleView(event.detail&&event.detail.role?event.detail.role:'pending');});
