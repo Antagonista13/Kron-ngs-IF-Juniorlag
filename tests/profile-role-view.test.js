@@ -31,9 +31,24 @@ test('leader snapshot shows real player count and next activity text',()=>{
   assert.deepEqual(leaderSnapshotPresentation(null,''),{playerCount:'–',nextActivity:'–'});
 });
 
-test('leader next activity is clickable and profile script cache is bumped',()=>{
+test('leader profile counts active roster players and uses fresh assets',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
+  assert.match(source,/leader-profile\.css\?v=2/);
+  assert.match(html,/profile-role-view\.js\?v=3/);
+});
+
+test('leader next activity is clickable',()=>{
+  const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
   assert.match(source,/id="leaderNextActivityTile"[^>]*data-profile-page="calendarPage"/);
-  assert.match(html,/profile-role-view\.js\?v=2/);
+});
+
+test('mobile leader profile layout keeps cards balanced',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','leader-profile.css'),'utf8');
+  assert.match(css,/\.leader-profile-links\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
+  assert.match(css,/\.leader-profile-snapshot\{[^}]*grid-template-columns:minmax\(0,\.78fr\) minmax\(0,2\.22fr\)/);
+  assert.match(css,/#leaderNextActivity\{[^}]*font-size:14px/);
+  assert.match(css,/\.leader-profile-snapshot>div\{[^}]*min-width:0/);
+  assert.match(css,/\.hero\{[^}]*width:100vw/);
 });
