@@ -33,6 +33,7 @@ jobs:
           node --check coach-development-worklist.js
           node --check calendar-management.js
           node --check calendar-runtime.js
+          node --check profile-role-view.js
       - name: Home tests
         run: |
           node tests/home-player-header.test.js
@@ -53,6 +54,8 @@ jobs:
         run: node --test tests/team-staff-admin-sql.test.js tests/team-staff-rpc-security.test.js tests/team-staff-admin-ui.test.js
       - name: Profile avatar tests
         run: node tests/profile-avatar.test.js
+      - name: Profile role tests
+        run: node --test tests/profile-role-view.test.js
       - name: Profile image 2.0 tests
         run: node --test tests/profile-image-admin.test.js tests/profile-image-sql.test.js tests/player-profile-image-sql.test.js tests/admin-profile-images.test.js
       - name: Profile data fallback tests
