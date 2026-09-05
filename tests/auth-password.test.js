@@ -20,5 +20,5 @@ test('login offers a complete Supabase password recovery flow', () => {
   assert.match(auth, /PASSWORD_RECOVERY/);
   assert.match(auth, /updateUser\(\{\s*password:/);
   assert.match(auth, /Bekräfta nytt lösenord/i);
-  assert.match(index, /auth\.js\?v=6/);
+  assert.match(index, /auth\.js\?v=7/);
 });

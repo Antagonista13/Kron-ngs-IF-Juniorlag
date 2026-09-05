@@ -69,7 +69,7 @@ jobs:
       - name: Player shirt number source tests
         run: node tests/player-shirt-number-source.test.js
       - name: Auth tests
-        run: node --test tests/auth-navigation.test.js tests/auth-password.test.js
+        run: node --test tests/auth-navigation.test.js tests/auth-password.test.js tests/invite-onboarding-mobile.test.js
       - name: Development role tests
         run: node --test tests/development-role.test.js tests/development-asset-loading.test.js tests/development-area-icons.test.js
       - name: Player development workflow tests
