@@ -15,6 +15,11 @@ test('player coach and admin keep development access', () => {
   assert.deepEqual(allowedPagesForRole('player'), allPages);
 });
 
+test('only admin may access the administration page', () => {
+  assert.ok(allowedPagesForRole('admin').includes('adminPage'));
+  ['coach','player','parent','pending'].forEach(role => assert.ok(!allowedPagesForRole(role).includes('adminPage')));
+});
+
 test('pending and unknown roles receive no app pages', () => {
   assert.deepEqual(allowedPagesForRole('pending'), []);
   assert.deepEqual(allowedPagesForRole('unknown'), []);
