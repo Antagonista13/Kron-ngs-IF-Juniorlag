@@ -8,7 +8,8 @@ function allowedPagesForRole(role) {
   const permissions = permissionApi();
   const normalized = permissions ? permissions.normalizeRole(role) : ['admin','coach','player','parent','pending'].includes(role) ? role : 'pending';
   const all = ['homePage','calendarPage','developmentPage','teamPage','profilePage'];
-  if (normalized === 'admin' || normalized === 'coach' || normalized === 'player') return all.slice();
+  if (normalized === 'admin') return all.concat('adminPage');
+  if (normalized === 'coach' || normalized === 'player') return all.slice();
   if (normalized === 'parent') return ['homePage','calendarPage','teamPage','profilePage'];
   return [];
 }
