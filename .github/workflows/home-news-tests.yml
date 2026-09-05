@@ -49,7 +49,7 @@ jobs:
       - name: Team focus style tests
         run: node tests/team-focus-style.test.js
       - name: Team staff tests
-        run: node tests/team-staff.test.js
+        run: node --test tests/team-staff.test.js tests/team-staff-profile.test.js
       - name: Team staff 2.0 tests
         run: node --test tests/team-staff-admin-sql.test.js tests/team-staff-rpc-security.test.js tests/team-staff-admin-ui.test.js
       - name: Profile avatar tests
