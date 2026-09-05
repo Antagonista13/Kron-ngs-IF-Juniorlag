@@ -36,13 +36,14 @@ test('leader profile counts active roster players and uses fresh assets',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
   assert.match(source,/leader-profile\.css\?v=2/);
-  assert.match(html,/profile-role-view\.js\?v=4/);
+  assert.match(html,/profile-role-view\.js\?v=5/);
   assert.match(html,/calendar-runtime\.js\?v=3/);
 });
 
-test('leader next activity is clickable',()=>{
+test('leader next activity is clickable and loads calendar directly',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
   assert.match(source,/id="leaderNextActivityTile"[^>]*data-profile-page="calendarPage"/);
+  assert.match(source,/pageId===['"]calendarPage['"][^\n]*testSportAdminCalendar/);
 });
 
 test('leader profile refreshes when calendar finishes and when profile opens',()=>{
