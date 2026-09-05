@@ -41,3 +41,8 @@ test('builds goal history with completed goals and saved subgoals', () => {
   assert.equal(typeof goalSummary.buildGoalHistoryViewModel, 'function');
   assert.deepEqual(goalSummary.buildGoalHistoryViewModel([{ id: 'goal-1', title: 'Mitt gamla mål', final_reflection: 'Jag lärde mig mycket.', completed_at: '2026-09-02T12:00:00Z' }], { 'goal-1': [{ id: 'sub-1', text: 'Första delmålet', status: 'completed' }, { id: 'sub-2', text: 'Arkiverat', status: 'archived' }] }), [{ id: 'goal-1', title: 'Mitt gamla mål', reflection: 'Jag lärde mig mycket.', completedAt: '2026-09-02T12:00:00Z', subgoals: [{ id: 'sub-1', text: 'Första delmålet', completed: true }] }]);
 });
+
+test('approved leader goal gets a compact confirmation label only when it matches an accepted proposal', () => {
+  assert.deepEqual(goalSummary.buildApprovedLeaderGoalPresentation({ title: 'Stretcha' }, [{ status: 'accepted', proposed_goal_text: 'Stretcha' }]), { approvedFromLeader: true, label: 'GODKÄNT FRÅN DIN LEDARE', className: 'approved-leader-goal' });
+  assert.deepEqual(goalSummary.buildApprovedLeaderGoalPresentation({ title: 'Eget mål' }, [{ status: 'accepted', proposed_goal_text: 'Stretcha' }]), { approvedFromLeader: false, label: '', className: '' });
+});
