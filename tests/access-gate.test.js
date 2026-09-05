@@ -28,9 +28,10 @@ test('disabled profile is blocked regardless of active role', () => {
   assert.deepEqual(state.allowedPages, []);
 });
 
-test('access gate force-hides disallowed navigation items', () => {
+test('access gate force-hides disallowed navigation items and pages', () => {
   const source = fs.readFileSync(path.join(__dirname, '..', 'access-gate.js'), 'utf8');
-  assert.match(source, /button\.style\.display\s*=\s*allowed\.has\(button\.dataset\.page\)\s*\?\s*['"]['"]\s*:\s*['"]none['"]/);
+  assert.match(source, /page\.style\.display\s*=\s*visible\s*\?\s*['"]['"]\s*:\s*['"]none['"]/);
+  assert.match(source, /button\.style\.display\s*=\s*visible\s*\?\s*['"]['"]\s*:\s*['"]none['"]/);
 });
 
 test('parent profile removes player-only development sections and shows parent information', () => {
