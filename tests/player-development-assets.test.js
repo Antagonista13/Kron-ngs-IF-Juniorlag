@@ -6,6 +6,7 @@ const role=fs.readFileSync('development-role.js','utf8');
 const workflowCss=fs.readFileSync('development-workflow.css','utf8');
 const worklist=fs.readFileSync('coach-development-worklist.js','utf8');
 const profile=fs.readFileSync('development-profile.js','utf8');
+const goalSummary=require('../goal-summary.js');
 
 test('development workflow assets load in dependency order',()=>{
   const model=index.indexOf('development-workflow.js?v=');
@@ -33,6 +34,11 @@ test('exact unread development items receive a visible highlight',()=>{
   assert.match(workflowCss,/\.development-new/);
   assert.match(profile,/data-entity-type="development_goal"/);
   assert.match(profile,/data-entity-type="development_focus"/);
+});
+
+test('approved leader goal is identified separately from a player-created goal',()=>{
+  assert.deepEqual(goalSummary.buildApprovedLeaderGoalPresentation({title:'Stretcha'},[{status:'accepted',proposed_goal_text:'Stretcha'}]),{approvedFromLeader:true,label:'GODKÄNT FRÅN DIN LEDARE',className:'approved-leader-goal'});
+  assert.equal(goalSummary.buildApprovedLeaderGoalPresentation({title:'Eget mål'},[{status:'accepted',proposed_goal_text:'Stretcha'}]).approvedFromLeader,false);
 });
 
 test('development summary cards use shared monochrome line icons',()=>{
