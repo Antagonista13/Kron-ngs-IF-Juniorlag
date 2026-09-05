@@ -20,6 +20,7 @@ function openProfilePage(pageId) {
   document.querySelectorAll('.page').forEach(function(page){page.classList.toggle('active',page.id===pageId);});
   document.querySelectorAll('.nav-item').forEach(function(button){button.classList.toggle('active',button.dataset.page===pageId);});
   if(pageId==='profilePage')refreshCurrentLeaderProfile();
+  if(pageId==='calendarPage'&&typeof window!=='undefined'&&typeof window.testSportAdminCalendar==='function')window.testSportAdminCalendar();
   if (typeof window!=='undefined'&&window.KronangNavigation&&typeof window.KronangNavigation.scrollPageTop==='function') window.KronangNavigation.scrollPageTop();
 }
 function ensureLeaderProfile() {
