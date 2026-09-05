@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
-const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl, handleTeamPostNavigation } = require('../team-posts.js');
+const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl } = require('../team-posts.js');
+const { handleTeamPostNavigation } = require('../team-post-navigation-reset.js');
 
 test('only coach and admin roles can create team posts', () => {
   assert.equal(canManageTeamPosts('coach'), true);
@@ -90,4 +91,7 @@ test('leaving Laget closes and resets an open team post composer', () => {
   assert.equal(fields['#teamPostPinned'].checked, false);
   assert.equal(composer.dataset.currentImageUrl, '');
   assert.equal(handleTeamPostNavigation('teamPage', doc), false);
+
+  const index = fs.readFileSync('index.html', 'utf8');
+  assert.ok(index.includes('team-post-navigation-reset.js?v=1'));
 });
