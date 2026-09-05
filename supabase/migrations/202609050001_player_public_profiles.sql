@@ -24,12 +24,18 @@ using (current_profile_active() and is_active = true);
 create or replace function public.protect_player_admin_fields()
 returns trigger
 language plpgsql
-security definer
 set search_path = public
 as $$
 begin
-  if (new.avatar_url is distinct from old.avatar_url
-      or new.position is distinct from old.position
+  if tg_op = 'INSERT' then
+    if (new.position is not null or new.team_role is not null)
+       and not (current_profile_active() and current_profile_role() = 'admin') then
+      raise exception 'Only active admins may set player profile presentation fields';
+    end if;
+    return new;
+  end if;
+
+  if (new.position is distinct from old.position
       or new.team_role is distinct from old.team_role)
      and not (current_profile_active() and current_profile_role() = 'admin') then
     raise exception 'Only active admins may change player profile presentation fields';
@@ -40,5 +46,5 @@ $$;
 
 drop trigger if exists protect_player_admin_fields on public.players;
 create trigger protect_player_admin_fields
-before update on public.players
+before insert or update on public.players
 for each row execute function public.protect_player_admin_fields();
