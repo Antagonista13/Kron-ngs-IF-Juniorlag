@@ -24,6 +24,23 @@ test('reselecting Utveckling resets an open player detail to the development lan
   assert.equal(worklist.hidden, false);
 });
 
+test('reselecting Laget closes an open public player profile and restores the roster', () => {
+  let removed = false;
+  const profile = { classList: { contains: (name) => name === 'player-public-profile' }, remove: () => { removed = true; } };
+  const heading = { hidden: true, classList: { contains: () => false } };
+  const list = { hidden: true, classList: { contains: () => false } };
+  const roster = {
+    children: [profile, heading, list],
+    querySelector: (selector) => selector === '.player-public-profile' ? profile : null
+  };
+  const doc = { getElementById: (id) => id === 'playerRosterSection' ? roster : null };
+
+  assert.equal(resetNestedPageState('teamPage', doc), true);
+  assert.equal(removed, true);
+  assert.equal(heading.hidden, false);
+  assert.equal(list.hidden, false);
+});
+
 test('Utveckling tab scrolls to the development page landing, not the player card', () => {
   let scrolled = null;
   const developmentPage = { scrollIntoView: (options) => { scrolled = options; } };
@@ -34,6 +51,6 @@ test('Utveckling tab scrolls to the development page landing, not the player car
   assert.deepEqual(scrolled, { behavior: 'auto', block: 'start' });
 });
 
-test('other bottom navigation destinations do not reset development detail state', () => {
+test('other bottom navigation destinations do not reset nested detail state', () => {
   assert.equal(resetNestedPageState('homePage', { getElementById: () => null }), false);
 });
