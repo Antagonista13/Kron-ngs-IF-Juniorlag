@@ -37,7 +37,7 @@ test('last saved timestamp is formatted in Swedish local time', () => {
 test('saved users render compact summary with explicit edit action', () => {
   const source = fs.readFileSync('admin-compact-users.js', 'utf8');
   assert.match(source, /admin-user-summary/);
-  assert.match(source, /data\.action='edit'/);
+  assert.match(source, /dataset\.action='edit'/);
   assert.match(source, /REDIGERA/);
   assert.match(source, /admin-user-editor/);
   assert.match(source, /startsWith\('SPARAT'\)/);
