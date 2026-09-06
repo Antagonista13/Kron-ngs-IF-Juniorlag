@@ -4,7 +4,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const roster = require('../player-roster.js');
-const source = fs.readFileSync(path.join(__dirname, '..', 'player-roster.js'), 'utf8');
 
 test('linked roster player exposes profile navigation target', () => {
   assert.equal(roster.getRosterProfileTarget({ profile_id: 'profile-23' }), 'profile-23');
@@ -19,6 +18,6 @@ test('Laget cards open the public player card for every signed-in team role', ()
 });
 
 test('public player card hides every sibling while open', () => {
-  assert.match(source, /player-roster-section>\[hidden\]/);
-  assert.match(source, /display:none!important/);
+  const css=fs.readFileSync(path.join(__dirname,'..','player-roster.css'),'utf8');
+  assert.match(css, /player-roster-section>\[hidden\]\{display:none!important\}/);
 });
