@@ -21,3 +21,18 @@ test('public player card hides every sibling while open', () => {
   const css=fs.readFileSync(path.join(__dirname,'..','player-roster.css'),'utf8');
   assert.match(css, /player-roster-section>\[hidden\]\{display:none!important\}/);
 });
+
+test('closing a public player profile restores each roster child to its previous hidden state', () => {
+  const visible={hidden:false,dataset:{}};
+  const hidden={hidden:true,dataset:{}};
+  const profile={hidden:false,dataset:{},classList:{contains:(name)=>name==='player-public-profile'}};
+  const container={children:[profile,visible,hidden]};
+
+  roster.hidePublicProfileSiblings(container,profile);
+  assert.equal(visible.hidden,true);
+  assert.equal(hidden.hidden,true);
+
+  roster.restorePublicProfileSiblings(container);
+  assert.equal(visible.hidden,false);
+  assert.equal(hidden.hidden,true);
+});
