@@ -10,5 +10,5 @@ assert.ok(source.includes("card.addEventListener('click'"));
 assert.ok(source.includes("card.setAttribute('role','button')"));
 assert.ok(source.includes('card.tabIndex=0'));
 assert.ok(source.includes('setTeamFocusEditorOpen(manager,form,true)'));
-assert.ok(html.includes('team-focus.js?v=4'));
+assert.ok(html.includes('team-focus.js?v=5'));
 console.log('team focus style tests passed');
