@@ -30,6 +30,7 @@ function handleAuthNavigation(eventName, session, targetWindow, targetDocument) 
     dispatchAuthEvent(targetDocument, 'kronang:auth-signed-in', session);
   } else if (eventName === 'SIGNED_OUT') {
     resetAppStartState(targetDocument);
+    activateHome(targetWindow, targetDocument);
     dispatchAuthEvent(targetDocument, 'kronang:auth-signed-out', null);
   }
 }
