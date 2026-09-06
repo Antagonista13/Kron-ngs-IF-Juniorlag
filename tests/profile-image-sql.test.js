@@ -30,7 +30,8 @@ test('profile image bucket is private with authenticated read and admin-only wri
 test('assigning an account profile image also updates its linked roster player',()=>{
  const sql=fs.readFileSync(syncPath,'utf8').toLowerCase();
  assert.match(sql,/create or replace function public\.admin_assign_profile_image/);
+ assert.match(sql,/v_path text := nullif/);
  assert.match(sql,/update public\.players/);
+ assert.match(sql,/set avatar_url=v_path/);
  assert.match(sql,/where profile_id\s*=\s*p_profile_id/);
- assert.match(sql,/avatar_url\s*=\s*nullif/);
 });
