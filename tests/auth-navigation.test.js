@@ -38,8 +38,13 @@ test('SIGNED_IN resets transient ui, activates home and announces account refres
   assert.ok(ui.events.indexOf('kronang:app-start-reset') < ui.events.indexOf('kronang:auth-signed-in'));
 });
 
-test('SIGNED_OUT announces account reset', () => {
+test('SIGNED_OUT resets navigation to Home before another account can sign in', () => {
   const ui = makeUi();
   handleAuthNavigation('SIGNED_OUT', null, ui.win, ui.doc);
+  assert.equal(ui.pages[0].classList.contains('active'), true);
+  assert.equal(ui.pages[1].classList.contains('active'), false);
+  assert.equal(ui.navs[0].classList.contains('active'), true);
+  assert.equal(ui.navs[1].classList.contains('active'), false);
+  assert.ok(ui.events.includes('kronang:app-start-reset'));
   assert.ok(ui.events.includes('kronang:auth-signed-out'));
 });
