@@ -1,75 +1,8 @@
-#coachDevelopmentView:not(.coach-player-detail-open) #coachPlayerDevelopment {
-  display: none;
-}
-
-#coachDevelopmentView.coach-player-detail-open > h2,
-#coachDevelopmentView.coach-player-detail-open > p,
-#coachDevelopmentView.coach-player-detail-open .coach-roster-search,
-#coachDevelopmentView.coach-player-detail-open #coachPlayerList,
-#coachDevelopmentView.coach-player-detail-open .coach-roster-empty {
-  display: none;
-}
-
-.coach-player-page-header {
-  margin: 0 0 22px;
-}
-
-.coach-player-page-back {
-  border: 0;
-  background: transparent;
-  color: #111;
-  padding: 0;
-  margin: 0 0 14px;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.coach-player-page-back:hover,
-.coach-player-page-back:focus {
-  text-decoration: underline;
-}
-
-.coach-player-page-header h2 {
-  margin: 0 0 12px;
-  font-size: 30px;
-}
-
-.coach-player-section-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.coach-player-section-nav button {
-  border: 1px solid #d7d7d7;
-  background: #fff;
-  color: #333;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.coach-player-section-nav button:hover,
-.coach-player-section-nav button:focus {
-  border-color: #111;
-  color: #111;
-  outline: none;
-}
-
-@media (max-width: 600px) {
-  .coach-player-page-header h2 {
-    font-size: 26px;
-  }
-
-  .coach-player-section-nav {
-    gap: 6px;
-  }
-
-  .coach-player-section-nav button {
-    padding: 7px 10px;
-    font-size: 14px;
-  }
-}
+#coachDevelopmentView:not(.coach-player-detail-open) #coachPlayerDevelopment {display:none}
+#coachDevelopmentView.coach-player-detail-open>h2,#coachDevelopmentView.coach-player-detail-open>p,#coachDevelopmentView.coach-player-detail-open .coach-roster-search,#coachDevelopmentView.coach-player-detail-open #coachPlayerList,#coachDevelopmentView.coach-player-detail-open .coach-roster-empty{display:none}
+.coach-player-page-header{margin:0 0 22px}.coach-player-page-back{border:0;background:transparent;color:#111;padding:0;margin:0 0 14px;font:inherit;font-weight:800;cursor:pointer}.coach-player-page-back:hover,.coach-player-page-back:focus{text-decoration:underline}
+.coach-player-profile-hero{display:flex;align-items:center;gap:16px;padding:18px;border-radius:22px;background:linear-gradient(135deg,#090909,#262626);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.16)}.coach-player-profile-avatar{width:92px;height:92px;flex:0 0 92px;border-radius:50%;object-fit:cover;border:2px solid #a98745;background:#111}.coach-player-profile-avatar-empty{display:grid;place-items:center;text-align:center;font-size:10px;font-weight:900;letter-spacing:.08em;color:#d1aa67}.coach-player-profile-copy{min-width:0}.coach-player-profile-kicker{display:block;margin-bottom:5px;font-size:11px;font-weight:900;letter-spacing:.12em;color:#d1aa67}.coach-player-profile-copy h2{margin:0 0 5px;font-size:30px;line-height:1.05;color:#fff}.coach-player-profile-meta{margin:0;color:#d9d9d9;font-weight:700}.coach-player-profile-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.coach-player-profile-badges span{padding:5px 8px;border-radius:999px;border:1px solid rgba(209,170,103,.55);color:#f2d49b;font-size:10px;font-weight:900;letter-spacing:.05em}
+.coach-player-leader-tools{margin-top:12px;padding:14px 15px;border-radius:18px;border:1px solid #d8c59b;background:#fff}.coach-player-leader-tools>span{display:block;margin-bottom:9px;font-size:11px;font-weight:900;letter-spacing:.1em;color:#7b632f}.coach-player-leader-tools>div{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.coach-player-leader-tools button{border:0;border-radius:11px;background:#111;color:#fff;padding:10px 8px;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
+.coach-player-section-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.coach-player-section-nav button{border:1px solid #d7d7d7;background:#fff;color:#333;border-radius:999px;padding:8px 12px;font:inherit;font-weight:700;cursor:pointer}.coach-player-section-nav button:hover,.coach-player-section-nav button:focus{border-color:#111;color:#111;outline:none}
+#coachPlayerContext{border-radius:20px;border:1px solid #e1e1e1;background:#fff;padding:18px;margin-bottom:12px}#coachPlayerContext>h3{margin-top:0}#coachFocusFeedbackControls{margin-top:16px;padding-top:14px;border-top:1px solid #e4e4e4}#coachFocusFeedbackControls h4{margin:0 0 9px}#coachFocusFeedbackControls textarea{width:100%;box-sizing:border-box;border:1px solid #ccc;border-radius:12px;padding:11px;font:inherit}
+@media(max-width:600px){.coach-player-profile-hero{padding:15px;gap:12px;border-radius:19px}.coach-player-profile-avatar{width:76px;height:76px;flex-basis:76px}.coach-player-profile-copy h2{font-size:24px}.coach-player-profile-meta{font-size:13px}.coach-player-leader-tools>div{grid-template-columns:1fr}.coach-player-leader-tools button{min-height:42px}.coach-player-section-nav{gap:6px}.coach-player-section-nav button{padding:7px 10px;font-size:13px}}
