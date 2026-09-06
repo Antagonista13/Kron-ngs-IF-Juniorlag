@@ -32,6 +32,19 @@ function resetNestedPageState(pageId, doc) {
   return Boolean(coachView || detail || worklist);
 }
 
+function scrollToPageLanding(pageId, doc, win) {
+  const targetDoc = doc || (typeof document !== 'undefined' ? document : null);
+  if (pageId === 'developmentPage' && targetDoc) {
+    const page = targetDoc.getElementById('developmentPage');
+    if (page && typeof page.scrollIntoView === 'function') {
+      page.scrollIntoView({ behavior: 'auto', block: 'start' });
+      return true;
+    }
+  }
+  scrollPageTop(win);
+  return false;
+}
+
 function setupNavigationScroll(doc, win) {
   if (!doc || !win) return;
   configureScrollRestoration(win);
@@ -47,7 +60,12 @@ function setupNavigationScroll(doc, win) {
     if (!navTarget) return;
 
     if (navTarget.classList && navTarget.classList.contains('nav-item')) {
-      resetNestedPageState(navTarget.getAttribute('data-page'), doc);
+      const pageId = navTarget.getAttribute('data-page');
+      resetNestedPageState(pageId, doc);
+      if (pageId === 'developmentPage') {
+        setTimeout(() => scrollToPageLanding(pageId, doc, win), 20);
+        return;
+      }
     }
     setTimeout(scrollNow, 0);
   });
@@ -68,7 +86,7 @@ function setupNavigationScroll(doc, win) {
   });
 }
 
-const navigationScrollApi = { scrollPageTop, configureScrollRestoration, resetNestedPageState, setupNavigationScroll };
+const navigationScrollApi = { scrollPageTop, configureScrollRestoration, resetNestedPageState, scrollToPageLanding, setupNavigationScroll };
 if (typeof module !== 'undefined' && module.exports) module.exports = navigationScrollApi;
 if (typeof window !== 'undefined') {
   window.KronangNavigationScroll = navigationScrollApi;
