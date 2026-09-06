@@ -13,10 +13,11 @@ function profileFallbackIcon(){
   return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5"/></svg>';
 }
 
-function buildProfileImageObjectPath(targetType,targetId){
+function buildProfileImageObjectPath(targetType,targetId,version){
   const folder={profile:'profiles',staff:'staff',player:'players'}[targetType];
   if(!folder||targetId===null||targetId===undefined||targetId==='')return'';
-  return folder+'/'+String(targetId)+'/avatar.jpg';
+  const suffix=version===null||version===undefined||version===''?'':('-'+String(version));
+  return folder+'/'+String(targetId)+'/avatar'+suffix+'.jpg';
 }
 
 function isAbsoluteImageUrl(value){return /^(https?:|data:|blob:)/i.test(String(value||''));}
@@ -69,7 +70,7 @@ async function assignProfileImage(targetType,targetId,objectPath){
 function openAdminProfileImagePicker(options){
   const opts=options||{},targetType=opts.targetType,targetId=opts.targetId;
   if(typeof document==='undefined'||typeof window==='undefined'||!window.kronangSupabase)return;
-  const objectPath=buildProfileImageObjectPath(targetType,targetId);if(!objectPath)return;
+  const targetPath=buildProfileImageObjectPath(targetType,targetId);if(!targetPath)return;
   document.querySelectorAll('.profile-image-modal').forEach(el=>el.remove());
   const modal=document.createElement('div');modal.className='profile-image-modal';
   modal.innerHTML='<div class="profile-image-dialog" role="dialog" aria-modal="true"><div class="profile-image-dialog-head"><div><span>PROFILBILD</span><h3>Justera bilden</h3></div><button type="button" data-close aria-label="Stäng">×</button></div><p>Välj en färdig bild från mobilen. Placera personen i den runda förhandsvisningen.</p><input class="profile-image-file" type="file" accept="image/*"><div class="profile-image-crop"><canvas width="640" height="640"></canvas></div><label>Zoom<input class="profile-image-zoom" type="range" min="1" max="3" step="0.01" value="1"></label><label>Flytta i sidled<input class="profile-image-x" type="range" min="-100" max="100" step="1" value="0"></label><label>Flytta upp / ner<input class="profile-image-y" type="range" min="-100" max="100" step="1" value="0"></label><p class="profile-image-message" aria-live="polite"></p><div class="profile-image-actions"><button type="button" data-save disabled>SPARA BILD</button><button type="button" class="secondary" data-remove>TA BORT BILD</button></div></div>';
@@ -79,7 +80,7 @@ function openAdminProfileImagePicker(options){
   const redraw=()=>{if(image)drawSquareCrop(canvas,image,zoom.value,x.value,y.value);};
   [zoom,x,y].forEach(input=>input.addEventListener('input',redraw));
   fileInput.addEventListener('change',async()=>{message.textContent='';const file=fileInput.files&&fileInput.files[0];if(!file)return;if(!String(file.type||'').startsWith('image/')){message.textContent='Välj en bildfil.';return;}if(file.size>8388608){message.textContent='Bilden får vara högst 8 MB.';return;}try{image=await loadLocalImage(file);zoom.value='1';x.value='0';y.value='0';redraw();save.disabled=false;}catch(err){message.textContent=err.message||'Bilden kunde inte läsas.';}});
-  save.addEventListener('click',async()=>{if(!image)return;save.disabled=true;save.textContent='SPARAR…';message.textContent='';try{const blob=await canvasToJpegBlob(canvas);const {error}=await window.kronangSupabase.storage.from('profile-images').upload(objectPath,blob,{upsert:true,contentType:'image/jpeg',cacheControl:'3600'});if(error)throw error;await assignProfileImage(targetType,targetId,objectPath);if(opts.onSaved)await opts.onSaved(objectPath);modal.remove();}catch(err){console.error('Profilbild:',err);message.textContent='Det gick inte att spara bilden. Försök igen.';save.disabled=false;save.textContent='SPARA BILD';}});
+  save.addEventListener('click',async()=>{if(!image)return;save.disabled=true;save.textContent='SPARAR…';message.textContent='';try{const blob=await canvasToJpegBlob(canvas);const uploadPath=buildProfileImageObjectPath(targetType,targetId,Date.now());const {error}=await window.kronangSupabase.storage.from('profile-images').upload(uploadPath,blob,{upsert:false,contentType:'image/jpeg',cacheControl:'31536000'});if(error)throw error;await assignProfileImage(targetType,targetId,uploadPath);const current=String(opts.currentPath||'');if(current&&current!==uploadPath&&!isAbsoluteImageUrl(current)){const cleanup=await window.kronangSupabase.storage.from('profile-images').remove([current]);if(cleanup.error)console.warn('Kunde inte rensa gammal profilbild:',cleanup.error);}if(opts.onSaved)await opts.onSaved(uploadPath);modal.remove();}catch(err){console.error('Profilbild:',err);message.textContent='Det gick inte att spara bilden. Försök igen.';save.disabled=false;save.textContent='SPARA BILD';}});
   remove.addEventListener('click',async()=>{if(!confirm('Ta bort profilbilden?'))return;remove.disabled=true;message.textContent='';try{const current=String(opts.currentPath||'');if(current&&!isAbsoluteImageUrl(current))await window.kronangSupabase.storage.from('profile-images').remove([current]);await assignProfileImage(targetType,targetId,'');if(opts.onSaved)await opts.onSaved('');modal.remove();}catch(err){console.error('Ta bort profilbild:',err);message.textContent='Det gick inte att ta bort bilden.';remove.disabled=false;}});
   modal.querySelector('[data-close]').addEventListener('click',()=>modal.remove());modal.addEventListener('click',event=>{if(event.target===modal)modal.remove();});
 }
