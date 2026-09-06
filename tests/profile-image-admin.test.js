@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const avatar=require('../profile-avatar.js');
 const source=fs.readFileSync('profile-avatar.js','utf8');
+const html=fs.readFileSync('index.html','utf8');
 
 test('profile image object path is target scoped and versioned when replacing an image',()=>{
  assert.equal(avatar.buildProfileImageObjectPath('profile','abc'),'profiles/abc/avatar.jpg');
@@ -16,6 +17,10 @@ test('saving a replacement image uses a fresh object path and cleans up the prev
  assert.match(source,/storage\.from\('profile-images'\)\.upload\(uploadPath,blob/);
  assert.match(source,/assignProfileImage\(targetType,targetId,uploadPath\)/);
  assert.match(source,/current&&current!==uploadPath/);
+});
+
+test('Safari receives the updated profile avatar implementation',()=>{
+ assert.equal(html.split('profile-avatar.js?v=4').length-1,1);
 });
 
 test('admin image picker is mobile friendly and has square crop controls',()=>{
