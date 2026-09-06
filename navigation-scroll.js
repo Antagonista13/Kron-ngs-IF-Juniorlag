@@ -10,6 +10,28 @@ function configureScrollRestoration(win) {
   target.history.scrollRestoration = 'manual';
 }
 
+function resetNestedPageState(pageId, doc) {
+  const targetDoc = doc || (typeof document !== 'undefined' ? document : null);
+  if (pageId !== 'developmentPage' || !targetDoc) return false;
+
+  const coachView = targetDoc.getElementById('coachDevelopmentView');
+  const detail = targetDoc.getElementById('coachPlayerDevelopment');
+  const worklist = targetDoc.getElementById('developmentWorklist');
+
+  if (coachView && coachView.classList) coachView.classList.remove('coach-player-detail-open');
+  if (detail) {
+    detail.hidden = true;
+    detail.innerHTML = '';
+  }
+  if (worklist) worklist.hidden = false;
+
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.classList.remove('coach-player-quick-tool-open');
+  }
+
+  return Boolean(coachView || detail || worklist);
+}
+
 function setupNavigationScroll(doc, win) {
   if (!doc || !win) return;
   configureScrollRestoration(win);
@@ -22,7 +44,12 @@ function setupNavigationScroll(doc, win) {
     const navTarget = event.target && event.target.closest
       ? event.target.closest('.nav-item, #openAdminPage, #adminBackButton')
       : null;
-    if (navTarget) setTimeout(scrollNow, 0);
+    if (!navTarget) return;
+
+    if (navTarget.classList && navTarget.classList.contains('nav-item')) {
+      resetNestedPageState(navTarget.getAttribute('data-page'), doc);
+    }
+    setTimeout(scrollNow, 0);
   });
 
   const observer = new MutationObserver((mutations) => {
@@ -41,7 +68,7 @@ function setupNavigationScroll(doc, win) {
   });
 }
 
-const navigationScrollApi = { scrollPageTop, configureScrollRestoration, setupNavigationScroll };
+const navigationScrollApi = { scrollPageTop, configureScrollRestoration, resetNestedPageState, setupNavigationScroll };
 if (typeof module !== 'undefined' && module.exports) module.exports = navigationScrollApi;
 if (typeof window !== 'undefined') {
   window.KronangNavigationScroll = navigationScrollApi;
