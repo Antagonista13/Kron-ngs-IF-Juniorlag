@@ -34,7 +34,13 @@ jobs:
           node --check coach-player-page.js
           node --check calendar-management.js
           node --check calendar-runtime.js
+          node --check calendar-bridge.js
           node --check profile-role-view.js
+          node --check leader-tools-profile.js
+      - name: CI stability coverage
+        run: node --test tests/ci-stability-coverage.test.js
+      - name: Critical mobile flow contract
+        run: node --test tests/critical-flow-contract.test.js
       - name: Home tests
         run: |
           node tests/home-player-header.test.js
