@@ -19,4 +19,7 @@ assert.match(source,/makeRosterSelect\('Lagroll','team_role'/);
 assert.match(source,/position,team_role/);
 assert.match(source,/player-public-profile/);
 assert.match(source,/if\(role\)\{const badge=/, 'role badge must only be created when a role exists');
+assert.match(source,/player-public-profile-fullscreen/, 'opened player card must use a fullscreen profile surface');
+assert.match(source,/document\.body\.classList\.add\('player-profile-open'\)/, 'opening a player must lock the underlying app');
+assert.match(source,/document\.body\.classList\.remove\('player-profile-open'\)/, 'back must restore the underlying app');
 console.log('player public profile tests passed');
