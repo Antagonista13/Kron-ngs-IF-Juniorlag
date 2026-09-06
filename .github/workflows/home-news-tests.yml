@@ -88,7 +88,7 @@ jobs:
       - name: Browser script compatibility tests
         run: node --test tests/browser-script-order.test.js
       - name: Navigation scroll tests
-        run: node --test tests/navigation-scroll.test.js
+        run: node --test tests/navigation-scroll.test.js tests/navigation-player-detail-reset.test.js
       - name: Admin role schema tests
         run: node tests/admin-role-schema.test.js
       - name: Admin user RPC tests
