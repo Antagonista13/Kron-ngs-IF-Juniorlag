@@ -2,7 +2,7 @@
   function hideTeamOverviewCards(doc){
     const d=doc||root.document;
     if(!d)return;
-    const focus=d.getElementById('teamFocusCard');
+    const focus=d.getElementById('teamWeeklyFocus')||d.getElementById('teamFocusCard');
     const posts=d.getElementById('teamPostsFeed');
     if(focus)focus.hidden=true;
     if(posts)posts.hidden=true;
@@ -14,7 +14,7 @@
     root.addEventListener?.('kronang:team-page-opened',()=>hideTeamOverviewCards(d));
     const page=d.getElementById('teamPage');
     if(page&&root.MutationObserver){
-      new root.MutationObserver(()=>hideTeamOverviewCards(d)).observe(page,{childList:true,subtree:false});
+      new root.MutationObserver(()=>hideTeamOverviewCards(d)).observe(page,{childList:true,subtree:true});
     }
   }
   if(typeof module!=='undefined'&&module.exports)module.exports={hideTeamOverviewCards};
