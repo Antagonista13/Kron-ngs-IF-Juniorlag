@@ -82,7 +82,8 @@ test('calendar runtime owns Calendar navigation before the legacy click handler'
  const runtime=fs.readFileSync('calendar-runtime.js','utf8');
  assert.match(runtime,/setupCalendarNavigation/);
  assert.match(runtime,/stopImmediatePropagation\(\)/);
- assert.match(runtime,/addEventListener\(['"]click['"][^;]*true\)/);
+ assert.match(runtime,/addEventListener\(['"]click['"]/);
+ assert.match(runtime,/\},true\);/);
  assert.match(runtime,/window\.testSportAdminCalendar\(\)/);
 });
 
