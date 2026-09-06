@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
-const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl, selectHomeNewsPosts, teamPostAuthorLabel, leaderToolsHostPageId, buildLeaderToolsActions } = require('../team-posts.js');
+const { canManageTeamPosts, canManageSpecificTeamPost, canViewTeamPosts, validateTeamPost, formatTeamPostDate, sortTeamPosts, buildTeamPostEditState, normalizeTeamPostImageUrl, selectHomeNewsPosts, teamPostAuthorLabel } = require('../team-posts.js');
+const { leaderToolsHostPageId, buildLeaderToolsActions } = require('../leader-tools-profile.js');
 const { handleTeamPostNavigation } = require('../team-post-navigation-reset.js');
 test('only coach and admin roles can create team posts',()=>{assert.equal(canManageTeamPosts('coach'),true);assert.equal(canManageTeamPosts('admin'),true);assert.equal(canManageTeamPosts('player'),false);assert.equal(canManageTeamPosts('parent'),false);assert.equal(canManageTeamPosts('pending'),false);});
 test('post ownership follows the locked admin coach hierarchy',()=>{assert.equal(canManageSpecificTeamPost('admin','admin'),true);assert.equal(canManageSpecificTeamPost('admin','coach'),true);assert.equal(canManageSpecificTeamPost('coach','coach'),true);assert.equal(canManageSpecificTeamPost('coach','admin'),false);assert.equal(canManageSpecificTeamPost('player','coach'),false);assert.equal(canManageSpecificTeamPost('parent','coach'),false);});
