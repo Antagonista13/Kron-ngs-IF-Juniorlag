@@ -1,9 +1,8 @@
 #profilePage #teamLeaderTools{margin:18px 0 22px}
 #profilePage #teamLeaderTools .team-leader-tools-heading p{margin-bottom:12px}
 #profilePage #teamLeaderToolsActions{display:grid;grid-template-columns:1fr;gap:12px}
-#profilePage #teamLeaderToolsActions>.team-leader-tool{width:100%;margin:0!important;min-height:56px}
-#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{width:100%;min-height:56px;margin:0!important}
-#openProfileRosterManager{border:0;border-radius:12px;background:#111;color:#fff;padding:12px 14px;font:inherit;font-weight:900;text-align:left;cursor:pointer}
+#profilePage #teamLeaderToolsActions>.team-leader-tool,#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{box-sizing:border-box;width:100%;min-height:64px;margin:0!important;padding:16px 18px!important;border-radius:12px;font-family:inherit!important;font-size:18px!important;font-weight:800!important;line-height:1.2!important;letter-spacing:0!important;text-align:left!important}
+#openProfileRosterManager{border:0;background:#111;color:#fff;cursor:pointer}
 #profilePage #teamFocusManager:not(.team-editor-focus-open){display:none!important}
 .profile-roster-manager-host{margin:0 0 26px}
 .profile-roster-manager-host[hidden]{display:none}
