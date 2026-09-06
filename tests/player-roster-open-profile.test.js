@@ -11,11 +11,14 @@ test('linked roster player exposes profile navigation target', () => {
   assert.equal(roster.getRosterProfileTarget({ profile_id: null }), '');
 });
 
-test('roster card click opens the 2.0 development player card by roster id', () => {
-  assert.match(source, /card\.addEventListener\('click'/);
-  assert.match(source, /event\.target\.closest\('button,a,input,select,textarea,label'\)/);
-  assert.match(source, /development-player-open/);
-  assert.match(source, /data-player-id/);
-  assert.match(source, /player\.id/);
-  assert.match(source, /developmentPage/);
+test('Laget cards open the public player card for every signed-in team role', () => {
+  assert.equal(roster.getPlayerCardDestination('admin',{id:'p1',profile_id:'u1'}),'public');
+  assert.equal(roster.getPlayerCardDestination('coach',{id:'p1',profile_id:'u1'}),'public');
+  assert.equal(roster.getPlayerCardDestination('player',{id:'p1'}),'public');
+  assert.equal(roster.getPlayerCardDestination('parent',{id:'p1'}),'public');
+});
+
+test('public player card hides every sibling while open', () => {
+  assert.match(source, /player-roster-section>\[hidden\]/);
+  assert.match(source, /display:none!important/);
 });
