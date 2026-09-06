@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const { buildAdminUserModel, buildAdminOverview, formatAdminSavedAt } = require('../admin-page.js');
 const { accountLinkLabel, accountLinkHelp, suggestPlayerForAccount } = require('../admin-account-linking.js');
 
@@ -31,6 +32,15 @@ test('last saved timestamp is formatted in Swedish local time', () => {
   assert.match(label, /4 sep/i);
   assert.match(label, /04:45/);
   assert.equal(formatAdminSavedAt(''), '');
+});
+
+test('saved users render compact summary with explicit edit action', () => {
+  const source = fs.readFileSync('admin-compact-users.js', 'utf8');
+  assert.match(source, /admin-user-summary/);
+  assert.match(source, /dataset\.action='edit'/);
+  assert.match(source, /REDIGERA/);
+  assert.match(source, /admin-user-editor/);
+  assert.match(source, /startsWith\('SPARAT'\)/);
 });
 
 test('player account linking uses clear language and exact name suggestion', () => {

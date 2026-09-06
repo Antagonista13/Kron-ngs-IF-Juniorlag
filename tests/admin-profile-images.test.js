@@ -10,3 +10,8 @@ test('admin profile image section manages every app account through the shared p
  assert.match(source,/avatar_url/);
  assert.match(source,/PROFILBILDER/);
 });
+
+test('profile image rows are deduplicated and sorted alphabetically by name',()=>{
+ assert.match(source,/new Map\(/);
+ assert.match(source,/localeCompare\([^)]*'sv'/);
+});
