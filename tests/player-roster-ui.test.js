@@ -19,7 +19,7 @@ assert.ok(css.includes('#teamPage.leader-team-view.active'), 'compact layout sho
 assert.ok(!css.includes('#teamPage:has(#playerRosterSection).active'), 'compact layout must not depend on :has() for layout activation');
 assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'leader tools should render two by two on mobile');
 assert.ok(css.includes('align-items:start'), 'paired mobile admin cards must keep independent heights instead of stretching to the tallest editor');
-assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'profile image should keep its current 48px size');
+assert.ok(/player-roster-avatar\{width:48px;height:48px/.test(css), 'roster list thumbnail should keep its compact 48px size');
 assert.ok(/player-roster-card-actions button\{min-height:30px/.test(css), 'roster edit buttons should be compact on mobile');
 assert.ok(css.includes('.player-roster-avatar:not(:has(img))::after'), 'missing roster images should have a visible placeholder label');
 assert.ok(css.includes('content:"BILD\\A KOMMER"'), 'missing roster images should say BILD KOMMER');
@@ -28,6 +28,6 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamFocusManager:has(
 assert.ok(css.includes('#teamFocusManager:has(#teamFocusForm:not([hidden]))>#openTeamFocusManager{display:none}'), 'focus opener must disappear while focus editor is open');
 assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:has(#teamChallengeForm:not([hidden])){grid-column:1/-1;min-height:0}'), 'open challenge editor should use the full mobile width without stretching its neighbour');
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
-assert.ok(index.includes('player-roster.css?v=7'), 'roster css cache version must be current');
+assert.ok(index.includes('player-roster.css?v=8'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=7'), 'roster js cache version must be current');
 console.log('player roster ui tests passed');

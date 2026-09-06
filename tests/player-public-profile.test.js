@@ -14,9 +14,13 @@ assert.strictEqual(roster.getPlayerCardDestination('coach',player),'public');
 assert.strictEqual(roster.getPlayerCardDestination('admin',player),'public');
 
 const source=fs.readFileSync(require.resolve('../player-roster.js'),'utf8');
+const css=fs.readFileSync(require.resolve('../player-roster.css'),'utf8');
 assert.match(source,/makeRosterSelect\('Position','position'/);
 assert.match(source,/makeRosterSelect\('Lagroll','team_role'/);
 assert.match(source,/position,team_role/);
 assert.match(source,/player-public-profile/);
 assert.match(source,/if\(role\)\{const badge=/, 'role badge must only be created when a role exists');
+assert.match(css,/\.player-public-profile\{[^}]*position:fixed[^}]*inset:0/, 'opened player card must cover the mobile viewport');
+assert.match(css,/\.player-public-profile-avatar\{[^}]*width:min\(78vw,360px\)[^}]*height:min\(78vw,360px\)/, 'fullscreen player portrait must be substantially larger');
+assert.match(css,/z-index:1000/, 'fullscreen player card must sit above app navigation');
 console.log('player public profile tests passed');
