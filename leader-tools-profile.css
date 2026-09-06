@@ -1,0 +1,17 @@
+#profilePage #teamLeaderTools{margin:18px 0 22px}
+#profilePage #teamLeaderTools .team-leader-tools-heading p{margin-bottom:12px}
+#profilePage #teamLeaderToolsActions{display:grid;grid-template-columns:1fr;gap:10px}
+#profilePage #teamLeaderToolsActions>.team-leader-tool,#profilePage #openProfileRosterManager{width:100%}
+#openProfileRosterManager{min-height:48px;border:0;border-radius:12px;background:#111;color:#fff;padding:12px 14px;font:inherit;font-weight:900;text-align:left;cursor:pointer}
+.profile-roster-manager-host{margin:0 0 26px}
+.profile-roster-manager-host[hidden]{display:none}
+#profilePage #playerRosterSection{margin-top:14px}
+#teamPage #playerRosterSection .player-roster-add,
+#teamPage #playerRosterSection .player-roster-card-actions,
+#teamPage #playerRosterSection .player-roster-form,
+#teamPage #playerRosterSection .player-roster-inactive{display:none!important}
+#teamPage #playerRosterSection .player-roster-heading{margin-bottom:12px}
+#teamPage #playerRosterSection .player-roster-heading p{margin-bottom:0}
+#profilePage #playerRosterSection.profile-roster-management .player-roster-add,
+#profilePage #playerRosterSection.profile-roster-management .player-roster-card-actions{display:flex}
+@media(min-width:700px){#profilePage #teamLeaderToolsActions{grid-template-columns:repeat(2,minmax(0,1fr))}}
