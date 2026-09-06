@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge, canViewTeamChallenge, shouldRefreshChallengeForAuthEvent } = require('../team-challenge.js');
+const fs = require('fs');
+const { validateTeamChallenge, buildTeamChallengeViewModel, canManageTeamChallenge, canViewTeamChallenge, shouldRefreshChallengeForAuthEvent, shouldOpenChallengeEditorFromHome } = require('../team-challenge.js');
 
 test('coach and admin can manage weekly challenge', () => {
   assert.equal(canManageTeamChallenge('coach'), true);
@@ -34,4 +35,17 @@ test('weekly challenge refreshes when the signed-in user changes', () => {
   assert.equal(shouldRefreshChallengeForAuthEvent('SIGNED_IN', { user: { id: 'coach' } }), true);
   assert.equal(shouldRefreshChallengeForAuthEvent('SIGNED_OUT', null), true);
   assert.equal(shouldRefreshChallengeForAuthEvent('TOKEN_REFRESHED', { user: { id: 'coach' } }), false);
+});
+
+test('home challenge card opens editor only for leaders and admins', () => {
+  assert.equal(shouldOpenChallengeEditorFromHome('coach'), true);
+  assert.equal(shouldOpenChallengeEditorFromHome('admin'), true);
+  assert.equal(shouldOpenChallengeEditorFromHome('player'), false);
+  assert.equal(shouldOpenChallengeEditorFromHome('parent'), false);
+});
+
+test('leader home challenge card is wired to the focused editor', () => {
+  const source = fs.readFileSync('team-challenge.js', 'utf8');
+  assert.match(source, /homeChallengeCard/);
+  assert.match(source, /setTeamChallengeEditorOpen\(manager,form,true\)/);
 });
