@@ -71,6 +71,13 @@ test('calendar runtime shows leader hide and admin restore controls',()=>{
  assert.match(runtime,/loadNextActivityHome/);
 });
 
+test('calendar page remains readable if optional profile lookup fails',()=>{
+ const runtime=fs.readFileSync('calendar-runtime.js','utf8');
+ assert.match(runtime,/async function safeCalendarProfile\(\)/);
+ assert.match(runtime,/try\{return await cm\.getCalendarProfile\(\);\}catch\(e\)\{console\.warn/);
+ assert.match(runtime,/const profile=await safeCalendarProfile\(\)/);
+});
+
 test('calendar feed bypasses stale Safari and intermediary caches',()=>{
  const runtime=fs.readFileSync('calendar-runtime.js','utf8');
  assert.match(runtime,/cache:\s*['"]no-store['"]/);
