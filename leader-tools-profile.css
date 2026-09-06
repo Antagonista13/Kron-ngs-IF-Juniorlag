@@ -1,8 +1,10 @@
 #profilePage #teamLeaderTools{margin:14px 0 18px}
 #profilePage #teamLeaderTools .team-leader-tools-heading p{margin-bottom:10px}
 #profilePage #teamLeaderToolsActions{display:grid;grid-template-columns:1fr;gap:8px}
-#profilePage #teamLeaderToolsActions>*{box-sizing:border-box!important;width:100%!important;min-width:0!important;min-height:46px!important;margin:0!important;justify-self:stretch!important}
-#profilePage #teamLeaderToolsActions>.team-leader-tool,#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{box-sizing:border-box!important;width:100%!important;min-height:46px!important;margin:0!important;padding:10px 14px!important;border-radius:11px;font-family:inherit!important;font-size:14px!important;font-weight:800!important;line-height:1.2!important;letter-spacing:0!important;text-align:left!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
+#profilePage #teamLeaderToolsActions>*{box-sizing:border-box!important;width:100%!important;min-width:0!important;margin:0!important;justify-self:stretch!important}
+#profilePage #teamLeaderToolsActions>.team-leader-tool:not(.team-editor-focus-open){padding:0!important;min-height:0!important;border:0!important;background:transparent!important;box-shadow:none!important;display:block!important}
+#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{box-sizing:border-box!important;width:100%!important;min-height:46px!important;margin:0!important;padding:10px 14px!important;border-radius:11px;font-family:inherit!important;font-size:14px!important;font-weight:800!important;line-height:1.2!important;letter-spacing:0!important;text-align:left!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
+#profilePage #teamLeaderToolsActions>.team-leader-tool.team-editor-focus-open{display:block!important;width:auto!important;min-width:0!important;min-height:0!important;margin:0!important;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 24px)!important;border-radius:0!important}
 #openProfileRosterManager{border:0;background:#111;color:#fff;cursor:pointer}
 .profile-tool-chevron{font-size:26px;font-weight:400;line-height:.8;margin-left:auto;color:#fff}
 #profilePage #teamFocusManager:not(.team-editor-focus-open){display:none!important}
