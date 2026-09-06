@@ -10,8 +10,8 @@ assert.strictEqual(roster.formatTeamRole('vice_captain'),'VICEKAPTEN');
 assert.strictEqual(roster.formatTeamRole(''),'');
 assert.strictEqual(roster.getPlayerCardDestination('player',player),'public');
 assert.strictEqual(roster.getPlayerCardDestination('parent',player),'public');
-assert.strictEqual(roster.getPlayerCardDestination('coach',player),'development');
-assert.strictEqual(roster.getPlayerCardDestination('admin',player),'development');
+assert.strictEqual(roster.getPlayerCardDestination('coach',player),'public');
+assert.strictEqual(roster.getPlayerCardDestination('admin',player),'public');
 
 const source=fs.readFileSync(require.resolve('../player-roster.js'),'utf8');
 assert.match(source,/makeRosterSelect\('Position','position'/);

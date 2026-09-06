@@ -21,5 +21,5 @@ test('admin compact user assets are cache-busted after behavior changes',()=>{
  assert.match(source,/admin-compact-users\.css\?v=2/);
  assert.match(source,/admin-compact-users\.js\?v=3/);
  assert.match(html,/admin-profile-images\.js\?v=3/);
- assert.match(html,/leader-tools-profile\.css\?v=6/);
+ assert.match(html,/leader-tools-profile\.css\?v=7/);
 });

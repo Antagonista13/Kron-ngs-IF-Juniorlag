@@ -79,7 +79,7 @@ test('calendar feed bypasses stale Safari and intermediary caches',()=>{
 
 test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{
  const html=fs.readFileSync('index.html','utf8');
- for(const asset of ['calendar-management.js?v=2','calendar-runtime.js?v=4','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
- assert.ok(html.indexOf('calendar-management.js?v=2')<html.indexOf('script.js?v=9'));
+ for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=4','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
+ assert.ok(html.indexOf('calendar-management.js?v=3')<html.indexOf('script.js?v=9'));
  assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=4'));
 });
