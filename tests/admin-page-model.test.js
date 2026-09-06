@@ -35,12 +35,12 @@ test('last saved timestamp is formatted in Swedish local time', () => {
 });
 
 test('saved users render compact summary with explicit edit action', () => {
-  const source = fs.readFileSync('admin-page.js', 'utf8');
+  const source = fs.readFileSync('admin-compact-users.js', 'utf8');
   assert.match(source, /admin-user-summary/);
-  assert.match(source, /data-action="edit"/);
+  assert.match(source, /data\.action='edit'/);
   assert.match(source, /REDIGERA/);
   assert.match(source, /admin-user-editor/);
-  assert.doesNotMatch(source, /setTimeout\(resolve, 1800\)/);
+  assert.match(source, /startsWith\('SPARAT'\)/);
 });
 
 test('player account linking uses clear language and exact name suggestion', () => {
