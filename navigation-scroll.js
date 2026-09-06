@@ -12,7 +12,23 @@ function configureScrollRestoration(win) {
 
 function resetNestedPageState(pageId, doc) {
   const targetDoc = doc || (typeof document !== 'undefined' ? document : null);
-  if (pageId !== 'developmentPage' || !targetDoc) return false;
+  if (!targetDoc) return false;
+
+  if (pageId === 'teamPage') {
+    const roster = targetDoc.getElementById('playerRosterSection');
+    if (!roster || typeof roster.querySelector !== 'function') return false;
+    const profile = roster.querySelector('.player-public-profile');
+    if (!profile) return false;
+    if (typeof profile.remove === 'function') profile.remove();
+    Array.from(roster.children || []).forEach((child) => {
+      if (child === profile) return;
+      const isEditor = child.classList && typeof child.classList.contains === 'function' && child.classList.contains('player-roster-form');
+      if (!isEditor) child.hidden = false;
+    });
+    return true;
+  }
+
+  if (pageId !== 'developmentPage') return false;
 
   const coachView = targetDoc.getElementById('coachDevelopmentView');
   const detail = targetDoc.getElementById('coachPlayerDevelopment');
