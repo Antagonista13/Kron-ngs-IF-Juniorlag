@@ -1,7 +1,12 @@
 const fs = require('fs');
 const assert = require('assert');
 const css = fs.readFileSync('team-posts.css', 'utf8');
+const source = fs.readFileSync('team-focus.js', 'utf8');
 assert.ok(css.includes('.team-weekly-focus'));
 assert.ok(css.includes('background:linear-gradient'));
 assert.ok(css.includes('color:#fff'));
+assert.ok(source.includes("card.addEventListener('click'"));
+assert.ok(source.includes("card.setAttribute('role','button')"));
+assert.ok(source.includes('card.tabIndex=0'));
+assert.ok(source.includes('setTeamFocusEditorOpen(manager,form,true)'));
 console.log('team focus style tests passed');
