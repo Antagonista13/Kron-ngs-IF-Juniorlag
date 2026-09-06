@@ -71,6 +71,13 @@ test('calendar runtime shows leader hide and admin restore controls',()=>{
  assert.match(runtime,/loadNextActivityHome/);
 });
 
+test('calendar page remains readable if optional profile lookup fails',()=>{
+ const runtime=fs.readFileSync('calendar-runtime.js','utf8');
+ assert.match(runtime,/async function safeCalendarProfile\(\)/);
+ assert.match(runtime,/try\{return await cm\.getCalendarProfile\(\);\}catch\(e\)\{console\.warn/);
+ assert.match(runtime,/const profile=await safeCalendarProfile\(\)/);
+});
+
 test('calendar feed bypasses stale Safari and intermediary caches',()=>{
  const runtime=fs.readFileSync('calendar-runtime.js','utf8');
  assert.match(runtime,/cache:\s*['"]no-store['"]/);
@@ -79,7 +86,7 @@ test('calendar feed bypasses stale Safari and intermediary caches',()=>{
 
 test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{
  const html=fs.readFileSync('index.html','utf8');
- for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=4','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
+ for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=5','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
  assert.ok(html.indexOf('calendar-management.js?v=3')<html.indexOf('script.js?v=9'));
- assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=4'));
+ assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=5'));
 });
