@@ -1,18 +1,15 @@
 #profilePage #teamLeaderTools{margin:14px 0 18px}
 #profilePage #teamLeaderTools .team-leader-tools-heading p{margin-bottom:10px}
 #profilePage #teamLeaderToolsActions{display:grid;grid-template-columns:1fr;gap:8px}
-#profilePage #teamLeaderToolsActions>.team-leader-tool,#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{box-sizing:border-box;width:100%;min-height:50px;margin:0!important;padding:12px 14px!important;border-radius:12px;font-family:inherit!important;font-size:15px!important;font-weight:800!important;line-height:1.2!important;letter-spacing:0!important;text-align:left!important}
+#profilePage #teamLeaderToolsActions>.team-leader-tool,#profilePage #teamLeaderToolsActions>.team-leader-tool>button,#profilePage #openProfileRosterManager{box-sizing:border-box;width:100%;min-height:46px;margin:0!important;padding:10px 14px!important;border-radius:11px;font-family:inherit!important;font-size:14px!important;font-weight:800!important;line-height:1.2!important;letter-spacing:0!important;text-align:left!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
 #openProfileRosterManager{border:0;background:#111;color:#fff;cursor:pointer}
+.profile-tool-chevron{font-size:26px;font-weight:400;line-height:.8;margin-left:auto;color:#fff}
 #profilePage #teamFocusManager:not(.team-editor-focus-open){display:none!important}
 .profile-roster-manager-host{margin:0 0 22px}
 .profile-roster-manager-host[hidden]{display:none}
 #profilePage #playerRosterSection{margin-top:12px}
-#teamPage #playerRosterSection .player-roster-add,
-#teamPage #playerRosterSection .player-roster-card-actions,
-#teamPage #playerRosterSection .player-roster-form,
-#teamPage #playerRosterSection .player-roster-inactive{display:none!important}
+#teamPage #playerRosterSection .player-roster-add,#teamPage #playerRosterSection .player-roster-card-actions,#teamPage #playerRosterSection .player-roster-form,#teamPage #playerRosterSection .player-roster-inactive{display:none!important}
 #teamPage #playerRosterSection .player-roster-heading{margin-bottom:10px}
 #teamPage #playerRosterSection .player-roster-heading p{margin-bottom:0}
-#profilePage #playerRosterSection.profile-roster-management .player-roster-add,
-#profilePage #playerRosterSection.profile-roster-management .player-roster-card-actions{display:flex}
+#profilePage #playerRosterSection.profile-roster-management .player-roster-add,#profilePage #playerRosterSection.profile-roster-management .player-roster-card-actions{display:flex}
 @media(min-width:700px){#profilePage #teamLeaderToolsActions{grid-template-columns:repeat(2,minmax(0,1fr))}}
