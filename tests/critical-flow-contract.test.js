@@ -6,7 +6,7 @@ const home=fs.readFileSync('home-player-header.js','utf8');
 const leader=fs.readFileSync('leader-tools-profile.js','utf8');
 
 test('critical Safari assets are versioned and loaded exactly once',()=>{
-  for(const asset of ['navigation-scroll.js?v=2','home-player-header.js?v=9','leader-tools-profile.js?v=6','calendar-runtime.js?v=8','calendar-bridge.js?v=1']){
+  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=9','leader-tools-profile.js?v=6','calendar-runtime.js?v=8','calendar-bridge.js?v=1']){
     assert.equal(html.split(asset).length-1,1,asset+' must load exactly once');
   }
   assert.ok(html.indexOf('calendar-runtime.js?v=8')<html.indexOf('calendar-bridge.js?v=1'),'calendar bridge must load after runtime');

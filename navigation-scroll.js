@@ -10,6 +10,21 @@ function configureScrollRestoration(win) {
   target.history.scrollRestoration = 'manual';
 }
 
+function resetAdminPageState(doc) {
+  const targetDoc = doc || (typeof document !== 'undefined' ? document : null);
+  if (!targetDoc || typeof targetDoc.querySelectorAll !== 'function') return false;
+  const cards = Array.from(targetDoc.querySelectorAll('#adminUsers .admin-user-card[data-user-id]') || []);
+  cards.forEach((card) => {
+    if (!card || typeof card.querySelector !== 'function') return;
+    const summary = card.querySelector('.admin-user-summary');
+    const editor = card.querySelector('.admin-user-editor');
+    if (summary) summary.hidden = false;
+    if (editor) editor.hidden = true;
+    if (card.classList && typeof card.classList.add === 'function') card.classList.add('admin-user-compact');
+  });
+  return cards.length > 0;
+}
+
 function resetNestedPageState(pageId, doc) {
   const targetDoc = doc || (typeof document !== 'undefined' ? document : null);
   if (!targetDoc) return false;
@@ -75,8 +90,11 @@ function setupNavigationScroll(doc, win) {
       : null;
     if (!navTarget) return;
 
+    if (navTarget.id === 'adminBackButton') resetAdminPageState(doc);
+
     if (navTarget.classList && navTarget.classList.contains('nav-item')) {
       const pageId = navTarget.getAttribute('data-page');
+      if (pageId === 'profilePage') resetAdminPageState(doc);
       resetNestedPageState(pageId, doc);
       if (pageId === 'developmentPage') {
         setTimeout(() => scrollToPageLanding(pageId, doc, win), 20);
@@ -102,7 +120,7 @@ function setupNavigationScroll(doc, win) {
   });
 }
 
-const navigationScrollApi = { scrollPageTop, configureScrollRestoration, resetNestedPageState, scrollToPageLanding, setupNavigationScroll };
+const navigationScrollApi = { scrollPageTop, configureScrollRestoration, resetAdminPageState, resetNestedPageState, scrollToPageLanding, setupNavigationScroll };
 if (typeof module !== 'undefined' && module.exports) module.exports = navigationScrollApi;
 if (typeof window !== 'undefined') {
   window.KronangNavigationScroll = navigationScrollApi;
