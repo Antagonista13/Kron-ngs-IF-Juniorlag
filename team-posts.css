@@ -37,3 +37,17 @@
 .team-post-manage{margin-top:9px;padding-top:8px;justify-content:flex-start}
 .team-post-manage button{min-height:32px;padding:5px 9px;font-size:10px;line-height:1}
 @media(max-width:560px){.team-posts-list .team-post{border-radius:18px}.team-post-manage{display:flex;gap:6px}.team-post-manage button{width:auto;min-height:32px;padding:5px 9px}.team-post-image{max-height:180px;object-fit:cover;margin:10px 0 6px}.team-post-pinned{margin-top:6px}.team-post-toggle{min-height:30px}}
+
+/* Fokuserat redigeringsläge */
+body:has(.team-editor-focus-open){overflow:hidden}
+body:has(.team-editor-focus-open) .bottom-nav{display:none}
+.team-editor-focus-open{position:fixed!important;inset:0!important;z-index:2000!important;margin:0!important;border-radius:0!important;overflow-y:auto!important;background:rgba(7,7,7,.97)!important;color:#fff!important;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 24px)!important;display:block!important;box-shadow:none!important}
+.team-editor-focus-open::before{display:block;max-width:620px;margin:0 auto 14px;font-size:26px;font-weight:900;letter-spacing:-.02em;color:#fff}
+#teamPostComposer.team-editor-focus-open::before{content:"Laginlägg"}
+#teamFocusManager.team-editor-focus-open::before{content:"Veckans fokus"}
+#teamChallengeManager.team-editor-focus-open::before{content:"Veckans utmaning"}
+.team-editor-focus-open>#openTeamPostComposer,.team-editor-focus-open>#openTeamFocusManager,.team-editor-focus-open>#openTeamChallengeManager{display:none!important}
+.team-editor-focus-open #teamPostForm,.team-editor-focus-open #teamFocusForm,.team-editor-focus-open #teamChallengeForm{display:block;max-width:620px;margin:0 auto;background:#fff;color:#111;border-radius:22px;padding:18px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
+.team-editor-focus-open #teamPostForm[hidden],.team-editor-focus-open #teamFocusForm[hidden],.team-editor-focus-open #teamChallengeForm[hidden]{display:none}
+.team-editor-focus-open .team-post-form-actions{position:sticky;bottom:0;background:#fff;padding-top:12px;padding-bottom:max(4px,env(safe-area-inset-bottom,0px));z-index:1}
+@media(max-width:560px){.team-editor-focus-open{padding-left:12px!important;padding-right:12px!important}.team-editor-focus-open::before{font-size:24px}.team-editor-focus-open #teamPostForm,.team-editor-focus-open #teamFocusForm,.team-editor-focus-open #teamChallengeForm{border-radius:18px;padding:16px}.team-editor-focus-open .team-post-form-actions{grid-template-columns:1fr 1fr}}
