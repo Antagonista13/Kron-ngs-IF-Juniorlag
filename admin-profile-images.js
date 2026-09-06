@@ -22,6 +22,10 @@ async function load(){
   if(!rows.length)host.innerHTML='<p class="admin-empty">Inga användare att visa.</p>';
 }
 function loadAccountLinkingUx(){if(root.KronangAdminAccountLinking||document.querySelector('script[data-admin-account-linking]'))return;const script=document.createElement('script');script.src='admin-account-linking.js?v=1';script.dataset.adminAccountLinking='true';document.head.appendChild(script);}
-if(typeof document!=='undefined'){loadAccountLinkingUx();document.addEventListener('click',event=>{if(event.target&&event.target.closest&&event.target.closest('#openAdminPage'))setTimeout(load,50);});document.addEventListener('kronang:auth-signed-in',()=>setTimeout(load,150));setTimeout(load,1200);}
+function loadCompactAdminUx(){
+  if(!document.querySelector('link[data-admin-compact-users]')){const link=document.createElement('link');link.rel='stylesheet';link.href='admin-compact-users.css?v=1';link.dataset.adminCompactUsers='true';document.head.appendChild(link);}
+  if(!document.querySelector('script[data-admin-compact-users]')){const script=document.createElement('script');script.src='admin-compact-users.js?v=1';script.dataset.adminCompactUsers='true';document.head.appendChild(script);}
+}
+if(typeof document!=='undefined'){loadAccountLinkingUx();loadCompactAdminUx();document.addEventListener('click',event=>{if(event.target&&event.target.closest&&event.target.closest('#openAdminPage'))setTimeout(load,50);});document.addEventListener('kronang:auth-signed-in',()=>setTimeout(load,150));setTimeout(load,1200);}
 root.KronangAdminProfileImages={load};
 })(typeof window!=='undefined'?window:{});
