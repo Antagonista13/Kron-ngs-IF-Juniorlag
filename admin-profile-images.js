@@ -12,8 +12,9 @@ async function load(){
   const {data:me}=await root.kronangSupabase.from('profiles').select('role,is_active').eq('id',user.id).maybeSingle();if(!me||me.role!=='admin'||me.is_active===false)return;
   const section=ensureSection();if(!section)return;const host=section.querySelector('.admin-profile-images-list');host.innerHTML='<p class="admin-empty">Hämtar profilbilder…</p>';
   const usersResult=await root.kronangSupabase.rpc('admin_list_users');if(usersResult.error){host.innerHTML='<p class="admin-empty">Profilbilder kunde inte hämtas.</p>';return;}
+  const activeRows=(usersResult.data||[]).filter(row=>row.is_active!==false&&row.role!=='pending');
   const unique=new Map();
-  for(const row of (usersResult.data||[])){if(row.is_active===false||row.role==='pending'||!row.profile_id)continue;if(!unique.has(row.profile_id))unique.set(row.profile_id,row);}
+  for(const row of activeRows){if(!row.profile_id)continue;if(!unique.has(row.profile_id))unique.set(row.profile_id,row);}
   const rows=Array.from(unique.values()).sort((a,b)=>(a.full_name||'').localeCompare(b.full_name||'','sv',{sensitivity:'base'}));
   const ids=rows.map(r=>r.profile_id).filter(Boolean);let avatarRows=[];
   if(ids.length){const result=await root.kronangSupabase.from('profiles').select('id,avatar_url').in('id',ids);avatarRows=result.data||[];}
