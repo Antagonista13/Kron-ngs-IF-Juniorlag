@@ -38,6 +38,6 @@ test('staff profile has back to team and optional contact links', () => {
 });
 
 test('opened staff profile is the only visible section content', () => {
-  assert.match(source, /team-staff-section>\[hidden\]/);
-  assert.match(source, /display:none!important/);
+  const css=fs.readFileSync(path.join(__dirname,'..','team-staff.css'),'utf8');
+  assert.match(css, /team-staff-section>\[hidden\]\{display:none!important\}/);
 });
