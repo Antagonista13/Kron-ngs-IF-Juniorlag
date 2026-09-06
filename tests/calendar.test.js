@@ -87,6 +87,13 @@ test('calendar runtime owns Calendar navigation before the legacy click handler'
  assert.match(runtime,/window\.testSportAdminCalendar\(\)/);
 });
 
+test('calendar falls back to a direct SportAdmin render if enhanced pipeline fails',()=>{
+ const runtime=fs.readFileSync('calendar-runtime.js','utf8');
+ assert.match(runtime,/async function renderBasicCalendarFallback\(host\)/);
+ assert.match(runtime,/catch\(e\)\{console\.error\(e\);await renderBasicCalendarFallback\(host\);\}/);
+ assert.match(runtime,/parseActivities\(await r\.text\(\)\)/);
+});
+
 test('calendar feed bypasses stale Safari and intermediary caches',()=>{
  const runtime=fs.readFileSync('calendar-runtime.js','utf8');
  assert.match(runtime,/cache:\s*['"]no-store['"]/);
@@ -95,7 +102,7 @@ test('calendar feed bypasses stale Safari and intermediary caches',()=>{
 
 test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{
  const html=fs.readFileSync('index.html','utf8');
- for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=6','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
+ for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=7','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
  assert.ok(html.indexOf('calendar-management.js?v=3')<html.indexOf('script.js?v=9'));
- assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=6'));
+ assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=7'));
 });
