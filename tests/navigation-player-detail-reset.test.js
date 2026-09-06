@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { resetNestedPageState, scrollToPageLanding } = require('../navigation-scroll.js');
+const { resetNestedPageState, resetAdminPageState, scrollToPageLanding } = require('../navigation-scroll.js');
 
 test('reselecting Utveckling resets an open player detail to the development landing view', () => {
   const classNames = new Set(['coach-player-detail-open']);
@@ -41,6 +41,25 @@ test('reselecting Laget closes an open public player profile and restores the ro
   assert.equal(heading.hidden, false);
   assert.equal(list.hidden, false);
   assert.equal(form.hidden, true);
+});
+
+test('returning from Administration collapses expanded user editors before Profile is shown', () => {
+  const card = {
+    classList: { added: '', add(name) { this.added = name; } },
+    summary: { hidden: true },
+    editor: { hidden: false },
+    querySelector(selector) {
+      if (selector === '.admin-user-summary') return this.summary;
+      if (selector === '.admin-user-editor') return this.editor;
+      return null;
+    }
+  };
+  const doc = { querySelectorAll: (selector) => selector === '#adminUsers .admin-user-card[data-user-id]' ? [card] : [] };
+
+  assert.equal(resetAdminPageState(doc), true);
+  assert.equal(card.summary.hidden, false);
+  assert.equal(card.editor.hidden, true);
+  assert.equal(card.classList.added, 'admin-user-compact');
 });
 
 test('Utveckling tab scrolls to the development page landing, not the player card', () => {
