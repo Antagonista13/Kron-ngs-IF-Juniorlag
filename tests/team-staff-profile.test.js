@@ -36,3 +36,8 @@ test('staff profile has back to team and optional contact links', () => {
   assert.match(source, /phoneHref/);
   assert.match(source, /emailHref/);
 });
+
+test('opened staff profile is the only visible section content', () => {
+  assert.match(source, /team-staff-section>\[hidden\]/);
+  assert.match(source, /display:none!important/);
+});
