@@ -3,113 +3,19 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {stableExternalEventKey,filterHiddenActivities,filterCurrentOrFutureActivities,escapeCalendarHtml}=require('../calendar-management.js');
 
-test('uses SportAdmin UID as stable external key when available',()=>{
- assert.equal(stableExternalEventKey({uid:'sportadmin-123',startRaw:'20260905T110000',summary:'Träning'}),'uid:sportadmin-123');
-});
-
-test('falls back to deterministic fingerprint without UID',()=>{
- const a=stableExternalEventKey({startRaw:'20260905T110000',endRaw:'20260905T123000',summary:'Träning',location:'Kronäng Arena'});
- const b=stableExternalEventKey({startRaw:'20260905T110000',endRaw:'20260905T123000',summary:'Träning',location:'Kronäng Arena'});
- assert.equal(a,b);
- assert.match(a,/^fp:/);
-});
-
-test('hidden external keys are removed before rendering',()=>{
- const activities=[{externalKey:'uid:a'},{externalKey:'uid:b'}];
- assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);
-});
-
-test('completed activities are removed while ongoing and future activities remain',()=>{
- const now=new Date('2026-09-05T14:00:00+02:00');
- const completed={summary:'Domare',date:new Date('2026-09-05T10:00:00+02:00'),endDate:new Date('2026-09-05T11:00:00+02:00')};
- const ongoing={summary:'Träning',date:new Date('2026-09-05T13:30:00+02:00'),endDate:new Date('2026-09-05T15:00:00+02:00')};
- const future={summary:'Match',date:new Date('2026-09-06T12:00:00+02:00'),endDate:new Date('2026-09-06T14:00:00+02:00')};
- assert.deepEqual(filterCurrentOrFutureActivities([completed,ongoing,future],now),[ongoing,future]);
-});
-
-test('activity without end time stops being current at its start time',()=>{
- const now=new Date('2026-09-05T14:00:00+02:00');
- const started={summary:'Domare',date:new Date('2026-09-05T11:00:00+02:00'),endDate:null};
- const future={summary:'Träning',date:new Date('2026-09-05T18:00:00+02:00'),endDate:null};
- assert.deepEqual(filterCurrentOrFutureActivities([started,future],now),[future]);
-});
-
-test('escapes external calendar text before html rendering',()=>{
- assert.equal(escapeCalendarHtml('<img src=x onerror=alert(1)> & "x"'),'&lt;img src=x onerror=alert(1)&gt; &amp; &quot;x&quot;');
-});
-
-test('calendar management uses server RPCs and never writes to the external calendar source',()=>{
- const js=fs.readFileSync('calendar-management.js','utf8').toLowerCase();
- assert.doesNotMatch(js,/sportadmin.*(delete|update|post|put|patch)/);
- assert.match(js,/list_calendar_hidden_keys/);
- assert.match(js,/hide_calendar_event/);
- assert.match(js,/restore_calendar_event/);
- assert.doesNotMatch(js,/from\('calendar_hidden_events'\)\.select/);
-});
-
-test('calendar migration grants hide to leaders, key-read to active roles and full restore/list only to admin',()=>{
- const sql=fs.readFileSync('supabase/migrations/202609040019_calendar_hidden_events.sql','utf8').toLowerCase();
- assert.match(sql,/calendar_hidden_events/);
- assert.match(sql,/list_calendar_hidden_keys/);
- assert.match(sql,/hide_calendar_event/);
- assert.match(sql,/restore_calendar_event/);
- assert.match(sql,/list_hidden_calendar_events/);
- assert.match(sql,/role not in \('admin','coach'\)/);
- assert.match(sql,/role = 'admin'/);
- assert.match(sql,/calendar_hidden_events_hidden_by_idx/);
- assert.doesNotMatch(sql,/sportadmin/);
-});
-
-test('calendar runtime shows leader hide and admin restore controls',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/DÖLJ AKTIVITET/);
- assert.match(runtime,/VISA DOLDA AKTIVITETER/);
- assert.match(runtime,/ÅTERSTÄLL/);
- assert.match(runtime,/filterHiddenActivities/);
- assert.match(runtime,/filterCurrentOrFutureActivities/);
- assert.match(runtime,/escapeCalendarHtml/);
- assert.match(runtime,/loadNextActivityHome/);
-});
-
-test('calendar page remains readable if optional profile lookup fails',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/async function safeCalendarProfile\(\)/);
- assert.match(runtime,/try\{return await cm\.getCalendarProfile\(\);\}catch\(e\)\{console\.warn/);
- assert.match(runtime,/const profile=await safeCalendarProfile\(\)/);
-});
-
-test('calendar runtime owns Calendar navigation before the legacy click handler',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/setupCalendarNavigation/);
- assert.match(runtime,/stopImmediatePropagation\(\)/);
- assert.match(runtime,/addEventListener\(['"]click['"]/);
- assert.match(runtime,/\},true\);/);
- assert.match(runtime,/window\.testSportAdminCalendar\(\)/);
-});
-
-test('calendar falls back to a direct SportAdmin render if enhanced pipeline fails',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/async function renderBasicCalendarFallback\(host\)/);
- assert.match(runtime,/catch\(e\)\{console\.error\(e\);await renderBasicCalendarFallback\(host\);\}/);
- assert.match(runtime,/parseActivities\(await r\.text\(\)\)/);
-});
-
-test('calendar feed bypasses stale Safari and intermediary caches',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/cache:\s*['"]no-store['"]/);
- assert.match(runtime,/[?&]_=[^;,)]+/);
-});
-
-test('calendar page reuses the successful home feed instead of requiring a second SportAdmin request',()=>{
- const runtime=fs.readFileSync('calendar-runtime.js','utf8');
- assert.match(runtime,/let cachedFeedActivities=/);
- assert.match(runtime,/cachedFeedActivities=parsed/);
- assert.match(runtime,/if\(cachedFeedActivities\.length\)return cachedFeedActivities\.slice\(\)/);
-});
-
-test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{
- const html=fs.readFileSync('index.html','utf8');
- for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=8','calendar-management.css?v=1']) assert.equal(html.split(asset).length-1,1);
- assert.ok(html.indexOf('calendar-management.js?v=3')<html.indexOf('script.js?v=9'));
- assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=8'));
-});
+test('uses SportAdmin UID as stable external key when available',()=>{assert.equal(stableExternalEventKey({uid:'sportadmin-123',startRaw:'20260905T110000',summary:'Träning'}),'uid:sportadmin-123');});
+test('falls back to deterministic fingerprint without UID',()=>{const a=stableExternalEventKey({startRaw:'20260905T110000',endRaw:'20260905T123000',summary:'Träning',location:'Kronäng Arena'});const b=stableExternalEventKey({startRaw:'20260905T110000',endRaw:'20260905T123000',summary:'Träning',location:'Kronäng Arena'});assert.equal(a,b);assert.match(a,/^fp:/);});
+test('hidden external keys are removed before rendering',()=>{const activities=[{externalKey:'uid:a'},{externalKey:'uid:b'}];assert.deepEqual(filterHiddenActivities(activities,new Set(['uid:a'])),[{externalKey:'uid:b'}]);});
+test('completed activities are removed while ongoing and future activities remain',()=>{const now=new Date('2026-09-05T14:00:00+02:00');const completed={summary:'Domare',date:new Date('2026-09-05T10:00:00+02:00'),endDate:new Date('2026-09-05T11:00:00+02:00')};const ongoing={summary:'Träning',date:new Date('2026-09-05T13:30:00+02:00'),endDate:new Date('2026-09-05T15:00:00+02:00')};const future={summary:'Match',date:new Date('2026-09-06T12:00:00+02:00'),endDate:new Date('2026-09-06T14:00:00+02:00')};assert.deepEqual(filterCurrentOrFutureActivities([completed,ongoing,future],now),[ongoing,future]);});
+test('activity without end time stops being current at its start time',()=>{const now=new Date('2026-09-05T14:00:00+02:00');const started={summary:'Domare',date:new Date('2026-09-05T11:00:00+02:00'),endDate:null};const future={summary:'Träning',date:new Date('2026-09-05T18:00:00+02:00'),endDate:null};assert.deepEqual(filterCurrentOrFutureActivities([started,future],now),[future]);});
+test('escapes external calendar text before html rendering',()=>{assert.equal(escapeCalendarHtml('<img src=x onerror=alert(1)> & "x"'),'&lt;img src=x onerror=alert(1)&gt; &amp; &quot;x&quot;');});
+test('calendar management uses server RPCs and never writes to the external calendar source',()=>{const js=fs.readFileSync('calendar-management.js','utf8').toLowerCase();assert.doesNotMatch(js,/sportadmin.*(delete|update|post|put|patch)/);assert.match(js,/list_calendar_hidden_keys/);assert.match(js,/hide_calendar_event/);assert.match(js,/restore_calendar_event/);assert.doesNotMatch(js,/from\('calendar_hidden_events'\)\.select/);});
+test('calendar migration grants hide to leaders, key-read to active roles and full restore/list only to admin',()=>{const sql=fs.readFileSync('supabase/migrations/202609040019_calendar_hidden_events.sql','utf8').toLowerCase();assert.match(sql,/calendar_hidden_events/);assert.match(sql,/list_calendar_hidden_keys/);assert.match(sql,/hide_calendar_event/);assert.match(sql,/restore_calendar_event/);assert.match(sql,/list_hidden_calendar_events/);assert.match(sql,/role not in \('admin','coach'\)/);assert.match(sql,/role = 'admin'/);assert.match(sql,/calendar_hidden_events_hidden_by_idx/);assert.doesNotMatch(sql,/sportadmin/);});
+test('calendar runtime shows leader hide and admin restore controls',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/DÖLJ AKTIVITET/);assert.match(runtime,/VISA DOLDA AKTIVITETER/);assert.match(runtime,/ÅTERSTÄLL/);assert.match(runtime,/filterHiddenActivities/);assert.match(runtime,/filterCurrentOrFutureActivities/);assert.match(runtime,/escapeCalendarHtml/);assert.match(runtime,/loadNextActivityHome/);});
+test('calendar page remains readable if optional profile lookup fails',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/async function safeCalendarProfile\(\)/);assert.match(runtime,/try\{return await cm\.getCalendarProfile\(\);\}catch\(e\)\{console\.warn/);assert.match(runtime,/const profile=await safeCalendarProfile\(\)/);});
+test('calendar runtime owns Calendar navigation before the legacy click handler',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/setupCalendarNavigation/);assert.match(runtime,/stopImmediatePropagation\(\)/);assert.match(runtime,/addEventListener\(['"]click['"]/);assert.match(runtime,/\},true\);/);assert.match(runtime,/window\.testSportAdminCalendar\(\)/);});
+test('calendar falls back to a direct SportAdmin render if enhanced pipeline fails',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/async function renderBasicCalendarFallback\(host\)/);assert.match(runtime,/catch\(e\)\{console\.error\(e\);await renderBasicCalendarFallback\(host\);\}/);assert.match(runtime,/parseActivities\(await r\.text\(\)\)/);});
+test('calendar feed bypasses stale Safari and intermediary caches',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/cache:\s*['"]no-store['"]/);assert.match(runtime,/[?&]_=[^;,)]+/);});
+test('calendar page reuses the successful home feed instead of requiring a second SportAdmin request',()=>{const runtime=fs.readFileSync('calendar-runtime.js','utf8');assert.match(runtime,/let cachedFeedActivities=/);assert.match(runtime,/cachedFeedActivities=parsed/);assert.match(runtime,/if\(cachedFeedActivities\.length\)return cachedFeedActivities\.slice\(\)/);});
+test('calendar bridge isolates the page from Calendar 2.0 rendering failures',()=>{const html=fs.readFileSync('index.html','utf8');const bridge=fs.readFileSync('calendar-bridge.js','utf8');assert.match(html,/calendar-bridge\.js\?v=1/);assert.ok(html.indexOf('calendar-runtime.js?v=8')<html.indexOf('calendar-bridge.js?v=1'));assert.match(bridge,/window\.testSportAdminCalendar=renderCalendarBridge/);assert.match(bridge,/kronangs-kalender\.h-bergqvist\.workers\.dev/);assert.match(bridge,/calendar-card/);assert.doesNotMatch(bridge,/KronangCalendarManagement/);});
+test('calendar 2.0 assets load exactly once around the legacy calendar script',()=>{const html=fs.readFileSync('index.html','utf8');for(const asset of ['calendar-management.js?v=3','calendar-runtime.js?v=8','calendar-management.css?v=1'])assert.equal(html.split(asset).length-1,1);assert.ok(html.indexOf('calendar-management.js?v=3')<html.indexOf('script.js?v=9'));assert.ok(html.indexOf('script.js?v=9')<html.indexOf('calendar-runtime.js?v=8'));});
