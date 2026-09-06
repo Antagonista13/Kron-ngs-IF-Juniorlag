@@ -35,6 +35,8 @@ jobs:
           node --check calendar-management.js
           node --check calendar-runtime.js
           node --check profile-role-view.js
+      - name: CI stability coverage
+        run: node --test tests/ci-stability-coverage.test.js
       - name: Home tests
         run: |
           node tests/home-player-header.test.js
