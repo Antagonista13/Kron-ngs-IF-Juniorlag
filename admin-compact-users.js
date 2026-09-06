@@ -41,8 +41,8 @@ function decorate(card){
   const summary=document.createElement('div');
   summary.className='admin-user-summary';
   const meta=document.createElement('span');meta.className='admin-user-summary-meta';meta.textContent=summaryText(card);
-  const edit=document.createElement('button');edit.type='button';edit.dataset.action='edit';edit.className='admin-user-edit';edit.textContent='REDIGERA ›';
-  edit.addEventListener('click',()=>expandCard(card));
+  const edit=document.createElement('button');edit.type='button';edit.setAttribute('data-action','admin-edit');edit.className='admin-user-edit';edit.textContent='REDIGERA ›';
+  edit.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();expandCard(card);});
   summary.append(meta,edit);
   card.append(summary,editor);
   collapseCard(card);
