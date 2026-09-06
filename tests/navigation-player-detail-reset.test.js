@@ -24,13 +24,14 @@ test('reselecting Utveckling resets an open player detail to the development lan
   assert.equal(worklist.hidden, false);
 });
 
-test('reselecting Laget closes an open public player profile and restores the roster', () => {
+test('reselecting Laget closes an open public player profile and restores the roster without opening the edit form', () => {
   let removed = false;
   const profile = { classList: { contains: (name) => name === 'player-public-profile' }, remove: () => { removed = true; } };
   const heading = { hidden: true, classList: { contains: () => false } };
   const list = { hidden: true, classList: { contains: () => false } };
+  const form = { hidden: true, classList: { contains: (name) => name === 'player-roster-form' } };
   const roster = {
-    children: [profile, heading, list],
+    children: [profile, heading, list, form],
     querySelector: (selector) => selector === '.player-public-profile' ? profile : null
   };
   const doc = { getElementById: (id) => id === 'playerRosterSection' ? roster : null };
@@ -39,6 +40,7 @@ test('reselecting Laget closes an open public player profile and restores the ro
   assert.equal(removed, true);
   assert.equal(heading.hidden, false);
   assert.equal(list.hidden, false);
+  assert.equal(form.hidden, true);
 });
 
 test('Utveckling tab scrolls to the development page landing, not the player card', () => {
