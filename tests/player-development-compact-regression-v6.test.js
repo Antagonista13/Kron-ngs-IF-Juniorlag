@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact styles keep history content visible when populated',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/#playerHistoryContent\{margin-top:12px\}/);});
