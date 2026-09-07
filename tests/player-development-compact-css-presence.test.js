@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact player development stylesheet exists',()=>{assert.equal(fs.existsSync('player-development-compact.css'),true);});
