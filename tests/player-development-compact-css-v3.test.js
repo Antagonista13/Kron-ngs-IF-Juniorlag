@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('layout enables compact presentation',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/classList\.add\('player-development-compact'\)/);});
