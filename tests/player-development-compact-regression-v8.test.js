@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history tab has clear inverse styling',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/button\[aria-selected="true"\]\{background:#111;color:#fff;font-weight:800\}/);});
