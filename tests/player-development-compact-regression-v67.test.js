@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact trend heading removes top margin',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/developmentTrendCard h2.*margin-top:0/);});
