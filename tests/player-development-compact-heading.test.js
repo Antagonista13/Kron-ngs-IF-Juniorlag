@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment heading has tight spacing',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/player-development-section-heading\{margin:2px 0 8px\}/);});
