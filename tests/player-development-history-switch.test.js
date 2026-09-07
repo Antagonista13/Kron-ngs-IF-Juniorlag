@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('switching history changes both panel visibility and selected control',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/activeHistory=kind/);assert.match(js,/el\.hidden=name!==activeHistory/);assert.match(js,/aria-selected/);});
