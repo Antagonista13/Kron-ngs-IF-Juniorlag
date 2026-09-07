@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history choices fit a mobile row',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);assert.match(css,/white-space:nowrap/);});
