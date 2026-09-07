@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('phone assessment grid uses eight pixel gap',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-grid\{gap:8px\}/);});
