@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected state compares semantic button key with active history',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/btn\.dataset\.historyPanel===activeHistory/);});
