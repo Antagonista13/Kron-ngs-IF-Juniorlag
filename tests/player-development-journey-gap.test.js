@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('journey spacing is compact',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/#playerDevelopmentJourney\{display:grid;gap:18px\}/);});
