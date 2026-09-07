@@ -11,6 +11,20 @@ function ensureCompactStyles(){
     #developmentPage .player-development-section-heading{margin:2px 2px 8px}
     #developmentPage .player-development-section-heading span{display:block;font-size:12px;font-weight:900;letter-spacing:1.2px}
     #developmentPage .player-development-section-heading p{margin:3px 0 0;color:#6f6f6f;font-size:13px}
+
+    #developmentPage #playerMainGoalCard{padding:14px 15px}
+    #developmentPage #playerMainGoalCard .player-main-goal-head{margin-bottom:10px}
+    #developmentPage #playerMainGoalCard .player-main-goal-head h3{font-size:1.05rem;margin-top:2px}
+    #developmentPage #playerMainGoalCard .player-main-goal-readonly h2{font-size:1.25rem;margin:0 0 5px}
+    #developmentPage #playerMainGoalCard .player-main-goal-readonly>p{margin:0 0 8px;line-height:1.3}
+    #developmentPage #playerMainGoalCard button.secondary{min-height:38px;margin-top:10px}
+    #developmentPage #developmentFocusSummary{padding:14px 15px}
+    #developmentPage #developmentFocusSummary h3{margin:0 0 9px;font-size:1.15rem}
+    #developmentPage #developmentFocusSummary>strong{display:block;margin:0 0 5px}
+    #developmentPage #developmentFocusSummary h2{margin:0 0 7px;font-size:1.3rem;line-height:1.2}
+    #developmentPage #developmentFocusSummary p{margin:5px 0;line-height:1.35}
+    #developmentPage #developmentFocusSummary>strong:not(:first-child){margin-top:10px}
+
     #developmentPage #playerAssessmentSlot .development-grid{grid-template-columns:1fr 1fr;gap:8px}
     #developmentPage #playerAssessmentSlot .development-card{border-radius:14px;padding:12px;min-height:0}
     #developmentPage #playerAssessmentSlot .development-icon{font-size:21px;margin-bottom:6px}
@@ -21,11 +35,30 @@ function ensureCompactStyles(){
     #developmentPage #playerAssessmentSlot .self-reflection{min-height:52px;margin-bottom:8px;padding:8px;font-size:13px}
     #developmentPage #playerAssessmentSlot .development-save-card{grid-column:1/-1;padding:10px}
     #developmentPage #playerAssessmentSlot #saveDevelopmentButton{padding:11px 14px;border-radius:11px;font-size:13px}
+
+    #developmentPage #playerTrendSlot .profile-development-trend{margin-top:0;padding:14px}
+    #developmentPage #playerTrendSlot .profile-development-trend>h3{font-size:20px;margin:0 0 4px}
+    #developmentPage #playerTrendSlot .profile-trend-intro{font-size:13px;line-height:1.3;margin:0 0 10px}
+    #developmentPage #playerTrendSlot .profile-trend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    #developmentPage #playerTrendSlot .profile-trend-row{border:1px solid #ececec;border-radius:12px;padding:10px;min-width:0}
+    #developmentPage #playerTrendSlot .profile-trend-row:first-child{border-top:1px solid #ececec;padding-top:10px}
+    #developmentPage #playerTrendSlot .profile-trend-row h4{font-size:15px;margin:0 0 7px}
+    #developmentPage #playerTrendSlot .profile-trend-line{display:block;margin:7px 0}
+    #developmentPage #playerTrendSlot .profile-trend-line-label{display:block;font-size:11px;margin-bottom:4px;color:#666}
+    #developmentPage #playerTrendSlot .profile-trend-values{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+    #developmentPage #playerTrendSlot .profile-trend-values>span{gap:1px;min-width:0}
+    #developmentPage #playerTrendSlot .profile-trend-values small{font-size:9px}
+    #developmentPage #playerTrendSlot .profile-trend-values strong{font-size:12px;letter-spacing:0;white-space:nowrap}
+    #developmentPage #playerTrendSlot .profile-trend-change{grid-column:1/-1;border:0;border-top:1px solid #eee;padding:4px 0 0;margin-top:2px}
+    #developmentPage #playerTrendSlot .profile-trend-change strong{font-size:12px}
+
     #developmentPage .player-unified-history h2{margin:0 0 10px;font-size:18px}
     #developmentPage .player-history-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
     #developmentPage .player-history-tabs button{border:1px solid #d9d9d9;background:#f4f4f4;color:#222;border-radius:10px;padding:9px 6px;font-size:11px;font-weight:800;line-height:1.15;cursor:pointer}
     #developmentPage .player-history-tabs button[aria-selected="true"]{background:#111;color:#fff;border-color:#111}
     #developmentPage #playerHistoryContent .card{box-shadow:none;border:1px solid #ececec;padding:12px}
+    #developmentPage #playerHistoryContent #developmentGoalHistory:not([hidden]){display:block!important}
+
     @media (max-width:420px){
       #developmentPage .page-heading{margin-bottom:14px}
       #developmentPage .page-heading h2{font-size:24px}
@@ -33,9 +66,19 @@ function ensureCompactStyles(){
       #developmentPage .player-development-journey .card{padding:13px}
       #developmentPage #playerAssessmentSlot .development-card{padding:10px}
       #developmentPage .player-history-tabs button{padding:8px 4px;font-size:10px}
+      #developmentPage #playerTrendSlot .profile-trend-grid{gap:6px}
+      #developmentPage #playerTrendSlot .profile-trend-row{padding:8px}
+      #developmentPage #playerTrendSlot .profile-trend-values strong{font-size:11px}
     }
   `;
   document.head.appendChild(style);
+}
+
+function hideDuplicateGoalDescription(goal){
+  if(!goal)return;
+  const title=goal.querySelector('.player-main-goal-readonly h2');
+  const description=goal.querySelector('.player-main-goal-readonly>p');
+  if(title&&description&&title.textContent.trim()===description.textContent.trim())description.hidden=true;
 }
 
 function setupPlayerDevelopmentLayout(){
@@ -101,7 +144,7 @@ function setupPlayerDevelopmentLayout(){
     const goal=document.getElementById('playerMainGoalCard');
     const focus=document.getElementById('developmentFocusSummary');
     const trend=document.getElementById('developmentTrendCard')||document.getElementById('profileDevelopmentTrend');
-    if(goal&&goal.parentElement!==goalSlot)goalSlot.appendChild(goal);
+    if(goal){if(goal.parentElement!==goalSlot)goalSlot.appendChild(goal);hideDuplicateGoalDescription(goal);}
     if(focus&&focus.parentElement!==focusSlot)focusSlot.appendChild(focus);
     if(trend&&trend.parentElement!==trendSlot)trendSlot.appendChild(trend);
     const card=ensureHistory();
