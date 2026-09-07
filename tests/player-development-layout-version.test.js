@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('development layout cache version is bumped',()=>{assert.match(fs.readFileSync('index.html','utf8'),/player-development-layout\.js\?v=3/);});
