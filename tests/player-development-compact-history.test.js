@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history presentation is compact',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/player-unified-history\{padding:18px/);assert.match(css,/player-history-tabs\{display:grid/);});
