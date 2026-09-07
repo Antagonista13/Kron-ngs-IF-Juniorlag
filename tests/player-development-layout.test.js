@@ -25,3 +25,15 @@ test('history is one card with three choices',()=>{
   assert.match(layout,/Utvecklingshistorik/);
   assert.match(layout,/data-history-panel/);
 });
+
+test('selected history choice survives later layout mutations',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/let activeHistoryKind=['"]goal['"]/);
+  assert.match(layout,/activeHistoryKind=kind/);
+  assert.match(layout,/showHistory\(activeHistoryKind\)/);
+  assert.doesNotMatch(layout,/el\.hidden=index!==0/);
+});
+
+test('player development compact styling is loaded',()=>{
+  assert.match(html,/player-development-compact\.css\?v=1/);
+});
