@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history content avoids nested oversized cards',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/#playerHistoryContent.*margin-top:12px/);assert.match(css,/box-shadow:none/);});
