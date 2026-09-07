@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact assessment preserves player-facing heading',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.ok(js.includes('SJÄLVSKATTNING'));assert.ok(js.includes('Hur tycker du att det går just nu?'));});
