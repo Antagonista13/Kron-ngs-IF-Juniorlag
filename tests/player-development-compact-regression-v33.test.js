@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact assessment card title spacing is reduced',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-card h3\{margin:6px 0 10px\}/);});
