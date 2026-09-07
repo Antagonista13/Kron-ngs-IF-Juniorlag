@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile history controls fit in one compact grid',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/repeat\(3,minmax\(0,1fr\)\)/);assert.match(css,/font-size:11px;padding:8px 4px/);});
