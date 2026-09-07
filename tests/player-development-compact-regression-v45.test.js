@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('phone journey uses fourteen pixel section gap',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/#playerDevelopmentJourney\{gap:14px\}/);});
