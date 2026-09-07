@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment cards retain rounded compact containers',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-card\{padding:16px 18px;border-radius:18px\}/);});
