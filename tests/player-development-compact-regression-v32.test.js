@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact player journey remains a simple grid',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/#playerDevelopmentJourney\{display:grid/);});
