@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('active history choice is obvious',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/font-weight:800/);assert.match(css,/background:#111;color:#fff/);});
