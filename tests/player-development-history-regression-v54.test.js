@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history source ids remain unchanged',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.ok(js.includes('developmentGoalHistory'));assert.ok(js.includes('developmentFocusHistory'));});
