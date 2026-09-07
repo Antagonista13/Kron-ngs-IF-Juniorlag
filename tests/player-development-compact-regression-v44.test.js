@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('inactive history controls remain visually light',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/background:#ececec/);});
