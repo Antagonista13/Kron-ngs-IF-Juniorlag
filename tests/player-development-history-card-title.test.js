@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history title has compact spacing',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/player-unified-history h2\{margin:0 0 14px\}/);});
