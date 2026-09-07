@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('active history pill uses bold weight',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/font-weight:800/);});
