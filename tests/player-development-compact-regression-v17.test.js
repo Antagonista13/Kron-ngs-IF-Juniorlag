@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history labels stay on one line',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/white-space:nowrap/);});
