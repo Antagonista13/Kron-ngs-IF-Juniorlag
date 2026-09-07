@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history controls use six pixel gap',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/gap:6px/);});
