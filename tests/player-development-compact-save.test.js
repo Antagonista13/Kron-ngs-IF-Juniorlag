@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('save presentation is compact',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-save-card\{padding:12px 16px/);});
