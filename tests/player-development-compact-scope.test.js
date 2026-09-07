@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment compaction is scoped to player development',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/\.player-development-compact \.development-card/);});
