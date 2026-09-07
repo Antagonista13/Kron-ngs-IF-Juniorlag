@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history panel keys remain goal focus development',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');['goal','focus','development'].forEach(k=>assert.ok(js.includes("data-history-panel=\""+k+"\"")));});
