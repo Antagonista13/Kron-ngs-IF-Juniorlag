@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history controls keep Swedish labels',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');['Målhistorik','Fokushistorik','Utvecklingshistorik'].forEach(x=>assert.ok(js.includes(x)));});
