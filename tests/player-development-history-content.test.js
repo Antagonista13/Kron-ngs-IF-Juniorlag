@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history card owns a content container',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/id="playerHistoryContent"/);assert.match(js,/if\(el\.parentElement!==content\)content\.appendChild\(el\)/);});
