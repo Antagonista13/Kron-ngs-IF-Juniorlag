@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('unified history has exactly three panel controls in template',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.equal((js.match(/data-history-panel=/g)||[]).length>=3,true);});
