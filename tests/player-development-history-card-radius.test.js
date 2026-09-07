@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history card uses compact rounded container',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/player-unified-history\{padding:18px;border-radius:20px\}/);});
