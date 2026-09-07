@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history choices are buttons wired to showHistory',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/button type="button" data-history-panel="goal"/);assert.match(js,/showHistory\(btn\.dataset\.historyPanel\)/);});
