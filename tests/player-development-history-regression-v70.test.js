@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history render moves each available source into unified content',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/if\(el\.parentElement!==content\)content\.appendChild\(el\)/);});
