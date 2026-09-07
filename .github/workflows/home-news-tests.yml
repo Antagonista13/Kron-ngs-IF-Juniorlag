@@ -87,6 +87,8 @@ jobs:
         run: node --test tests/player-main-goal-sql.test.js
       - name: Player main goal UI tests
         run: node --test tests/player-main-goal-ui.test.js
+      - name: Coach main goal review tests
+        run: node --test tests/coach-main-goal-review.test.js
       - name: Coach player profile 2 tests
         run: node --test tests/coach-player-profile-2.test.js
       - name: Team challenge tests
