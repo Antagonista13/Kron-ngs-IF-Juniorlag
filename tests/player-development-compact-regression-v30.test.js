@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact class is added by player development setup',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/page\.classList\.add\('player-development-compact'\)/);});
