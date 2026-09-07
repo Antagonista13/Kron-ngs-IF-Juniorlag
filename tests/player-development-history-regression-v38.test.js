@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('showHistory always records requested panel',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/function showHistory\(kind\)\{\s*activeHistory=kind/);});
