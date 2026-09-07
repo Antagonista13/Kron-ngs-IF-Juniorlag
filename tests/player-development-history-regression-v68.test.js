@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history starts with goal selected',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/activeHistory='goal'/);});
