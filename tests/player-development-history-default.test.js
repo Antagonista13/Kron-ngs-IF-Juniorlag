@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('goal history is selected by default',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/let activeHistory='goal'/);});
