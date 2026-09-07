@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('all history panels move into unified content container',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/if\(el\.parentElement!==content\)content\.appendChild\(el\)/);});
