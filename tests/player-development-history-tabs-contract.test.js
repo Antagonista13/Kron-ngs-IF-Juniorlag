@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history tab click updates active state',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/addEventListener\('click',\(\)=>showHistory\(btn\.dataset\.historyPanel\)\)/);assert.match(js,/setAttribute\('aria-selected'/);});
