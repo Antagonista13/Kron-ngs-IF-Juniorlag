@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('empty history content collapses cleanly',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/#playerHistoryContent:empty\{display:none\}/);});
