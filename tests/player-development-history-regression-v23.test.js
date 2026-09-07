@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history content container follows controls',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');const card=js.slice(js.indexOf("card.innerHTML='"));assert.ok(card.indexOf('player-history-tabs')<card.indexOf('playerHistoryContent'));});
