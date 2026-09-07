@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history tab keys map to source ids',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/goal:'developmentGoalHistory'/);assert.match(js,/focus:'developmentFocusHistory'/);assert.match(js,/development:'developmentHistory'/);});
