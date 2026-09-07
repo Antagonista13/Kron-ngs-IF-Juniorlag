@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('current history selection persists through moveExisting',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/let activeHistory='goal'/);assert.match(js,/ensureHistory\(\);showHistory\(activeHistory\)/);});
