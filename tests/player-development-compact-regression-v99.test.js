@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history hook uses aria-selected true',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/button\[aria-selected="true"\]/);});
