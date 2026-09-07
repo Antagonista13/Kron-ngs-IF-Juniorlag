@@ -11,6 +11,12 @@ test('player main goal maps lifecycle to approved Swedish labels', () => {
   assert.equal(mod.buildMainGoalViewModel({status:'active',review_status:'approved'}).statusLabel, 'GODKÄNT ✓');
 });
 
+test('main goal description is hidden when it only repeats the title', () => {
+  assert.equal(mod.shouldShowMainGoalDescription({title:'Stretcha',description:'Stretcha'}), false);
+  assert.equal(mod.shouldShowMainGoalDescription({title:'Stretcha',description:'Stretcha varje dag'}), true);
+  assert.equal(mod.shouldShowMainGoalDescription({title:'Stretcha',description:''}), false);
+});
+
 test('new player main goal module owns player goal surface before legacy modules load', () => {
   const html = fs.readFileSync('index.html','utf8');
   const mainGoal = html.indexOf('player-main-goal.js?v=1');
