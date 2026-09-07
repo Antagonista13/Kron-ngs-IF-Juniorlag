@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('active history choice is represented in DOM state',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/setAttribute\('aria-selected',String\(btn\.dataset\.historyPanel===activeHistory\)\)/);});
