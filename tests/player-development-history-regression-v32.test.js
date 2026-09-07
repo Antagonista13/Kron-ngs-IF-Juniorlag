@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('current history selection is applied after ensuring card',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/ensureHistory\(\);showHistory\(activeHistory\)/);});
