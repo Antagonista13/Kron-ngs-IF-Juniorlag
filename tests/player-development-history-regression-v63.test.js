@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history selected-state updates are scoped to unified history card',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/#playerUnifiedHistory \[data-history-panel\]/);});
