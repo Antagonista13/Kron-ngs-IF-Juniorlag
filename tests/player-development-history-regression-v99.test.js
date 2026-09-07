@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('all history controls receive selected state update',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/querySelectorAll\('#playerUnifiedHistory \[data-history-panel\]'\)\.forEach/);});
