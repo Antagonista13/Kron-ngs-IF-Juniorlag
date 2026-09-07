@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history choices use equal compact columns',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/player-history-tabs\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);});
