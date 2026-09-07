@@ -21,9 +21,10 @@ test('new player main goal module owns player goal surface before legacy modules
   assert.ok(mainGoal < goalSummary);
 });
 
-test('legacy player goal mounts respect the new owner flag', () => {
-  const profile = fs.readFileSync('development-profile.js','utf8');
-  const summary = fs.readFileSync('goal-summary.js','utf8');
-  assert.match(profile, /KronangPlayerMainGoalOwnsPlayerView/);
-  assert.match(summary, /KronangPlayerMainGoalOwnsPlayerView/);
+test('new owner styling suppresses duplicate legacy player goal surfaces', () => {
+  const css = fs.readFileSync('player-main-goal.css','utf8');
+  for (const id of ['ownDevelopmentWorkflow','developmentGoalSummary','developmentGoalHistory']) {
+    assert.match(css, new RegExp('#' + id));
+  }
+  assert.match(css, /data-player-main-goal-owner/);
 });
