@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('empty history content does not consume space',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/#playerHistoryContent:empty\{display:none\}/);});
