@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('goal focus and development histories remain supported',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');['developmentGoalHistory','developmentFocusHistory','developmentHistory'].forEach(id=>assert.ok(js.includes(id)));});
