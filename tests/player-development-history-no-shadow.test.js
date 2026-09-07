@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history content removes nested card shadow',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/#playerHistoryContent[\s\S]*box-shadow:none/);});
