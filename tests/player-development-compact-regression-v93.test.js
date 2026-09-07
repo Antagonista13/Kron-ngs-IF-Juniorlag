@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile history control type is eleven pixels',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/font-size:11px;padding:8px 4px/);});
