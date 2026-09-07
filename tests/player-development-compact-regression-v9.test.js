@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('save button stays usable while compact',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-save-card button\{min-height:48px\}/);});
