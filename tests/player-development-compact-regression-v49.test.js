@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('phone history labels use compact font',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/font-size:11px/);});
