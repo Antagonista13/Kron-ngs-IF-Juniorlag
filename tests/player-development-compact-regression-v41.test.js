@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history choice has high contrast',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/background:#111;color:#fff/);});
