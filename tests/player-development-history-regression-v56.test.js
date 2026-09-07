@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history card keeps tablist role',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/role="tablist"/);});
