@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('reflection field keeps usable mobile height',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/min-height:64px/);});
