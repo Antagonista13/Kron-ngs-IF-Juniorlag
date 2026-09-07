@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history tab is visually distinct',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/aria-selected="true"/);assert.match(css,/background:#111;color:#fff/);});
