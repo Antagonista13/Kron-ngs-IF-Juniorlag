@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment heading stays concise',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/SJÄLVSKATTNING/);assert.match(js,/Hur tycker du att det går just nu\?/);});
