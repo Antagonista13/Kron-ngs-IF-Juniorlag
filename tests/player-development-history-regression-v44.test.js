@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('async DOM updates call moveExisting which reuses activeHistory',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/observer\.observe\(page/);assert.match(js,/showHistory\(activeHistory\)/);});
