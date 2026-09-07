@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('observer callback preserves active history selection',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/MutationObserver\(moveExisting\)/);assert.match(js,/showHistory\(activeHistory\)/);});
