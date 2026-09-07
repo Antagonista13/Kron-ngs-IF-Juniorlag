@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history selected boolean is stringified for aria attribute',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/String\(btn\.dataset\.historyPanel===activeHistory\)/);});
