@@ -34,6 +34,10 @@ test('selected history choice survives later layout mutations',()=>{
   assert.doesNotMatch(layout,/el\.hidden=index!==0/);
 });
 
-test('player development compact styling is loaded',()=>{
-  assert.match(html,/player-development-compact\.css\?v=1/);
+test('player development gets dedicated compact mobile styling',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/playerDevelopmentCompactStyles/);
+  assert.match(layout,/player-development-journey/);
+  assert.match(layout,/player-history-tabs/);
+  assert.match(layout,/development-grid/);
 });
