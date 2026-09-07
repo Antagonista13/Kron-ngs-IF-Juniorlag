@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history current selection is reapplied on layout movement',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/showHistory\(activeHistory\)/);});
