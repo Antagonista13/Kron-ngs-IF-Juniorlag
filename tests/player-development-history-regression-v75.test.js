@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history render sets selected state for every history button',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/forEach\(btn=>btn\.setAttribute\('aria-selected'/);});
