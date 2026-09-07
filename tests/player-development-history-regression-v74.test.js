@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history target helper can return primary or fallback node',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/document\.getElementById\(ids\[kind\]\)\|\|document\.getElementById/);});
