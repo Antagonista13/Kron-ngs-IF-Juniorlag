@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history source lookup uses existing DOM ids',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/developmentGoalHistory/);assert.match(js,/developmentFocusHistory/);assert.match(js,/developmentHistory/);});
