@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('base stylesheet remains loaded alongside compact override',()=>{const html=fs.readFileSync('index.html','utf8');assert.match(html,/style\.css\?v=14/);assert.match(html,/player-development-compact\.css\?v=1/);});
