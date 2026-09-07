@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history content has modest top margin',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/margin-top:12px/);});
