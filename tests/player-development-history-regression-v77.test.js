@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history render exits safely if content target is missing',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/if\(!content\)return/);});
