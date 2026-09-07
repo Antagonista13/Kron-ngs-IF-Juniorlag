@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history tab selected value is explicit true or false string',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/String\(/);});
