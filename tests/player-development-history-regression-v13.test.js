@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history content reuses existing source elements',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/historyTarget\(name\)/);assert.match(js,/content\.appendChild\(el\)/);});
