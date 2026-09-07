@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile assessment paragraphs use tight spacing',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-card p\{margin:6px 0\}/);});
