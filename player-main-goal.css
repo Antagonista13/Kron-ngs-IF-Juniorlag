@@ -1,0 +1,25 @@
+#developmentPage[data-player-main-goal-owner="true"] #ownDevelopmentWorkflow,
+#developmentPage[data-player-main-goal-owner="true"] #developmentGoalSummary,
+#developmentPage[data-player-main-goal-owner="true"] #developmentGoalHistory{display:none!important}
+.player-main-goal{margin-bottom:18px;padding:20px;border-radius:18px;background:#171717;color:#fff}
+.player-main-goal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}
+.player-main-goal-head h3{margin:4px 0 0;font-size:1.35rem}
+.player-main-goal-kicker{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:#bdbdbd}
+.player-main-goal-status{flex:0 0 auto;padding:7px 10px;border-radius:999px;font-size:.72rem;font-weight:900;letter-spacing:.04em;background:#333}
+.player-main-goal-status.approved{background:#fff;color:#111}
+.player-main-goal-status.pending{background:#3b3b3b;color:#fff}
+.player-main-goal-status.draft{background:#2b2b2b;color:#ddd}
+.player-main-goal-editor label{display:block;margin:14px 0 6px;font-size:.78rem;font-weight:800;letter-spacing:.04em;color:#d8d8d8}
+.player-main-goal-editor input,.player-main-goal-editor textarea{width:100%;box-sizing:border-box;margin-top:7px;border:1px solid #444;border-radius:12px;background:#0f0f0f;color:#fff;padding:12px;font:inherit}
+.player-main-goal-editor textarea{resize:vertical}
+.player-main-goal-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+.player-main-goal button{width:100%;min-height:46px;border:0;border-radius:12px;font-weight:900}
+.player-main-goal button.secondary{margin-top:16px;background:#303030;color:#fff}
+.player-main-goal-readonly h2{margin:0 0 10px;font-size:1.55rem;line-height:1.15}
+.player-main-goal-readonly>p{color:#e6e6e6;line-height:1.5}
+.player-main-goal-success,.player-main-goal-coach,.player-main-goal-returned{margin-top:16px;padding:13px 14px;border-radius:12px;background:#222}
+.player-main-goal-success strong,.player-main-goal-coach strong,.player-main-goal-returned strong{display:block;margin-bottom:5px;font-size:.72rem;letter-spacing:.07em;color:#bdbdbd}
+.player-main-goal-success p,.player-main-goal-coach p,.player-main-goal-returned p{margin:0;line-height:1.45}
+.player-main-goal-waiting{margin-top:16px;padding:12px;border-radius:12px;background:#222;font-weight:700}
+.player-main-goal-message{min-height:20px;margin:10px 0 0;color:#ddd;font-size:.85rem}
+@media(min-width:560px){.player-main-goal-actions{grid-template-columns:1fr 1fr}}
