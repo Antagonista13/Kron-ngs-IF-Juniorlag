@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history tab labels use mobile sized type',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/player-history-tabs button\{font-size:11px;padding:8px 4px\}/);});
