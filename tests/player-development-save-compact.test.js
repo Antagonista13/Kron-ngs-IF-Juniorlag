@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment save area is compact',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/development-save-card\{padding:12px 16px/);assert.match(css,/min-height:48px/);});
