@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('development history supports profile fallback',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/alt=\{development:'profileDevelopmentHistory'\}/);});
