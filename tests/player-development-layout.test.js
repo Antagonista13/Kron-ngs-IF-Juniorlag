@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
 
 test('player Development has an explicit ordered journey contract',()=>{
-  assert.match(html,/player-development-layout\.js\?v=3/);
+  assert.match(html,/player-development-layout\.js\?v=4/);
   const layout=fs.readFileSync('player-development-layout.js','utf8');
   for(const id of ['playerMainGoalSlot','playerFocusSlot','playerAssessmentSlot','playerTrendSlot','playerHistorySlot']) assert.match(layout,new RegExp(id));
   assert.match(layout,/\[goalSlot,focusSlot,assessmentSlot,trendSlot,historySlot\]/);
@@ -34,10 +34,24 @@ test('selected history choice survives later layout mutations',()=>{
   assert.doesNotMatch(layout,/el\.hidden=index!==0/);
 });
 
+test('goal history can override legacy owner hiding when selected',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/#playerHistoryContent #developmentGoalHistory:not\(\[hidden\]\)\{display:block!important\}/);
+});
+
 test('player development gets dedicated compact mobile styling',()=>{
   const layout=fs.readFileSync('player-development-layout.js','utf8');
   assert.match(layout,/playerDevelopmentCompactStyles/);
   assert.match(layout,/player-development-journey/);
   assert.match(layout,/player-history-tabs/);
   assert.match(layout,/development-grid/);
+  assert.match(layout,/#playerMainGoalCard/);
+  assert.match(layout,/#developmentFocusSummary/);
+});
+
+test('development trend uses a compact two-column area grid on mobile',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/#playerTrendSlot \.profile-trend-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(layout,/#playerTrendSlot \.profile-trend-row/);
+  assert.match(layout,/#playerTrendSlot \.profile-trend-values/);
 });
