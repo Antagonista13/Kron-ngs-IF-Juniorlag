@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile breakpoint overrides history card padding',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.ok(css.lastIndexOf('player-unified-history{padding:16px}')>css.indexOf('@media(max-width:560px)'));});
