@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mutation path uses activeHistory variable',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');const move=js.slice(js.indexOf('function moveExisting'));assert.match(move,/showHistory\(activeHistory\)/);});
