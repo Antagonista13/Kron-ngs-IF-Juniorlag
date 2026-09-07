@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history choice is visibly different',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/aria-selected="true"/);});
