@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history exposes all three player choices',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');for(const label of ['Målhistorik','Fokushistorik','Utvecklingshistorik'])assert.match(js,new RegExp(label));});
