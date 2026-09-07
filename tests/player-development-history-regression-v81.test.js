@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history panel controls remain buttons',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/<button type="button" data-history-panel/);});
