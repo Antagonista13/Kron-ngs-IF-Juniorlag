@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history controls use button type button',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.equal((js.match(/button type="button" data-history-panel/g)||[]).length,3);});
