@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile reflection area is sixty four pixels minimum',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/min-height:64px/);});
