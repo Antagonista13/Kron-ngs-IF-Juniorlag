@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile reflection fields avoid excessive height',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/textarea\{min-height:64px\}/);});
