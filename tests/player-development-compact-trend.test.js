@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('trend presentation has reduced padding',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/developmentTrendCard.*padding:18px/);});
