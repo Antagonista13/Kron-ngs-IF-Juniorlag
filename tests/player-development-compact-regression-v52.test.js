@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact css loads after workflow css for overrides',()=>{const h=fs.readFileSync('index.html','utf8');assert.ok(h.indexOf('player-development-compact.css')>h.indexOf('development-workflow.css'));});
