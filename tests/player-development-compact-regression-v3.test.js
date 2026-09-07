@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact stylesheet loads after base development styles',()=>{const html=fs.readFileSync('index.html','utf8');assert.ok(html.indexOf('player-development-compact.css')>html.indexOf('development-workflow.css'));});
