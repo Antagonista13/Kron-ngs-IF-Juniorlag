@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('compact layout moves existing assessment grid rather than replacing it',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/assessmentSlot\.appendChild\(grid\)/);});
