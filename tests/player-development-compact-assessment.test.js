@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment cards are compact on mobile',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/development-card\{padding:14px 16px\}/);assert.match(css,/textarea\{min-height:64px\}/);});
