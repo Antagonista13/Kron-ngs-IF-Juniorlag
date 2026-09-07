@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('selected history key drives aria state',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/btn\.dataset\.historyPanel===activeHistory/);});
