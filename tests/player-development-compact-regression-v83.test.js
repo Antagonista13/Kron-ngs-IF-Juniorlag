@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('nested history cards are flattened visually',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/box-shadow:none/);assert.match(css,/padding:14px/);});
