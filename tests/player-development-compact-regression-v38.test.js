@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history controls use pill radius',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/border-radius:999px/);});
