@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history buttons are compact pills',()=>{const css=fs.readFileSync('player-development-compact.css','utf8');assert.match(css,/border-radius:999px/);assert.match(css,/padding:9px 6px/);});
