@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('updated layout asset is loaded',()=>{assert.match(fs.readFileSync('index.html','utf8'),/player-development-layout\.js\?v=3/);});
