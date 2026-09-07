@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history selection uses semantic keys rather than array index',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/activeHistory/);assert.match(js,/historyTarget\(name\)/);});
