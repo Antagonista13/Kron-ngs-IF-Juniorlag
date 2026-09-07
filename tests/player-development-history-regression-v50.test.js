@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history renderer uses current activeHistory selection',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/name!==activeHistory/);assert.match(js,/historyPanel===activeHistory/);});
