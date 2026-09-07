@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('assessment grid uses compact gaps',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/development-grid\{gap:10px\}/);});
