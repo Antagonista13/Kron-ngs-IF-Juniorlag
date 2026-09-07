@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history click changes activeHistory before rendering',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/function showHistory\(kind\)\{\s*activeHistory=kind/);});
