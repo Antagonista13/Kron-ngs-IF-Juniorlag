@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history uses existing nodes rather than cloning data',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/content\.appendChild\(el\)/);});
