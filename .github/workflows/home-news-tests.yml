@@ -30,6 +30,7 @@ jobs:
           node --check development-workflow.js
           node --check development-profile.js
           node --check development-notifications.js
+          node --check player-development-layout.js
           node --check coach-development-worklist.js
           node --check coach-player-page.js
           node --check calendar-management.js
@@ -82,7 +83,7 @@ jobs:
       - name: Development role tests
         run: node --test tests/development-role.test.js tests/development-asset-loading.test.js tests/development-area-icons.test.js
       - name: Player development workflow tests
-        run: node --test tests/development-workflow.test.js tests/development-profile.test.js tests/development-notifications.test.js tests/player-development-sql.test.js tests/player-development-assets.test.js
+        run: node --test tests/development-workflow.test.js tests/development-profile.test.js tests/development-notifications.test.js tests/player-development-sql.test.js tests/player-development-assets.test.js tests/player-development-layout.test.js
       - name: Player main goal SQL tests
         run: node --test tests/player-main-goal-sql.test.js
       - name: Player main goal UI tests
