@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history uses explicit activeHistory state',()=>{assert.match(fs.readFileSync('player-development-layout.js','utf8'),/let activeHistory/);});
