@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('trend card stays compact and rounded',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/padding:18px;border-radius:20px/);});
