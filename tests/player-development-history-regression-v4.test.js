@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history listeners are created with the single history card',()=>{const js=fs.readFileSync('player-development-layout.js','utf8');assert.match(js,/if\(!card\)[\s\S]*addEventListener\('click'/);});
