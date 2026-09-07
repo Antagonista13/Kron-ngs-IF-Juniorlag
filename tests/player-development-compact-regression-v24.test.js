@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history choices have equal available width',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/repeat\(3,minmax\(0,1fr\)\)/);});
