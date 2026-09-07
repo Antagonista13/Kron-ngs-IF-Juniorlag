@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('mobile assessment card padding is fourteen by sixteen',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/padding:14px 16px/);});
