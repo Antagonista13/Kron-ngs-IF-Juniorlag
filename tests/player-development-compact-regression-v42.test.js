@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');test('history controls use compact grid layout',()=>{assert.match(fs.readFileSync('player-development-compact.css','utf8'),/player-history-tabs\{display:grid/);});
