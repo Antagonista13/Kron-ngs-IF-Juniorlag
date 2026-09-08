@@ -3,6 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const SOURCE_URL="https://www.kronangsif.se/grupp/?ID=260563";
 const SOURCE="sportadmin_p2011";
+const SYNC_KEY="sb_publishable_LueK_yc8XAevJC9zMMVktg_hRc1Zdac";
 
 function decodeEntities(value:string){return value.replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');}
 function normalizeName(value:string){return value.normalize('NFKC').replace(/[“”]/g,'"').replace(/\s+/g,' ').trim().replace(/\s+"[^"]+"\s+/g,' ').toLocaleLowerCase('sv-SE');}
@@ -28,9 +29,20 @@ function extractPlayerNames(html:string){
   }
   return [...new Map(names.map(name=>[normalizeName(name),name])).values()];
 }
+async function authorized(req:Request){
+  if(req.headers.get('x-kronang-sync-key')===SYNC_KEY)return true;
+  const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'').trim();
+  if(!token)return false;
+  const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!);
+  const {data:userData,error:userError}=await authClient.auth.getUser(token);
+  if(userError||!userData.user)return false;
+  const {data:profile}=await authClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
+  return !!(profile&&profile.role==='admin'&&profile.is_active!==false);
+}
 
 Deno.serve(async req=>{
   if(req.method!=='POST') return new Response('Method not allowed',{status:405});
+  if(!(await authorized(req))) return new Response('Unauthorized',{status:401});
   try{
     const response=await fetch(SOURCE_URL,{headers:{'User-Agent':'KronangJuniorRosterSync/1.0'}});
     if(!response.ok) throw new Error(`SportAdmin returned ${response.status}`);
