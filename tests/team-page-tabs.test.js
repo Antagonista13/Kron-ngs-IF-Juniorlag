@@ -5,7 +5,7 @@ const html=fs.readFileSync('index.html','utf8');
 const source=fs.readFileSync('team-page-content.js','utf8');
 
 test('team page loads the tabbed content controller',()=>{
-  assert.match(html,/team-page-content\.js\?v=3/);
+  assert.match(html,/team-page-content\.js\?v=4/);
 });
 
 test('team page puts Team Manager information before the member tabs',()=>{
@@ -21,6 +21,12 @@ test('team page offers separate Spelare and Ledarstab tabs',()=>{
   assert.match(source,/>Spelare</);
   assert.match(source,/>Ledarstab</);
   assert.match(source,/showTeamView/);
+});
+
+test('member tabs stay visible while the team page scrolls',()=>{
+  assert.match(source,/#teamPage #teamMemberTabs\{[^}]*position:sticky/);
+  assert.match(source,/top:8px/);
+  assert.match(source,/z-index:30/);
 });
 
 test('only the selected roster section is visible',()=>{
