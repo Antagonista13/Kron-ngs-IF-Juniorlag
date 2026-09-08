@@ -1,0 +1,29 @@
+name: Daily SportAdmin roster sync
+
+on:
+  schedule:
+    - cron: '15 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync P2011 roster
+        shell: bash
+        run: |
+          KEY=$(python - <<'PY'
+          import re
+          text=open('auth.js',encoding='utf-8').read()
+          m=re.search(r'AUTH_SUPABASE_ANON_KEY="([^"]+)"',text)
+          if not m: raise SystemExit('publishable key not found')
+          print(m.group(1))
+          PY
+          )
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -H "x-kronang-sync-key: $KEY" \
+            --data '{}' \
+            'https://ndbwnsiqcnxppikdrwvd.supabase.co/functions/v1/sportadmin-roster-sync'
