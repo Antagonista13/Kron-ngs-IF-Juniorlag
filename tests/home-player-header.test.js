@@ -1,6 +1,6 @@
 const fs = require('fs');
 const assert = require('assert');
-const { buildHomePlayerHeader, buildNavIcon, getHomeShortcutPage, isHomeActivationKey, getHomeVisibleCards, navIconSelectorForPage } = require('../home-player-header.js');
+const { buildHomePlayerHeader, mergeHomeProfileFields, buildNavIcon, getHomeShortcutPage, isHomeActivationKey, getHomeVisibleCards, navIconSelectorForPage } = require('../home-player-header.js');
 
 const player = buildHomePlayerHeader({ full_name: 'Testspelare', team: 'Kronängs IF Juniorlag', role: 'player', player_number: 17, avatar_url: null });
 assert.strictEqual(player.name, 'Testspelare');
@@ -21,9 +21,21 @@ assert.strictEqual(withoutNumber.meta, 'Kronängs IF Juniorlag');
 assert.strictEqual(withoutNumber.playerNumber, '');
 assert.strictEqual(withoutNumber.roleLabel, '');
 
+const playerCards = getHomeVisibleCards('player');
+assert.deepStrictEqual(getHomeVisibleCards('coach'), playerCards, 'coach home must use the same card structure as the player master');
+assert.deepStrictEqual(getHomeVisibleCards('admin'), playerCards, 'admin home must use the same card structure as the player master');
 assert.deepStrictEqual(getHomeVisibleCards('parent'), { activity:true, news:true, focus:false, challenge:false });
-assert.deepStrictEqual(getHomeVisibleCards('player'), { activity:true, news:true, focus:true, challenge:true });
+assert.deepStrictEqual(playerCards, { activity:true, news:true, focus:true, challenge:true });
 assert.deepStrictEqual(getHomeVisibleCards('pending'), { activity:false, news:false, focus:false, challenge:false });
+
+const coachWithStaffAvatar = mergeHomeProfileFields(
+  { full_name:'Test Testsson', team:'Kronängs IF Juniorlag', role:'coach' },
+  null,
+  { avatar_url:null },
+  null,
+  { avatar_url:'staff/1/avatar.jpg' }
+);
+assert.strictEqual(coachWithStaffAvatar.avatar_url, 'staff/1/avatar.jpg', 'coach home should reuse the linked leader profile image');
 
 assert.ok(buildNavIcon('home').includes('<svg'));
 assert.ok(buildNavIcon('development').includes('<svg'));
