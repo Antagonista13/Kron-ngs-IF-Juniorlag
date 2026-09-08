@@ -28,6 +28,7 @@ test('goal and team card share a compact two-column grid and team card opens edi
   assert.match(source,/playerProfileQuickGrid/);
   assert.match(source,/playerPublicAboutCard/);
   assert.match(about,/playerAboutEdit/);
+  assert.match(about,/card\.addEventListener\(['"]click['"]/);
   assert.match(about,/setEditing\(card,true\)/);
   assert.match(css,/grid-template-columns\s*:\s*repeat\(2,minmax\(0,1fr\)\)/);
 });
