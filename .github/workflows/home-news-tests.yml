@@ -67,6 +67,8 @@ jobs:
         run: node --test tests/profile-role-view.test.js tests/leader-about-me.test.js
       - name: Player profile redesign tests
         run: node --test tests/player-profile-redesign.test.js
+      - name: Team player name size tests
+        run: node tests/team-player-name-size.test.js
       - name: Profile image 2.0 tests
         run: node --test tests/profile-image-admin.test.js tests/profile-image-sql.test.js tests/player-profile-image-sql.test.js tests/admin-profile-images.test.js
       - name: Profile data fallback tests
