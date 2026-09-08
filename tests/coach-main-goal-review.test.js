@@ -15,7 +15,7 @@ test('coach review model keeps player ownership and exposes approve/return actio
 test('coach review module is loaded before development worklist', () => {
   const html = fs.readFileSync('index.html','utf8');
   const review = html.indexOf('coach-main-goal-review.js?v=1');
-  const worklist = html.indexOf('coach-development-worklist.js?v=5');
+  const worklist = html.indexOf('coach-development-worklist.js?v=6');
   assert.ok(review > -1);
   assert.ok(worklist > -1);
   assert.ok(review < worklist);
