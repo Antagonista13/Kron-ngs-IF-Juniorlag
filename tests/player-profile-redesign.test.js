@@ -8,7 +8,7 @@ const root=path.join(__dirname,'..');
 test('player profile loads the redesigned profile controller and stylesheet',()=>{
   const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
   assert.match(html,/player-profile-redesign\.css\?v=1/);
-  assert.match(html,/player-profile-redesign\.js\?v=1/);
+  assert.match(html,/player-profile-redesign\.js\?v=2/);
 });
 
 test('redesign builds a personal player hero and removes passive stat tiles',()=>{
