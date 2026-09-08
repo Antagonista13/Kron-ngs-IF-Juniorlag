@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
 
 test('player Development has an explicit ordered journey contract',()=>{
-  assert.match(html,/player-development-layout\.js\?v=5/);
+  assert.match(html,/player-development-layout\.js\?v=4/);
   const layout=fs.readFileSync('player-development-layout.js','utf8');
   for(const id of ['playerMainGoalSlot','playerFocusSlot','playerAssessmentSlot','playerTrendSlot','playerHistorySlot']) assert.match(layout,new RegExp(id));
   assert.match(layout,/\[goalSlot,focusSlot,assessmentSlot,trendSlot,historySlot\]/);
@@ -35,11 +35,12 @@ test('selected history choice survives later layout mutations',()=>{
 });
 
 test('selected history tab reveals its existing history list directly',()=>{
-  const layout=fs.readFileSync('player-development-layout.js','utf8');
-  assert.match(layout,/function revealHistoryContent\(target\)/);
-  assert.match(layout,/startsWith\(['"]VISA ['"]\)/);
-  assert.match(layout,/toggle\.click\(\)/);
-  assert.match(layout,/revealHistoryContent\(target\)/);
+  assert.match(html,/player-history-direct\.js\?v=1/);
+  const direct=fs.readFileSync('player-history-direct.js','utf8');
+  assert.match(direct,/function revealHistoryContent\(target\)/);
+  assert.match(direct,/startsWith\(['"]VISA ['"]\)/);
+  assert.match(direct,/toggle\.click\(\)/);
+  assert.match(direct,/revealHistoryContent\(target\)/);
 });
 
 test('goal history can override legacy owner hiding when selected',()=>{
