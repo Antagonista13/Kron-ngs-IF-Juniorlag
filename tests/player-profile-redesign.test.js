@@ -21,6 +21,13 @@ test('redesign builds a personal player hero and removes passive stat tiles',()=
   assert.match(source,/hidden\s*=\s*true/);
 });
 
+test('player hero shows admin-managed team position with dash fallback',()=>{
+  const source=fs.readFileSync(path.join(root,'player-profile-redesign.js'),'utf8');
+  assert.match(source,/Position i laget:/);
+  assert.match(source,/player\.position\s*\|\|\s*['"]–['"]/);
+  assert.doesNotMatch(source,/player\.position\s*\|\|\s*['"]Spelare['"]/);
+});
+
 test('goal and team card share a compact two-column grid and team card opens editor',()=>{
   const source=fs.readFileSync(path.join(root,'player-profile-redesign.js'),'utf8');
   const about=fs.readFileSync(path.join(root,'player-public-about.js'),'utf8');
