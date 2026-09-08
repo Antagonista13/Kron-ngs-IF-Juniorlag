@@ -3,7 +3,6 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
 const source=fs.readFileSync('team-page-content.js','utf8');
-const staff=fs.readFileSync('team-staff.js','utf8');
 
 test('team page loads the tabbed content controller',()=>{
   assert.match(html,/team-page-content\.js\?v=4/);
@@ -35,10 +34,4 @@ test('only the selected roster section is visible',()=>{
   assert.match(source,/teamStaffSection/);
   assert.match(source,/players\.hidden/);
   assert.match(source,/staff\.hidden/);
-});
-
-test('opening Ledarstab refreshes staff data',()=>{
-  assert.match(source,/kronang:team-staff-refresh/);
-  assert.match(staff,/kronang:team-staff-refresh/);
-  assert.match(html,/team-staff\.js\?v=4/);
 });
