@@ -43,6 +43,15 @@ test('selected history tab reveals its existing history list directly',()=>{
   assert.match(direct,/revealHistoryContent\(target\)/);
 });
 
+test('legacy show and hide history controls are never visible inside unified history',()=>{
+  const direct=fs.readFileSync('player-history-direct.js','utf8');
+  assert.match(direct,/function hideLegacyHistoryToggles\(target\)/);
+  assert.match(direct,/startsWith\(['"]VISA ['"]\)/);
+  assert.match(direct,/startsWith\(['"]DÖLJ ['"]\)/);
+  assert.match(direct,/button\.hidden=true/);
+  assert.match(direct,/hideLegacyHistoryToggles\(target\)/);
+});
+
 test('goal history can override legacy owner hiding when selected',()=>{
   const layout=fs.readFileSync('player-development-layout.js','utf8');
   assert.match(layout,/#playerHistoryContent #developmentGoalHistory:not\(\[hidden\]\)\{display:block!important\}/);
