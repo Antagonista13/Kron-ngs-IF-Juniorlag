@@ -63,7 +63,7 @@ jobs:
       - name: Profile avatar tests
         run: node tests/profile-avatar.test.js
       - name: Profile role tests
-        run: node --test tests/profile-role-view.test.js
+        run: node --test tests/profile-role-view.test.js tests/leader-about-me.test.js
       - name: Profile image 2.0 tests
         run: node --test tests/profile-image-admin.test.js tests/profile-image-sql.test.js tests/player-profile-image-sql.test.js tests/admin-profile-images.test.js
       - name: Profile data fallback tests
