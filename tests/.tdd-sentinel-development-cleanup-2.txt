@@ -1,1 +1,0 @@
-Red-phase tests intentionally fail until production code is updated.
