@@ -5,6 +5,7 @@ function profileRolePresentation(role) {
     showPlayerDevelopment: role === 'player',
     showLeaderProfile: isLeader,
     showParentInfo: isParent,
+    showAdminStatus: role === 'admin',
     roleLabel: role === 'admin' ? 'Admin' : role === 'coach' ? 'Ledare' : '',
     subtitle: isLeader ? 'Din profil och information om laget.' : isParent ? 'Här hittar du information kopplad till ditt konto.' : 'Din utveckling börjar med dig.'
   };
