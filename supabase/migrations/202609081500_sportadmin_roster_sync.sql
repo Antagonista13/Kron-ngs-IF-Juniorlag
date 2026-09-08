@@ -1,6 +1,3 @@
-create extension if not exists pg_cron with schema extensions;
-create extension if not exists pg_net with schema extensions;
-
 create table if not exists public.sportadmin_player_candidates (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -18,8 +15,8 @@ create table if not exists public.sportadmin_player_candidates (
 
 alter table public.sportadmin_player_candidates enable row level security;
 revoke all on public.sportadmin_player_candidates from anon, authenticated;
-
 grant select on public.sportadmin_player_candidates to authenticated;
+
 create policy "active admins may read sportadmin candidates"
 on public.sportadmin_player_candidates for select to authenticated
 using (public.is_admin());
@@ -65,14 +62,3 @@ begin
 end;
 $$;
 grant execute on function public.dismiss_sportadmin_player_candidate(uuid) to authenticated;
-
-select cron.unschedule(jobid) from cron.job where jobname='sportadmin-p2011-roster-daily';
-select cron.schedule(
-  'sportadmin-p2011-roster-daily',
-  '15 3 * * *',
-  $$select net.http_post(
-      url:='https://ndbwnsiqcnxppikdrwvd.supabase.co/functions/v1/sportadmin-roster-sync',
-      headers:='{"Content-Type":"application/json","apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kYnduc2lxY254cHBpa2Ryd3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNjIwNTIsImV4cCI6MjEwMzgzODA1Mn0.ohJ9vdvgBXIGMsmH3wCiK7n0-PDWGp_Mt895UDTQoxA","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kYnduc2lxY254cHBpa2Ryd3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNjIwNTIsImV4cCI6MjEwMzgzODA1Mn0.ohJ9vdvgBXIGMsmH3wCiK7n0-PDWGp_Mt895UDTQoxA"}'::jsonb,
-      body:='{}'::jsonb
-    );$$
-);
