@@ -1,6 +1,13 @@
 const fs=require('fs');
 const source=fs.readFileSync('player-public-profile-v2.js','utf8');
+const css=fs.readFileSync('unified-team-profiles.css','utf8');
 const match=source.match(/\.player-public-profile-signature\{[^}]*font-size:(\d+)px/);
 if(!match) throw new Error('Could not find team player profile name size');
 if(Number(match[1])<41) throw new Error(`Expected larger team player name (>=41px), got ${match[1]}px`);
-console.log('team player name size ok');
+if(!/player-public-profile-avatar-wrap/.test(source)||!/player-public-profile-number-v2\{position:absolute/.test(source)) throw new Error('Player number must overlay avatar');
+if(!/player-public-profile-position[^}]*text-transform:uppercase/.test(source)) throw new Error('Player position must be uppercase');
+if(!/player-public-profile-signature[^}]*font-weight:(?:700|800|900)/.test(source)) throw new Error('Player signature must be bold');
+if(!/team-staff-profile h2[^}]*Segoe Script/.test(css)) throw new Error('Leader name must use matching signature typography');
+if(!/team-staff-profile-description:before[^}]*OM MIG/.test(css)) throw new Error('Leader description must use matching about card');
+if(!/team-staff-profile-role[^}]*text-transform:uppercase/.test(css)) throw new Error('Leader role must be uppercase');
+console.log('team profile visual standard ok');
