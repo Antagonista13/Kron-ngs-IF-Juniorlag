@@ -16,11 +16,13 @@ test('leader development uses one compact summary strip',()=>{
   assert.doesNotMatch(source,/leader-development-stat-wide/);
 });
 
-test('leader development keeps one search and a compact four-filter worklist',()=>{
+test('leader development keeps one search and three centered worklist filters',()=>{
   assert.match(source,/developmentWorklistSearch/);
+  assert.doesNotMatch(source,/<button data-filter="all"/);
   assert.match(source,/Behöver följas upp/);
   assert.match(source,/Saknar mål/);
   assert.match(source,/Nyligen uppdaterade/);
+  assert.match(css,/\.leader-development-workspace \.coach-roster-filters\{[^}]*justify-content:center/);
 });
 
 test('summary metrics are clickable filters',()=>{
