@@ -19,7 +19,7 @@ function buildHero(page,player){
   const subtitle=header.querySelector('#profileSubtitle');
   if(subtitle){subtitle.innerHTML='';
     const number=document.createElement('strong');number.className='player-profile-number';number.textContent=player.shirt_number!==null&&player.shirt_number!==undefined?'#'+player.shirt_number:'';
-    const position=document.createElement('span');position.className='player-profile-position';position.textContent=player.position||'Spelare';
+    const position=document.createElement('span');position.className='player-profile-position';position.innerHTML='<small>Position i laget:</small><b></b>';position.querySelector('b').textContent=player.position||'–';
     const role=roleLabel(player.team_role);const roleNode=document.createElement('span');roleNode.className='player-profile-role';roleNode.textContent=role;
     if(number.textContent)subtitle.appendChild(number);subtitle.appendChild(position);if(role)subtitle.appendChild(roleNode);
   }

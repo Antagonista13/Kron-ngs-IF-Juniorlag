@@ -8,7 +8,7 @@ const root=path.join(__dirname,'..');
 test('player profile loads the redesigned profile controller and stylesheet',()=>{
   const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
   assert.match(html,/player-profile-redesign\.css\?v=1/);
-  assert.match(html,/player-profile-redesign\.js\?v=1/);
+  assert.match(html,/player-profile-redesign\.js\?v=2/);
 });
 
 test('redesign builds a personal player hero and removes passive stat tiles',()=>{
@@ -19,6 +19,13 @@ test('redesign builds a personal player hero and removes passive stat tiles',()=
   assert.match(source,/team_role/);
   assert.match(source,/profile-stats/);
   assert.match(source,/hidden\s*=\s*true/);
+});
+
+test('player hero shows admin-managed team position with dash fallback',()=>{
+  const source=fs.readFileSync(path.join(root,'player-profile-redesign.js'),'utf8');
+  assert.match(source,/Position i laget:/);
+  assert.match(source,/player\.position\s*\|\|\s*['"]–['"]/);
+  assert.doesNotMatch(source,/player\.position\s*\|\|\s*['"]Spelare['"]/);
 });
 
 test('goal and team card share a compact two-column grid and team card opens editor',()=>{
