@@ -10,7 +10,19 @@ const SYNC_KEY="sb_publishable_LueK_yc8XAevJC9zMMVktg_hRc1Zdac";
 
 function decodeEntities(value:string){return value.replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');}
 function normalizeName(value:string){return value.normalize('NFKC').replace(/[“”]/g,'"').replace(/\s+/g,' ').trim().replace(/\s+"[^"]+"\s+/g,' ').toLocaleLowerCase('sv-SE');}
+function cleanCandidateName(value:string){return decodeEntities(value).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().replace(/\s+\d{1,2}\s*år.*$/i,'').trim();}
 function extractPlayerNames(html:string){
+  const rosterStart=html.search(/<b>Spelare<\/b>/i);
+  const rosterEnd=rosterStart<0?-1:html.slice(rosterStart+1).search(/<b>Ledare<\/b>/i);
+  if(rosterStart>=0){
+    const section=html.slice(rosterStart,rosterEnd>=0?rosterStart+1+rosterEnd:undefined);
+    const names:string[]=[];
+    for(const match of section.matchAll(/<div[^>]*class=['"]?userRow['"]?[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/gi)){
+      const value=cleanCandidateName(match[1]);
+      if(value&&value.length<=90&&value.split(' ').length>=2) names.push(value);
+    }
+    if(names.length) return [...new Map(names.map(name=>[normalizeName(name),name])).values()];
+  }
   const cleaned=decodeEntities(html)
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
@@ -24,7 +36,7 @@ function extractPlayerNames(html:string){
   const ignore=/^(ålder|beskrivning|mobil|moderklubb|smeknamn|truppen|bild|spelare)$/i;
   const names:string[]=[];
   for(const raw of body){
-    let value=raw.replace(/\s+\d{1,2}\s*år.*$/i,'').trim();
+    const value=cleanCandidateName(raw);
     if(!value||ignore.test(value)||/^\d{1,2}\s*år$/i.test(value)) continue;
     if(value.length>90||value.split(' ').length<2) continue;
     if(!/^[A-Za-zÀ-ÖØ-öø-ÿĀ-ž'’ -]+$/.test(value)) continue;
