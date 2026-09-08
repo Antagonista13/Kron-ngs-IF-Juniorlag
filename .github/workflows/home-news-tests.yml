@@ -20,6 +20,7 @@ jobs:
           if [ -f profile-avatar.js ]; then node --check profile-avatar.js; fi
           if [ -f admin-profile-images.js ]; then node --check admin-profile-images.js; fi
           if [ -f player-roster.js ]; then node --check player-roster.js; fi
+          if [ -f player-profile-redesign.js ]; then node --check player-profile-redesign.js; fi
           node --check navigation-scroll.js
           node --check role-permissions.js
           node --check access-gate.js
@@ -64,6 +65,8 @@ jobs:
         run: node tests/profile-avatar.test.js
       - name: Profile role tests
         run: node --test tests/profile-role-view.test.js tests/leader-about-me.test.js
+      - name: Player profile redesign tests
+        run: node --test tests/player-profile-redesign.test.js
       - name: Profile image 2.0 tests
         run: node --test tests/profile-image-admin.test.js tests/profile-image-sql.test.js tests/player-profile-image-sql.test.js tests/admin-profile-images.test.js
       - name: Profile data fallback tests
