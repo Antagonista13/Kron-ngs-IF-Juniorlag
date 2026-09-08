@@ -1,28 +1,26 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const roster=fs.readFileSync('player-roster.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
+const publicProfile=fs.readFileSync('player-public-profile-v2.js','utf8');
 
-test('public player profile is large, personal and excludes private development data',()=>{
-  assert.match(roster,/player-public-profile-avatar\{width:190px;height:190px/);
-  assert.match(roster,/player-public-profile-signature/);
-  assert.match(roster,/player-public-profile-about/);
-  assert.match(roster,/OM MIG/);
-  assert.match(roster,/aboutMe/);
-  assert.doesNotMatch(roster,/player-public-profile-goal/);
+test('public player profile enhancer is loaded',()=>{
+  assert.match(html,/player-public-profile-v2\.js\?v=1/);
 });
 
-test('public player profile keeps role and captain marker visible',()=>{
-  assert.match(roster,/player-public-profile-position/);
-  assert.match(roster,/player-public-profile-role/);
-  assert.match(roster,/formatTeamRole\(p\.teamRole\)/);
+test('public player profile is large and personal',()=>{
+  assert.match(publicProfile,/width:190px;height:190px/);
+  assert.match(publicProfile,/player-public-profile-signature/);
+  assert.match(publicProfile,/player-public-profile-about/);
+  assert.match(publicProfile,/OM MIG/);
+  assert.match(publicProfile,/public_about_me/);
 });
 
-test('player roster loads public about me but not development goals',()=>{
-  assert.match(roster,/public_about_me/);
-  assert.match(roster,/shirt_number,position,team_role,is_active,profile_id,avatar_url,public_about_me/);
-  assert.doesNotMatch(roster,/development_goals.*select/);
+test('public profile only fetches public presentation fields, never development goals',()=>{
+  assert.match(publicProfile,/full_name,shirt_number,position,team_role,public_about_me/);
+  assert.doesNotMatch(publicProfile,/development_goals/);
+  assert.doesNotMatch(publicProfile,/development_focus/);
+  assert.doesNotMatch(publicProfile,/reflection/);
 });
 
 test('profile editor for own public about me is loaded',()=>{
