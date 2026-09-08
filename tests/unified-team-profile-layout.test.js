@@ -1,0 +1,11 @@
+const fs=require('fs');
+const player=fs.readFileSync('player-public-profile-v2.js','utf8');
+const css=fs.readFileSync('unified-team-profiles.css','utf8');
+if(!/player-public-profile-avatar-wrap/.test(player)) throw new Error('Player profile needs avatar wrapper for shirt badge');
+if(!/player-public-profile-number-v2/.test(player)||!/position:absolute/.test(player)) throw new Error('Player number must overlay avatar');
+if(!/player-public-profile-position[^}]*text-transform:uppercase/.test(player)) throw new Error('Player position must be uppercase');
+if(!/player-public-profile-signature[^}]*font-weight:(?:700|800|900)/.test(player)) throw new Error('Player signature must be bold');
+if(!/team-staff-profile h2[^}]*Segoe Script/.test(css)) throw new Error('Staff profile needs matching signature typography');
+if(!/team-staff-profile-description:before[^}]*OM MIG/.test(css)) throw new Error('Staff profile needs matching about card label');
+if(!/team-staff-profile-role[^}]*text-transform:uppercase/.test(css)) throw new Error('Staff role must be uppercase');
+console.log('unified team profile layout ok');

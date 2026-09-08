@@ -1,0 +1,12 @@
+/* Shared visual standard for player and leader profiles in Laget */
+.team-staff-profile{background:linear-gradient(180deg,#151515,#080808)!important;border:1px solid rgba(202,166,72,.5)!important;border-radius:0!important;color:#fff!important;padding:18px 18px 24px!important;box-shadow:none!important}
+.staff-profile-back{color:#d6b65f!important;font-size:16px!important}
+.team-staff-profile-hero{gap:10px!important}
+.team-staff-profile-avatar{width:190px!important;height:190px!important;border:3px solid #d6b65f!important;background:#111!important;box-shadow:0 10px 30px rgba(0,0,0,.35)!important}
+.team-staff-profile h2{margin:4px 0 0!important;color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:46px!important;font-weight:800!important;line-height:1.05!important}
+.team-staff-profile-role{margin:4px 0 0!important;color:#d6b65f!important;font-size:16px!important;font-weight:900!important;letter-spacing:.1em!important;text-transform:uppercase!important}
+.team-staff-profile-description{margin:20px 0 0!important;padding:16px!important;border-radius:16px!important;background:#181818!important;color:#eee!important;line-height:1.5!important;text-align:left!important;white-space:pre-wrap!important}
+.team-staff-profile-description:before{content:"OM MIG";display:block;margin:0 0 7px;color:#d6b65f;font-size:11px;font-weight:900;letter-spacing:.12em}
+.team-staff-profile-contact{margin-top:14px!important}
+.team-staff-profile-contact a{border:1px solid #d6b65f!important;background:#0b0b0b!important;color:#d6b65f!important}
+@media(max-width:390px){.team-staff-profile h2{font-size:42px!important}.team-staff-profile-avatar{width:180px!important;height:180px!important}}
