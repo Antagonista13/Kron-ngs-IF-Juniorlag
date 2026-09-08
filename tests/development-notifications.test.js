@@ -6,7 +6,8 @@ const {
   unreadLabelForEvent,
   unreadNotificationForEntity,
   homeGoalProposalAlertModel,
-  shouldMarkUnreadOnEntityOpen
+  shouldMarkUnreadOnEntityOpen,
+  unreadNotificationIdsForPlayer
 }=require('../development-notifications.js');
 
 test('red dot derives only from unread items',()=>{
@@ -59,4 +60,13 @@ test('home alert points players to an unread goal proposal',()=>{
 test('goal proposal stays unread until the player answers',()=>{
   assert.equal(shouldMarkUnreadOnEntityOpen('goal_proposal'),false);
   assert.equal(shouldMarkUnreadOnEntityOpen('development_entry'),true);
+});
+
+test('leader opening a player can resolve every unread item for that player',()=>{
+  assert.deepEqual(unreadNotificationIdsForPlayer([
+    {id:'n1',player_id:'p1',read_at:null},
+    {id:'n2',player_id:'p1',read_at:'2026-09-08T10:00:00Z'},
+    {id:'n3',player_id:'p2',read_at:null},
+    {id:'n4',player_id:'p1',read_at:null}
+  ],'p1'),['n1','n4']);
 });
