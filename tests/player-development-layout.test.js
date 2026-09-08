@@ -73,3 +73,10 @@ test('development trend uses a compact two-column area grid on mobile',()=>{
   assert.match(layout,/#playerTrendSlot \.profile-trend-row/);
   assert.match(layout,/#playerTrendSlot \.profile-trend-values/);
 });
+
+test('leader dashboard actively hides the player-only journey',()=>{
+  const worklist=fs.readFileSync('coach-development-worklist.js','utf8');
+  assert.match(worklist,/function cleanupPlayerDevelopmentJourney\(\)/);
+  assert.match(worklist,/playerDevelopmentJourney/);
+  assert.match(worklist,/MutationObserver\(cleanupPlayerDevelopmentJourney\)/);
+});
