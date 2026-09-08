@@ -1,0 +1,16 @@
+name: SportAdmin roster sync tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SportAdmin roster sync contract
+        run: node tests/sportadmin-roster-sync.test.js
