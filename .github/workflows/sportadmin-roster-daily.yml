@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Sync P2011 roster
+      - name: Sync junior rosters
         shell: bash
         run: |
           KEY=$(python - <<'PY'
