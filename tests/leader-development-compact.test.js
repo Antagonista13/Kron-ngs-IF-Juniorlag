@@ -4,6 +4,7 @@ const fs=require('node:fs');
 
 const source=fs.readFileSync('coach-development-worklist.js','utf8');
 const css=fs.readFileSync('leader-development-dashboard.css','utf8');
+const adminMirror=fs.existsSync('admin-development-mirror.js')?fs.readFileSync('admin-development-mirror.js','utf8'):'';
 
 test('leader development removes the legacy coach overview instead of stacking two dashboards',()=>{
   assert.match(source,/const legacyOverview=document\.getElementById\('coachDevelopmentOverview'\)/);
@@ -46,4 +47,13 @@ test('summary metrics are clickable filters',()=>{
 test('main development heading is visually stronger than player subheading',()=>{
   assert.match(css,/#developmentPage\s*>\s*\.page-heading\s+h2\{[^}]*font-size:\s*32px/);
   assert.match(css,/\.leader-development-workspace>h2\{[^}]*font-size:\s*22px/);
+});
+
+test('admin development mirrors coach workspace without modifying coach behavior',()=>{
+  assert.match(adminMirror,/role\s*!==\s*['"]admin['"]/);
+  assert.match(adminMirror,/KronangCoachDevelopmentWorklist\.setup/);
+  assert.doesNotMatch(adminMirror,/role\s*===\s*['"]coach['"]/);
+  assert.match(adminMirror,/coachDevelopmentOverview/);
+  assert.match(adminMirror,/coachTeamOverview/);
+  assert.match(adminMirror,/coachRosterSearch/);
 });
