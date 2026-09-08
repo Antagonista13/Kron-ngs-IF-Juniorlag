@@ -1,0 +1,67 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
+const SOURCE_URL="https://www.kronangsif.se/grupp/?ID=260563";
+const SOURCE="sportadmin_p2011";
+
+function decodeEntities(value:string){return value.replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');}
+function normalizeName(value:string){return value.normalize('NFKC').replace(/[“”]/g,'"').replace(/\s+/g,' ').trim().replace(/\s+"[^"]+"\s+/g,' ').toLocaleLowerCase('sv-SE');}
+function extractPlayerNames(html:string){
+  const cleaned=decodeEntities(html)
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
+    .replace(/<(br|\/p|\/div|\/li|\/tr|\/h\d)>/gi,'\n')
+    .replace(/<[^>]+>/g,' ');
+  const lines=cleaned.split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  const start=lines.findIndex(x=>/^spelare$/i.test(x));
+  const end=start<0?-1:lines.findIndex((x,i)=>i>start&&/^ledare$/i.test(x));
+  if(start<0) throw new Error('SportAdmin player section was not found');
+  const body=lines.slice(start+1,end>start?end:undefined);
+  const ignore=/^(ålder|beskrivning|mobil|moderklubb|smeknamn|truppen|bild|spelare)$/i;
+  const names:string[]=[];
+  for(const raw of body){
+    let value=raw.replace(/\s+\d{1,2}\s*år.*$/i,'').trim();
+    if(!value||ignore.test(value)||/^\d{1,2}\s*år$/i.test(value)) continue;
+    if(value.length>90||value.split(' ').length<2) continue;
+    if(!/^[A-Za-zÀ-ÖØ-öø-ÿĀ-ž'’ -]+$/.test(value)) continue;
+    names.push(value);
+  }
+  return [...new Map(names.map(name=>[normalizeName(name),name])).values()];
+}
+
+Deno.serve(async req=>{
+  if(req.method!=='POST') return new Response('Method not allowed',{status:405});
+  try{
+    const response=await fetch(SOURCE_URL,{headers:{'User-Agent':'KronangJuniorRosterSync/1.0'}});
+    if(!response.ok) throw new Error(`SportAdmin returned ${response.status}`);
+    const names=extractPlayerNames(await response.text());
+    if(!names.length) throw new Error('No player names found in SportAdmin roster');
+    const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const {data:players,error:playerError}=await client.from('players').select('full_name');
+    if(playerError) throw playerError;
+    const existing=new Set((players||[]).map((row:any)=>normalizeName(row.full_name)));
+    const now=new Date().toISOString();
+    let pending=0;
+    for(const full_name of names){
+      const normalized_name=normalizeName(full_name);
+      if(existing.has(normalized_name)) continue;
+      const {data:current,error:findError}=await client.from('sportadmin_player_candidates').select('id,status').eq('source',SOURCE).eq('normalized_name',normalized_name).maybeSingle();
+      if(findError) throw findError;
+      if(current){
+        const {error}=await client.from('sportadmin_player_candidates').update({last_seen_at:now}).eq('id',current.id);
+        if(error) throw error;
+        if(current.status==='pending') pending++;
+      }else{
+        const {error}=await client.from('sportadmin_player_candidates').insert({full_name,normalized_name,source:SOURCE,source_url:SOURCE_URL,status:'pending',first_seen_at:now,last_seen_at:now});
+        if(error) throw error;
+        pending++;
+      }
+    }
+    return Response.json({ok:true,source:SOURCE,found:names.length,pending});
+  }catch(error){
+    console.error(error);
+    return Response.json({ok:false,message:error instanceof Error?error.message:'Sync failed'},{status:500});
+  }
+});
+
+export { extractPlayerNames, normalizeName };
