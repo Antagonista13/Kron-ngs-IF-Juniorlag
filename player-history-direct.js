@@ -1,10 +1,23 @@
 (function(root){
+function isLegacyHistoryToggle(button){
+  const label=(button.textContent||'').trim().toUpperCase();
+  return label.startsWith('VISA ')||label.startsWith('DÖLJ ');
+}
+
+function hideLegacyHistoryToggles(target){
+  if(!target)return;
+  Array.from(target.querySelectorAll('button')).forEach(function(button){
+    if(isLegacyHistoryToggle(button))button.hidden=true;
+  });
+}
+
 function revealHistoryContent(target){
   if(!target)return;
   const toggle=Array.from(target.querySelectorAll('button')).find(function(button){
     return (button.textContent||'').trim().toUpperCase().startsWith('VISA ');
   });
   if(toggle)toggle.click();
+  hideLegacyHistoryToggles(target);
 }
 
 function revealSelectedHistory(){
@@ -16,6 +29,7 @@ function revealSelectedHistory(){
   const kind=selected.dataset.historyPanel;
   const target=document.getElementById(ids[kind])||document.getElementById(alt[kind]||'');
   revealHistoryContent(target);
+  hideLegacyHistoryToggles(target);
 }
 
 function setupDirectHistory(){
@@ -30,6 +44,6 @@ function setupDirectHistory(){
   revealSelectedHistory();
 }
 
-if(typeof module!=='undefined'&&module.exports)module.exports={revealHistoryContent};
-if(root){root.KronangPlayerHistoryDirect={revealHistoryContent:revealHistoryContent};setTimeout(setupDirectHistory,0);}
+if(typeof module!=='undefined'&&module.exports)module.exports={revealHistoryContent,hideLegacyHistoryToggles};
+if(root){root.KronangPlayerHistoryDirect={revealHistoryContent:revealHistoryContent,hideLegacyHistoryToggles:hideLegacyHistoryToggles};setTimeout(setupDirectHistory,0);}
 })(typeof window!=='undefined'?window:null);
