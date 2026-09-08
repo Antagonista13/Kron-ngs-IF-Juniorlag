@@ -23,10 +23,12 @@ test('redesign builds a personal player hero and removes passive stat tiles',()=
 
 test('goal and team card share a compact two-column grid and team card opens editor',()=>{
   const source=fs.readFileSync(path.join(root,'player-profile-redesign.js'),'utf8');
+  const about=fs.readFileSync(path.join(root,'player-public-about.js'),'utf8');
   const css=fs.readFileSync(path.join(root,'player-profile-redesign.css'),'utf8');
   assert.match(source,/playerProfileQuickGrid/);
   assert.match(source,/playerPublicAboutCard/);
-  assert.match(source,/playerAboutEdit/);
+  assert.match(about,/playerAboutEdit/);
+  assert.match(about,/setEditing\(card,true\)/);
   assert.match(css,/grid-template-columns\s*:\s*repeat\(2,minmax\(0,1fr\)\)/);
 });
 
