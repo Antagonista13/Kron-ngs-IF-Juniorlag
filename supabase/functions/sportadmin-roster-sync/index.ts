@@ -3,7 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const SOURCES=[
   {label:'P2011',url:'https://www.kronangsif.se/grupp/?ID=260563'},
-  {label:'P2009-2010',url:'https://www.kronangsif.se/grupp/?ID=224796'}
+  {label:'P2009-2010',url:'https://www.kronangsif.se/grupp/?ID=224799'}
 ];
 const SOURCE="sportadmin_junior";
 const SYNC_KEY="sb_publishable_LueK_yc8XAevJC9zMMVktg_hRc1Zdac";
