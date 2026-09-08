@@ -11,6 +11,8 @@ if(!/dismiss_sportadmin_player_candidate/i.test(migration)) throw new Error('adm
 if(!/schedule:/i.test(schedule)||!/cron:/i.test(schedule)) throw new Error('daily schedule missing');
 if(!/sportadmin-roster-sync/i.test(schedule)) throw new Error('scheduled sync target missing');
 if(!/260563/.test(fn)) throw new Error('P2011 SportAdmin roster source missing');
+if(!/224796/.test(fn)) throw new Error('P2009-2010 SportAdmin roster source missing');
+if(!/SOURCES/.test(fn)||!/sportadmin_junior/.test(fn)) throw new Error('combined junior roster source missing');
 if(!/players/i.test(fn)||!/full_name/i.test(fn)) throw new Error('existing player comparison missing');
 if(/birth|birthday|phone|email|guardian|parent/i.test(fn)) throw new Error('SportAdmin sync must not import personal details beyond name');
 if(!/pending/i.test(fn)) throw new Error('new SportAdmin players must remain pending');
