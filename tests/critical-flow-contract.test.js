@@ -11,7 +11,7 @@ test('critical Safari assets are versioned and loaded exactly once',()=>{
   }
   assert.ok(html.indexOf('calendar-runtime.js?v=8')<html.indexOf('calendar-bridge.js?v=1'),'calendar bridge must load after runtime');
   assert.ok(html.indexOf('player-main-goal.js?v=1')<html.indexOf('development-profile.js?v=5'),'player main goal must own the player goal surface before legacy development profile');
-  assert.ok(html.indexOf('coach-main-goal-review.js?v=1')<html.indexOf('coach-development-worklist.js?v=4'),'coach main goal review must load before the worklist');
+  assert.ok(html.indexOf('coach-main-goal-review.js?v=1')<html.indexOf('coach-development-worklist.js?v=5'),'coach main goal review must load before the worklist');
 });
 
 test('Home next activity always routes to Calendar',()=>{
