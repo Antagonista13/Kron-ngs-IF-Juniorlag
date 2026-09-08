@@ -26,6 +26,12 @@ test('leader development keeps one search and three compact worklist filters',()
   assert.match(css,/\.leader-development-workspace \.coach-roster-filters button\{[^}]*min-width:0[^}]*width:100%/);
 });
 
+test('player shirt number is rendered at the far right before the arrow',()=>{
+  assert.match(source,/development-player-card-number/);
+  assert.match(source,/development-player-card-number[^<]*<\/span><span class="development-player-card-arrow"/);
+  assert.doesNotMatch(source,/\(i\.shirtNumber\?'#'\+i\.shirtNumber\+' · ':'\'\'\)\+i\.name/);
+});
+
 test('summary metrics are clickable filters',()=>{
   assert.match(source,/data-summary-filter="all"/);
   assert.match(source,/data-summary-filter="needs-follow-up"/);
