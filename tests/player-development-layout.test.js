@@ -73,3 +73,10 @@ test('development trend uses a compact two-column area grid on mobile',()=>{
   assert.match(layout,/#playerTrendSlot \.profile-trend-row/);
   assert.match(layout,/#playerTrendSlot \.profile-trend-values/);
 });
+
+test('player journey is removed when Development resolves to leader dashboard',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/function cleanupPlayerDevelopmentJourney\(\)/);
+  assert.match(layout,/dataset\.developmentViewMode===['"]leader-dashboard['"]/);
+  assert.match(layout,/kronang:development-role-resolved/);
+});
