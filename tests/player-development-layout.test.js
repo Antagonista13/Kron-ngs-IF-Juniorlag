@@ -34,6 +34,14 @@ test('selected history choice survives later layout mutations',()=>{
   assert.doesNotMatch(layout,/el\.hidden=index!==0/);
 });
 
+test('selected history tab reveals its existing history list directly',()=>{
+  const layout=fs.readFileSync('player-development-layout.js','utf8');
+  assert.match(layout,/function revealHistoryContent\(target\)/);
+  assert.match(layout,/startsWith\(['"]VISA ['"]\)/);
+  assert.match(layout,/toggle\.click\(\)/);
+  assert.match(layout,/revealHistoryContent\(target\)/);
+});
+
 test('goal history can override legacy owner hiding when selected',()=>{
   const layout=fs.readFileSync('player-development-layout.js','utf8');
   assert.match(layout,/#playerHistoryContent #developmentGoalHistory:not\(\[hidden\]\)\{display:block!important\}/);
