@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { buildTeamStaffMember } = require('../team-staff.js');
+const { buildTeamStaffMember, sortTeamStaffMembers } = require('../team-staff.js');
 
 const coach = buildTeamStaffMember({id:'staff-1', display_name:'Anna', staff_role:'Huvudtränare', description:'Ansvarar för träning och match.', phone:'0701234567', email:'anna@example.se', avatar_url:'https://example.se/a.jpg', sort_order:2});
 assert.strictEqual(coach.id, 'staff-1');
@@ -16,4 +16,24 @@ assert.strictEqual(noAccount.role, 'Kioskansvarig');
 assert.strictEqual(noAccount.description, 'Samordnar kiosken.');
 assert.strictEqual(noAccount.phoneHref, '');
 assert.strictEqual(noAccount.emailHref, '');
+
+const ranked = sortTeamStaffMembers([
+  {name:'Zara Övrig', role:'Materialansvarig'},
+  {name:'Bengt Coach', role:'Coach'},
+  {name:'Anna Assistent', role:'Ass Coach'},
+  {name:'Carl Huvud', role:'Head Coach'},
+  {name:'Henric Bergqvist', role:'Team Manager / Administratör'},
+  {name:'David Målvakt', role:'Målvaktstränare'},
+  {name:'Erik Fys', role:'Fystränare'}
+]);
+assert.deepStrictEqual(ranked.map(member=>member.name),[
+  'Henric Bergqvist',
+  'Carl Huvud',
+  'Bengt Coach',
+  'Anna Assistent',
+  'David Målvakt',
+  'Erik Fys',
+  'Zara Övrig'
+]);
+
 console.log('team staff tests passed');
