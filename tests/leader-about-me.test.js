@@ -35,5 +35,5 @@ test('database migration links team staff to auth profile and protects self upda
 
 test('profile role view cache is bumped for leader about me',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  assert.match(html,/profile-role-view\.js\?v=6/);
+  assert.match(html,/profile-role-view\.js\?v=7/);
 });
