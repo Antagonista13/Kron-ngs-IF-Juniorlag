@@ -67,20 +67,23 @@ Deno.serve(async (req) => {
   const alreadyRegistered = (usersPage.users || []).some((user) => String(user.email || '').trim().toLowerCase() === email);
   if (alreadyRegistered) return json({ error: 'Already invited or registered' }, 409);
 
-  const { error: inviteError } = await serviceClient.auth.admin.inviteUserByEmail(email, {
-    data: { full_name: fullName }
-  });
-  if (inviteError) return json({ error: 'Invitation could not be sent' }, 400);
-
-  const { error: metadataError } = await serviceClient.from('user_invitations').insert({
+  const { data: invitation, error: metadataError } = await serviceClient.from('user_invitations').insert({
     email,
     display_name: fullName,
     expected_role: expectedRole || null,
     status: 'pending',
     invited_by: caller.id,
     updated_at: new Date().toISOString()
+  }).select('id').single();
+  if (metadataError || !invitation) return json({ error: 'Invitation could not be prepared' }, 500);
+
+  const { error: inviteError } = await serviceClient.auth.admin.inviteUserByEmail(email, {
+    data: { full_name: fullName }
   });
-  if (metadataError) return json({ error: 'Invitation sent but metadata could not be saved' }, 500);
+  if (inviteError) {
+    await serviceClient.from('user_invitations').delete().eq('id', invitation.id).eq('status', 'pending');
+    return json({ error: 'Invitation could not be sent' }, 400);
+  }
 
   return json({ ok: true });
 });
