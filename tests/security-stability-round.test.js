@@ -29,7 +29,7 @@ test('account bootstrap is invitation-backed on the server',()=>{
 });
 
 test('team-post images are private and displayed with signed URLs',()=>{
-  assert.match(migration,/team-post-images[\s\S]*public\s*=\s*false/i);
+  assert.match(migration,/update\s+storage\.buckets[\s\S]*set\s+public\s*=\s*false[\s\S]*where\s+id\s*=\s*'team-post-images'/i);
   assert.match(migration,/team_post_images_select_active/i);
   assert.match(posts,/createSignedUrl/i);
   assert.doesNotMatch(posts,/getPublicUrl\(/i);
