@@ -12,6 +12,7 @@ assert.ok(/update_my_phone_visibility/i.test(migration), 'player must be able to
 assert.ok(/get_visible_player_phone/i.test(migration), 'phone visibility must be resolved server-side');
 assert.ok(/players[\s\S]*mobile_phone/i.test(migration), 'existing player mobile numbers must be migrated into protected contact storage');
 assert.ok(/set\s+mobile_phone\s*=\s*null/i.test(migration), 'legacy mobile numbers must be removed from the broadly readable players table');
+assert.ok(/capture_player_mobile_phone/i.test(migration), 'legacy admin roster edits must be redirected into protected contact storage');
 
 const sync = fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts', 'utf8');
 assert.equal(/birth|birthday|phone|email|guardian|parent/i.test(sync), false, 'current public SportAdmin roster sync must still avoid personal contact details');
@@ -24,12 +25,14 @@ assert.ok(sms.includes("role !== 'admin'"), 'SMS invite caller must be admin');
 assert.ok(/generateLink/i.test(sms), 'SMS invite must generate an auth link without sending email');
 assert.ok(/player_contact_preferences/i.test(sms), 'SMS invite must use protected player phone data');
 
-const ui = fs.readFileSync('admin-page.js', 'utf8');
-assert.ok(/Bjud in via SMS/i.test(ui), 'admin must get an SMS invite action for players');
-assert.ok(/sms:/i.test(ui), 'admin SMS action must open the device SMS composer');
+const adminSms = fs.readFileSync('admin-player-sms.js', 'utf8');
+assert.ok(/Bjud in via SMS/i.test(adminSms), 'admin must get an SMS invite action for players');
+assert.ok(/sms:/i.test(adminSms), 'admin SMS action must open the device SMS composer');
+assert.ok(/adminInvitePlayer/i.test(adminSms), 'SMS invite must be tied to a selected roster player');
 
-const profile = fs.readFileSync('profile-role-view.js', 'utf8');
-assert.ok(/Vem får se mitt mobilnummer/i.test(profile), 'player profile must expose phone visibility setting');
-assert.ok(/Dolt/i.test(profile) && /Endast tränare/i.test(profile) && /Alla i laget/i.test(profile), 'player must get all three visibility choices');
+const phoneUi = fs.readFileSync('player-phone-visibility.js', 'utf8');
+assert.ok(/Vem får se mitt mobilnummer/i.test(phoneUi), 'player profile must expose phone visibility setting');
+assert.ok(/Dolt/i.test(phoneUi) && /Endast tränare/i.test(phoneUi) && /Alla i laget/i.test(phoneUi), 'player must get all three visibility choices');
+assert.ok(/get_visible_player_phone/i.test(phoneUi), 'shared player profiles must resolve phone visibility server-side');
 
 console.log('player phone privacy and SMS invite contract ok');
