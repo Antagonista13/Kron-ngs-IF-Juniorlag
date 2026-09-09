@@ -10,6 +10,13 @@ test('invitation links force first-time password creation',()=>{
  assert.match(auth,/updateUser\(\{password:/);
 });
 
+test('public signup is disabled and accounts are invite-only',()=>{
+ const auth=fs.readFileSync('auth.js','utf8');
+ assert.doesNotMatch(auth,/signUp\s*\(/);
+ assert.doesNotMatch(auth,/>Skapa konto</i);
+ assert.doesNotMatch(auth,/mode\s*===?\s*['"]signup['"]/i);
+});
+
 test('admin profile image list excludes pending or inactive accounts',()=>{
  const source=fs.readFileSync('admin-profile-images.js','utf8');
  assert.match(source,/is_active\s*!==\s*false/);
@@ -25,7 +32,8 @@ test('admin form controls stay at iOS-safe 16px on mobile and page cannot overfl
 
 test('invite/admin cache versions are bumped',()=>{
  const html=fs.readFileSync('index.html','utf8');
- assert.match(html,/auth\.js\?v=7/);
+ assert.match(html,/auth\.js\?v=8/);
  assert.match(html,/admin-profile-images\.js\?v=3/);
  assert.match(html,/admin-page\.css\?v=7/);
+ assert.match(html,/admin-page\.js\?v=6/);
 });
