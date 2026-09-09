@@ -27,5 +27,5 @@ test('invite/admin cache versions are bumped',()=>{
  const html=fs.readFileSync('index.html','utf8');
  assert.match(html,/auth\.js\?v=7/);
  assert.match(html,/admin-profile-images\.js\?v=3/);
- assert.match(html,/admin-page\.css\?v=6/);
+ assert.match(html,/admin-page\.css\?v=7/);
 });
