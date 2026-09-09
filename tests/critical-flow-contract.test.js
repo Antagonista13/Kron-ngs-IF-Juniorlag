@@ -4,6 +4,9 @@ const fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
 const home=fs.readFileSync('home-player-header.js','utf8');
 const leader=fs.readFileSync('leader-tools-profile.js','utf8');
+const admin=fs.readFileSync('admin-page.js','utf8');
+const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
+const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
 test('critical Safari assets are versioned and loaded exactly once',()=>{
   for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9']){
@@ -27,4 +30,18 @@ test('Profile leader tools keep roster management available',()=>{
 
 test('leader tools remain hosted on Profile rather than Laget',()=>{
   assert.match(leader,/function leaderToolsHostPageId\(\)\{return'profilePage';\}/);
+});
+
+test('admin has a separate SportAdmin notification badge',()=>{
+  assert.equal(html.split('admin-sportadmin-badge.js?v=1').length-1,1,'SportAdmin badge script must load exactly once');
+  assert.match(admin,/id="sportadminPendingBadge"/);
+  assert.match(sportadminBadge,/getElementById\('sportadminPendingBadge'\)/);
+  assert.doesNotMatch(sportadminBadge,/getElementById\('adminPendingBadge'\)/);
+});
+
+test('SportAdmin sync automatically adds new roster players without creating app accounts',()=>{
+  assert.match(sportadminSync,/from\('players'\)\.insert\(\{full_name:item\.full_name,is_active:true\}\)/);
+  assert.match(sportadminSync,/status:'approved'/);
+  assert.match(sportadminSync,/created_player_id:/);
+  assert.doesNotMatch(sportadminSync,/auth\.admin\.createUser|invite-user|profiles.*insert/i);
 });
