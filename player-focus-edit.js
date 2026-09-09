@@ -92,6 +92,7 @@
     if(!summary.querySelector('h2')) return;
     const focus=await getPlayerActiveFocus();
     if(!focus) return;
+    if(summary.querySelector('[data-player-focus-edit]')) return;
     const button=document.createElement('button');
     button.type='button';
     button.textContent='ÄNDRA FOKUS';

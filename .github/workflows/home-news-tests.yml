@@ -91,7 +91,7 @@ jobs:
       - name: Player development workflow tests
         run: node --test tests/development-workflow.test.js tests/development-profile.test.js tests/development-notifications.test.js tests/player-development-sql.test.js tests/player-development-assets.test.js tests/player-development-layout.test.js
       - name: Player focus edit tests
-        run: node --test tests/player-focus-edit.test.js
+        run: node --test tests/player-focus-edit.test.js tests/player-focus-edit-duplicates.test.js
       - name: Leader development compact tests
         run: node --test tests/leader-development-compact.test.js tests/leader-development-compact-assets.test.js
       - name: Player main goal SQL tests
