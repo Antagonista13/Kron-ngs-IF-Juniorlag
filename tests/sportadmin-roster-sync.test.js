@@ -4,6 +4,7 @@ const migration=read('supabase/migrations/202609081500_sportadmin_roster_sync.sq
 const autoMigration=read('supabase/migrations/202609090001_auto_import_sportadmin_players.sql');
 const fn=read('supabase/functions/sportadmin-roster-sync/index.ts');
 const ui=read('sportadmin-sync-admin.js');
+const adminCenter=read('admin-center.js');
 const schedule=read('.github/workflows/sportadmin-roster-daily.yml');
 if(!/sportadmin_player_candidates/i.test(migration)) throw new Error('candidate table missing');
 if(!/status[^\n]*(pending|approved|dismissed)/i.test(migration)) throw new Error('candidate statuses missing');
@@ -20,7 +21,8 @@ if(/birth|birthday|phone|email|guardian|parent/i.test(fn)) throw new Error('Spor
 if(!/from\('players'\)\.insert/.test(fn)||!/status:'approved'/.test(fn)) throw new Error('new SportAdmin players must be added automatically');
 if(!/SPORTADMIN/i.test(ui)||!/MARKERA SOM SEDD/i.test(ui)) throw new Error('admin SportAdmin notification UI missing');
 if(/GODKÄNN|AVVISA/.test(ui)) throw new Error('SportAdmin imports must not require manual approval');
-if(!/sportadmin-roster-sync/.test(ui)) throw new Error('manual sync action missing');
+if(!/sportadmin-roster-sync/.test(adminCenter)) throw new Error('Admincenter manual sync action missing');
+if(/data-sportadmin-sync/.test(ui)) throw new Error('legacy SportAdmin UI must not expose a second manual sync action');
 if(!/triggeredBy/.test(fn)||!/scheduled/.test(fn)||!/admin/.test(fn)) throw new Error('sync trigger classification missing');
 if(!/sportadmin_sync_runs/.test(fn)) throw new Error('sync history recording missing');
 if(!/started_at/.test(fn)||!/finished_at/.test(fn)) throw new Error('sync run timestamps missing');
