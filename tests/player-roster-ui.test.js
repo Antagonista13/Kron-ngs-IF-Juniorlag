@@ -23,6 +23,10 @@ const css = fs.readFileSync('player-roster.css', 'utf8');
 const index = fs.readFileSync('index.html', 'utf8');
 assert.ok(js.includes("classList.toggle('leader-team-view'") || js.includes('classList.toggle("leader-team-view"'), 'leader/admin role should explicitly activate the compact team class');
 assert.ok(archiveJs.includes('Borttagna/arkiverade spelare'), 'inactive roster section should be labelled as archived players');
+assert.ok(archiveJs.includes('player-public-profile-archive'), 'archive action should be rendered inside the opened player profile');
+assert.ok(archiveJs.includes("closest('[data-roster-active]')"), 'archive UX should identify clicks from the active roster list');
+assert.ok(archiveJs.includes("button.style.display='none'"), 'active roster list should hide the old remove button');
+assert.ok(archiveJs.includes("from('players').update({is_active:false"), 'profile archive action should archive the player locally');
 assert.ok(archiveJs.includes('window.confirm('), 'removing an active player should require confirmation');
 assert.ok(archiveJs.includes('Spelaren tas bara bort från appen'), 'confirmation should explain local-only removal');
 assert.ok(css.includes('#teamPage.leader-team-view.active'), 'compact layout should be tied to the explicit leader-team-view class');
@@ -40,5 +44,5 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
 assert.ok(index.includes('player-roster.css?v=8'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=7'), 'roster js cache version must be current');
-assert.ok(index.includes('player-roster-archive.js?v=1'), 'local archive UX must load immediately after the roster script');
+assert.ok(index.includes('player-roster-archive.js?v=2'), 'player profile archive UX cache version must be current');
 console.log('player roster ui tests passed');
