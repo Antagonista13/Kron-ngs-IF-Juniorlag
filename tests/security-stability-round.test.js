@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('fs');
 function read(path){return fs.existsSync(path)?fs.readFileSync(path,'utf8'):'';}
 
-const migration=read('supabase/migrations/202609090001_security_stability_round.sql');
+const migration=read('supabase/migrations/202609090002_security_stability_round.sql');
 const roster=read('player-roster.js');
 const invite=read('supabase/functions/invite-user/index.ts');
 const posts=read('team-posts.js');
