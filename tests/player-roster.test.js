@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { normalizePlayer, validatePlayerInput, formatSwedishBirthDate, canManageRoster, formatTeamRoleMarker } = require('../player-roster.js');
+const { normalizePlayer, validatePlayerInput, formatSwedishBirthDate, canManageRoster, formatTeamRoleMarker, buildRosterCardModel } = require('../player-roster.js');
 assert.strictEqual(canManageRoster('coach'), true);
 assert.strictEqual(canManageRoster('admin'), true);
 assert.strictEqual(canManageRoster('player'), false);
@@ -13,6 +13,10 @@ assert.strictEqual(validatePlayerInput({name:'Axel',shirtNumber:''}).ok, true);
 assert.strictEqual(validatePlayerInput({name:'Axel',shirtNumber:0}).ok, false);
 assert.strictEqual(validatePlayerInput({name:'Axel',shirtNumber:100}).ok, false);
 assert.strictEqual(formatSwedishBirthDate('2011-07-15'),'15 juli 2011');
+assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'admin').birthDate,'15 juli 2011');
+assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'coach').birthDate,'2011');
+assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'player').birthDate,'2011');
+assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'parent').birthDate,'2011');
 assert.strictEqual(formatTeamRoleMarker('captain'), '(K)');
 assert.strictEqual(formatTeamRoleMarker('vice_captain'), '(VK)');
 assert.strictEqual(formatTeamRoleMarker(''), '');
