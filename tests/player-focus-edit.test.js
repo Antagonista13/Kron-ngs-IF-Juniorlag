@@ -23,7 +23,7 @@ test('active focus UI offers edit action and uses protected update RPC', () => {
   assert.match(js, /ÄNDRA FOKUS/);
   assert.match(js, /update_my_active_development_focus/);
   assert.match(js, /renderEditFocusForm/);
-  assert.match(loader, /player-focus-edit\.js\?v=1/);
+  assert.match(loader, /player-focus-edit\.js\?v=2/);
 });
 
 test('migration only updates the signed-in players active focus', () => {
