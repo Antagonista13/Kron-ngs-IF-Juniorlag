@@ -29,4 +29,6 @@ if(!/found/.test(fn)||!/imported/.test(fn)||!/error_message/.test(fn)) throw new
 if(!/auth\.getUser\(token\)/.test(fn)) throw new Error('manual sync must validate the bearer token');
 if(!/createClient\(Deno\.env\.get\('SUPABASE_URL'\)!\s*,\s*Deno\.env\.get\('SUPABASE_SERVICE_ROLE_KEY'\)!\)/s.test(fn)) throw new Error('admin profile lookup must use a service-role client after JWT validation');
 if(!/serviceClient\.from\('profiles'\)/.test(fn)) throw new Error('validated admin profile must be checked with service-role client');
+if(!/req\.method\s*===\s*['"]OPTIONS['"]/.test(fn)) throw new Error('browser preflight OPTIONS request must be handled');
+if(!/Access-Control-Allow-Origin/.test(fn)||!/Access-Control-Allow-Headers/.test(fn)) throw new Error('browser sync responses must include CORS headers');
 console.log('sportadmin roster sync contract ok');
