@@ -25,9 +25,8 @@ const approvalEdge = fs.readFileSync(approvalEdgePath, 'utf8');
 assert.ok(approvalEdge.includes('Authorization'), 'approval caller Authorization header must be checked');
 assert.ok(approvalEdge.includes("role !== 'admin'"), 'approval caller must be an admin');
 assert.ok(approvalEdge.includes("rpc('admin_approve_user'"), 'approval must reuse the existing server-side approval RPC');
-assert.ok(approvalEdge.includes('signInWithOtp'), 'approval must send a Supabase email after approval');
-assert.ok(approvalEdge.includes('shouldCreateUser: false'), 'approval email must never create a duplicate auth user');
-assert.ok(approvalEdge.includes('emailSent'), 'approval response must report whether email was sent');
+assert.equal(approvalEdge.includes('signInWithOtp'), false, 'approval must not send a magic-link email');
+assert.equal(approvalEdge.includes('emailSent'), false, 'approval must not report a misleading email status');
 const adminPage = fs.readFileSync(path.join(__dirname, '..', 'admin-page.js'), 'utf8');
 assert.ok(adminPage.includes("functions.invoke('approve-user'"), 'admin approval must call the approval Edge Function');
 
