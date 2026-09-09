@@ -55,7 +55,7 @@ test('leader profile counts active roster players and uses fresh assets',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
   assert.match(source,/leader-profile\.css\?v=5/);
-  assert.match(html,/profile-role-view\.js\?v=8/);
+  assert.match(html,/profile-role-view\.js\?v=9/);
   assert.match(html,/calendar-runtime\.js\?v=8/);
 });
 
