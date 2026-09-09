@@ -52,7 +52,11 @@ async function authorization(req:Request):Promise<{authorized:boolean;triggeredB
   if(configuredSyncKey&&suppliedSyncKey&&suppliedSyncKey===configuredSyncKey)return{authorized:true,triggeredBy:'scheduled'};
   const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'').trim();
   if(!token)return{authorized:false,triggeredBy:null};
-  const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!);
+  const authClient=createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    {global:{headers:{Authorization:`Bearer ${token}`}}}
+  );
   const {data:userData,error:userError}=await authClient.auth.getUser(token);
   if(userError||!userData.user)return{authorized:false,triggeredBy:null};
   const {data:profile}=await authClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
