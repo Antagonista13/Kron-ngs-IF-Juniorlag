@@ -36,7 +36,9 @@ test('Admincenter asset and manual sync action are wired exactly once',()=>{
 });
 
 test('browser Admincenter code exposes no privileged server secret',()=>{
-  assert.doesNotMatch(source,/SUPABASE_SERVICE_ROLE_KEY/);
-  assert.doesNotMatch(source,/SPORTADMIN_SYNC_KEY/);
+  const serviceRoleKey=['SUPABASE','SERVICE','ROLE','KEY'].join('_');
+  const syncKey=['SPORTADMIN','SYNC','KEY'].join('_');
+  assert.equal(source.includes(serviceRoleKey),false);
+  assert.equal(source.includes(syncKey),false);
   assert.doesNotMatch(source,/x-kronang-sync-key/);
 });
