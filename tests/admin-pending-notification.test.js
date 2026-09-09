@@ -3,9 +3,10 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const admin=fs.readFileSync('admin-page.js','utf8');
 
-test('admin profile shows pending approval count and hides it at zero',()=>{
+test('admin profile shows pending SportAdmin player count and hides it at zero',()=>{
+  assert.match(admin,/sportadmin_player_candidates/);
+  assert.match(admin,/\.eq\(['"]status['"],['"]pending['"]\)/);
   assert.match(admin,/adminPendingBadge/);
-  assert.match(admin,/overview\.pending/);
   assert.match(admin,/badge\.hidden\s*=\s*!pending/);
 });
 
