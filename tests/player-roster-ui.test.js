@@ -1,10 +1,16 @@
 const assert = require('assert');
 const fs = require('fs');
 const roster = require('../player-roster.js');
+const archive = require('../player-roster-archive.js');
 const { buildRosterCardModel, shouldUseCompactLeaderTeamView } = roster;
+const { getArchiveActionLabel, PLAYER_ARCHIVE_CONFIRM_TEXT } = archive;
 
 assert.deepStrictEqual(buildRosterCardModel({full_name:'Axel',shirt_number:17,is_active:true,mobile_phone:'0701',birth_date:'2011-07-15'}),{name:'Axel',number:'#17',mobile:'0701',birthDate:'15 juli 2011',position:'',teamRole:'',actionLabel:'Ta bort från truppen',isActive:true});
 assert.deepStrictEqual(buildRosterCardModel({full_name:'Roney',shirt_number:null,is_active:false,mobile_phone:null,birth_date:null}),{name:'Roney',number:'',mobile:'',birthDate:'',position:'',teamRole:'',actionLabel:'Återaktivera',isActive:false});
+assert.equal(getArchiveActionLabel(true),'Ta bort från appen');
+assert.equal(getArchiveActionLabel(false),'Återaktivera');
+assert.ok(PLAYER_ARCHIVE_CONFIRM_TEXT.includes('SportAdmin påverkas inte'), 'archive confirmation must explicitly say SportAdmin is unaffected');
+assert.ok(PLAYER_ARCHIVE_CONFIRM_TEXT.includes('historik sparas'), 'archive confirmation must explain that player history is preserved');
 
 assert.equal(shouldUseCompactLeaderTeamView('admin'), true, 'admin should get compact leader team view');
 assert.equal(shouldUseCompactLeaderTeamView('coach'), true, 'coach should get compact leader team view');
@@ -12,9 +18,13 @@ assert.equal(shouldUseCompactLeaderTeamView('player'), false, 'player should kee
 assert.equal(shouldUseCompactLeaderTeamView('parent'), false, 'parent should keep normal team view');
 
 const js = fs.readFileSync('player-roster.js', 'utf8');
+const archiveJs = fs.readFileSync('player-roster-archive.js', 'utf8');
 const css = fs.readFileSync('player-roster.css', 'utf8');
 const index = fs.readFileSync('index.html', 'utf8');
 assert.ok(js.includes("classList.toggle('leader-team-view'") || js.includes('classList.toggle("leader-team-view"'), 'leader/admin role should explicitly activate the compact team class');
+assert.ok(archiveJs.includes('Borttagna/arkiverade spelare'), 'inactive roster section should be labelled as archived players');
+assert.ok(archiveJs.includes('window.confirm('), 'removing an active player should require confirmation');
+assert.ok(archiveJs.includes('Spelaren tas bara bort från appen'), 'confirmation should explain local-only removal');
 assert.ok(css.includes('#teamPage.leader-team-view.active'), 'compact layout should be tied to the explicit leader-team-view class');
 assert.ok(!css.includes('#teamPage:has(#playerRosterSection).active'), 'compact layout must not depend on :has() for layout activation');
 assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'leader tools should render two by two on mobile');
@@ -30,4 +40,5 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
 assert.ok(index.includes('player-roster.css?v=8'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=7'), 'roster js cache version must be current');
+assert.ok(index.includes('player-roster-archive.js?v=1'), 'local archive UX must load immediately after the roster script');
 console.log('player roster ui tests passed');
