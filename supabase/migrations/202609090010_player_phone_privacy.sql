@@ -18,7 +18,6 @@ set mobile_phone = excluded.mobile_phone,
 update public.players set mobile_phone = null where mobile_phone is not null;
 
 alter table public.player_contact_preferences enable row level security;
-
 revoke all on public.player_contact_preferences from anon;
 grant select on public.player_contact_preferences to authenticated;
 
@@ -59,12 +58,12 @@ using (
   and visibility in ('coaches','team')
 );
 
-create policy "phone players read team shared"
+create policy "phone team reads team shared"
 on public.player_contact_preferences
 for select
 to authenticated
 using (
-  public.current_phone_viewer_role() = 'player'
+  public.current_phone_viewer_role() in ('player','parent')
   and visibility = 'team'
 );
 
@@ -151,7 +150,7 @@ begin
   if v_role = 'admin'
      or v_is_owner
      or (v_role = 'coach' and v_visibility in ('coaches','team'))
-     or (v_role = 'player' and v_visibility = 'team') then
+     or (v_role in ('player','parent') and v_visibility = 'team') then
     return query select v_phone, v_visibility;
   end if;
 end;
@@ -192,3 +191,55 @@ end;
 $$;
 
 grant execute on function public.get_my_phone_preference() to authenticated;
+
+-- Keep the existing admin roster editor compatible without leaving the number in players.
+create or replace function public.capture_player_mobile_phone()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.mobile_phone is not null and nullif(trim(new.mobile_phone), '') is not null
+     and new.mobile_phone is distinct from old.mobile_phone then
+    insert into public.player_contact_preferences (player_id, mobile_phone, visibility, source, updated_at)
+    values (new.id, trim(new.mobile_phone), coalesce((select visibility from public.player_contact_preferences where player_id = new.id), 'hidden'), 'admin', now())
+    on conflict (player_id) do update
+    set mobile_phone = excluded.mobile_phone,
+        source = 'admin',
+        updated_at = now();
+    new.mobile_phone := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists capture_player_mobile_phone_before_update on public.players;
+create trigger capture_player_mobile_phone_before_update
+before update of mobile_phone on public.players
+for each row execute function public.capture_player_mobile_phone();
+
+create or replace function public.capture_inserted_player_mobile_phone()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.mobile_phone is not null and nullif(trim(new.mobile_phone), '') is not null then
+    insert into public.player_contact_preferences (player_id, mobile_phone, visibility, source, updated_at)
+    values (new.id, trim(new.mobile_phone), 'hidden', 'admin', now())
+    on conflict (player_id) do update
+    set mobile_phone = excluded.mobile_phone,
+        source = 'admin',
+        updated_at = now();
+    update public.players set mobile_phone = null where id = new.id;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists capture_player_mobile_phone_after_insert on public.players;
+create trigger capture_player_mobile_phone_after_insert
+after insert on public.players
+for each row execute function public.capture_inserted_player_mobile_phone();
