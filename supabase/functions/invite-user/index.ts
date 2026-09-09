@@ -37,11 +37,12 @@ Deno.serve(async (req) => {
     return json({ error: 'Forbidden' }, 403);
   }
 
-  let body: { email?: string; fullName?: string; expectedRole?: string };
+  let body: { email?: string; fullName?: string; expectedRole?: string; teamFunction?: string };
   try { body = await req.json(); } catch { return json({ error: 'Invalid request' }, 400); }
   const email = String(body.email || '').trim().toLowerCase();
   const fullName = String(body.fullName || '').trim();
   const expectedRole = String(body.expectedRole || '').trim();
+  const teamFunction = expectedRole === 'coach' ? String(body.teamFunction || '').trim() : '';
   const allowedExpectedRoles = ['', 'player', 'parent', 'coach'];
   if (!/^\S+@\S+\.\S+$/.test(email) || !fullName || !allowedExpectedRoles.includes(expectedRole)) {
     return json({ error: 'Invalid invitation data' }, 400);
@@ -71,6 +72,7 @@ Deno.serve(async (req) => {
     email,
     display_name: fullName,
     expected_role: expectedRole || null,
+    team_function: teamFunction || null,
     status: 'pending',
     invited_by: caller.id,
     updated_at: new Date().toISOString()
