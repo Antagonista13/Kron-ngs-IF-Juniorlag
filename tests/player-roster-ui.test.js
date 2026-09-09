@@ -7,7 +7,7 @@ const { getArchiveActionLabel, PLAYER_ARCHIVE_CONFIRM_TEXT } = archive;
 
 assert.deepStrictEqual(buildRosterCardModel({full_name:'Axel',shirt_number:17,is_active:true,mobile_phone:'0701',birth_date:'2011-07-15'}),{name:'Axel',number:'#17',mobile:'0701',birthDate:'15 juli 2011',position:'',teamRole:'',actionLabel:'Ta bort från truppen',isActive:true});
 assert.deepStrictEqual(buildRosterCardModel({full_name:'Roney',shirt_number:null,is_active:false,mobile_phone:null,birth_date:null}),{name:'Roney',number:'',mobile:'',birthDate:'',position:'',teamRole:'',actionLabel:'Återaktivera',isActive:false});
-assert.equal(getArchiveActionLabel(true),'Ta bort från appen');
+assert.equal(getArchiveActionLabel(true),'Ta bort');
 assert.equal(getArchiveActionLabel(false),'Återaktivera');
 assert.ok(PLAYER_ARCHIVE_CONFIRM_TEXT.includes('SportAdmin påverkas inte'), 'archive confirmation must explicitly say SportAdmin is unaffected');
 assert.ok(PLAYER_ARCHIVE_CONFIRM_TEXT.includes('historik sparas'), 'archive confirmation must explain that player history is preserved');
@@ -27,6 +27,9 @@ assert.ok(archiveJs.includes('player-public-profile-archive'), 'archive action s
 assert.ok(archiveJs.includes("closest('[data-roster-active]')"), 'archive UX should identify clicks from the active roster list');
 assert.ok(archiveJs.includes("button.style.display='none'"), 'active roster list should hide the old remove button');
 assert.ok(archiveJs.includes("from('players').update({is_active:false"), 'profile archive action should archive the player locally');
+assert.ok(archiveJs.includes("button.textContent=getArchiveActionLabel(true)"), 'opened player profile remove button should use the short Ta bort label');
+assert.ok(archiveJs.includes("profile.querySelector('.player-public-profile-role')"), 'remove button should look for the captain/vice-captain badge');
+assert.ok(archiveJs.includes('roleBadge.after(button)'), 'remove button should be placed immediately below the captain/vice-captain badge');
 assert.ok(archiveJs.includes('window.confirm('), 'removing an active player should require confirmation');
 assert.ok(archiveJs.includes('Spelaren tas bara bort från appen'), 'confirmation should explain local-only removal');
 assert.ok(css.includes('#teamPage.leader-team-view.active'), 'compact layout should be tied to the explicit leader-team-view class');
@@ -44,5 +47,5 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
 assert.ok(index.includes('player-roster.css?v=8'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=7'), 'roster js cache version must be current');
-assert.ok(index.includes('player-roster-archive.js?v=2'), 'player profile archive UX cache version must be current');
+assert.ok(index.includes('player-roster-archive.js?v=3'), 'player profile archive UX cache version must be current');
 console.log('player roster ui tests passed');
