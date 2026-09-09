@@ -118,6 +118,8 @@ jobs:
         run: node --test tests/admin-save-feedback-sql.test.js
       - name: Admincenter tests
         run: node --test tests/admin-center.test.js tests/admin-center-sql.test.js
+      - name: Admin cleanup round tests
+        run: node tests/admin-cleanup-round.test.js
       - name: Permission SQL tests
         run: node tests/permissions-sql.test.js
       - name: Access gate tests
