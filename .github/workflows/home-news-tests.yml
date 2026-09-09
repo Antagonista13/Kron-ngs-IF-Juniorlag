@@ -120,6 +120,8 @@ jobs:
         run: node --test tests/admin-center.test.js tests/admin-center-sql.test.js
       - name: Admin cleanup round tests
         run: node tests/admin-cleanup-round.test.js
+      - name: Reinvite and invite role label tests
+        run: node tests/reinvite-and-invite-role-labels.test.js
       - name: Permission SQL tests
         run: node tests/permissions-sql.test.js
       - name: Access gate tests

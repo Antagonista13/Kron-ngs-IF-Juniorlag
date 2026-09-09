@@ -15,10 +15,11 @@ function validateInvite(input) {
   const email = String(item.email || '').trim().toLowerCase();
   const fullName = String(item.fullName || '').trim();
   const expectedRole = String(item.expectedRole || '').trim();
+  const teamFunction = String(item.teamFunction || '').trim();
   if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false, message: 'Ange en giltig e-postadress.' };
   if (!fullName) return { ok: false, message: 'Ange personens namn.' };
-  if (!['', 'player', 'parent', 'coach'].includes(expectedRole)) return { ok: false, message: 'Välj en giltig förväntad roll.' };
-  return { ok: true, message: '', value: { email, fullName, expectedRole } };
+  if (!['', 'player', 'parent', 'coach'].includes(expectedRole)) return { ok: false, message: 'Välj en giltig kontotyp.' };
+  return { ok: true, message: '', value: { email, fullName, expectedRole, teamFunction: expectedRole === 'coach' ? teamFunction : '' } };
 }
 const adminAccessApi = { normalizeApprovalRole, validateApproval, validateInvite };
 if (typeof module !== 'undefined' && module.exports) module.exports = adminAccessApi;
