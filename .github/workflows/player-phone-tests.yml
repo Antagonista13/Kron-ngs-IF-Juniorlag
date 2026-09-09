@@ -1,0 +1,21 @@
+name: Player phone privacy tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check admin-player-sms.js
+          node --check player-phone-visibility.js
+          node --check role-permissions.js
+      - name: Player phone privacy and SMS invite contract
+        run: node tests/player-phone-privacy-sms.test.js
