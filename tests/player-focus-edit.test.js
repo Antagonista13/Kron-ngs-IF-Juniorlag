@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
-const focus = require('../focus-summary.js');
+const focus = require('../player-focus-edit.js');
 
 test('player can build an update request for an active focus', () => {
   assert.equal(typeof focus.buildFocusUpdateRequest, 'function');
@@ -18,10 +18,12 @@ test('player can build an update request for an active focus', () => {
 });
 
 test('active focus UI offers edit action and uses protected update RPC', () => {
-  const js = fs.readFileSync('focus-summary.js', 'utf8');
+  const js = fs.readFileSync('player-focus-edit.js', 'utf8');
+  const loader = fs.readFileSync('role-permissions.js', 'utf8');
   assert.match(js, /ÄNDRA FOKUS/);
   assert.match(js, /update_my_active_development_focus/);
   assert.match(js, /renderEditFocusForm/);
+  assert.match(loader, /player-focus-edit\.js\?v=1/);
 });
 
 test('migration only updates the signed-in players active focus', () => {
