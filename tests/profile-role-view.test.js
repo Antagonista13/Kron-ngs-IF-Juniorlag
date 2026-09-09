@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const {profileRolePresentation,leaderSnapshotPresentation}=require('../profile-role-view.js');
+const {buildLeaderToolsActions}=require('../leader-tools-profile.js');
 
 test('player keeps development profile',()=>{
   const view=profileRolePresentation('player');
@@ -24,6 +25,13 @@ test('admin gets leader profile with administration status',()=>{
   assert.equal(view.showLeaderProfile,true);
   assert.equal(view.roleLabel,'Admin');
   assert.equal(view.showAdminStatus,true);
+});
+
+test('admin profile gets only the requested leader shortcuts while coach stays unchanged',()=>{
+  assert.deepEqual(buildLeaderToolsActions('admin').map(action=>action.id),['openTeamPostComposer','openTeamChallengeManager']);
+  assert.deepEqual(buildLeaderToolsActions('coach').map(action=>action.id),['openTeamPostComposer','openTeamChallengeManager','openProfileRosterManager']);
+  const source=fs.readFileSync(path.join(__dirname,'..','leader-tools-profile.js'),'utf8');
+  assert.match(source,/role===['"]admin['"][^\n]*leaderProfile|leaderProfile[^\n]*role===['"]admin['"]/);
 });
 
 test('leader snapshot shows real player count and next activity text',()=>{
