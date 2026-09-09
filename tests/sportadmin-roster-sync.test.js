@@ -21,4 +21,9 @@ if(!/from\('players'\)\.insert/.test(fn)||!/status:'approved'/.test(fn)) throw n
 if(!/SPORTADMIN/i.test(ui)||!/MARKERA SOM SEDD/i.test(ui)) throw new Error('admin SportAdmin notification UI missing');
 if(/GODKÄNN|AVVISA/.test(ui)) throw new Error('SportAdmin imports must not require manual approval');
 if(!/sportadmin-roster-sync/.test(ui)) throw new Error('manual sync action missing');
+if(!/triggeredBy/.test(fn)||!/scheduled/.test(fn)||!/admin/.test(fn)) throw new Error('sync trigger classification missing');
+if(!/sportadmin_sync_runs/.test(fn)) throw new Error('sync history recording missing');
+if(!/started_at/.test(fn)||!/finished_at/.test(fn)) throw new Error('sync run timestamps missing');
+if(!/status:\s*['"]success['"]/.test(fn)||!/status:\s*['"]failure['"]/.test(fn)) throw new Error('success/failure sync run recording missing');
+if(!/found/.test(fn)||!/imported/.test(fn)||!/error_message/.test(fn)) throw new Error('sync run result metadata missing');
 console.log('sportadmin roster sync contract ok');
