@@ -1,4 +1,6 @@
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const { normalizePlayer, validatePlayerInput, formatSwedishBirthDate, canManageRoster, formatTeamRoleMarker, buildRosterCardModel } = require('../player-roster.js');
 assert.strictEqual(canManageRoster('coach'), true);
 assert.strictEqual(canManageRoster('admin'), true);
@@ -17,6 +19,10 @@ assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15
 assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'coach').birthDate,'2011');
 assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'player').birthDate,'2011');
 assert.strictEqual(buildRosterCardModel({full_name:'Axel',birth_date:'2011-07-15'},'parent').birthDate,'2011');
+const privacySql = fs.readFileSync(path.join(__dirname,'../supabase/migrations/202609090020_player_birth_year_privacy.sql'),'utf8');
+assert.match(privacySql,/list_coach_roster_players/);
+assert.match(privacySql,/extract\(year from p\.birth_date\)/i);
+assert.match(privacySql,/birth_year/i);
 assert.strictEqual(formatTeamRoleMarker('captain'), '(K)');
 assert.strictEqual(formatTeamRoleMarker('vice_captain'), '(VK)');
 assert.strictEqual(formatTeamRoleMarker(''), '');
