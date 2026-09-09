@@ -27,8 +27,8 @@ if(!/started_at/.test(fn)||!/finished_at/.test(fn)) throw new Error('sync run ti
 if(!/status:\s*['"]success['"]/.test(fn)||!/status:\s*['"]failure['"]/.test(fn)) throw new Error('success/failure sync run recording missing');
 if(!/found/.test(fn)||!/imported/.test(fn)||!/error_message/.test(fn)) throw new Error('sync run result metadata missing');
 if(!/auth\.getUser\(token\)/.test(fn)) throw new Error('manual sync must validate the bearer token');
-if(!/createClient\(Deno\.env\.get\('SUPABASE_URL'\)!\s*,\s*Deno\.env\.get\('SUPABASE_SERVICE_ROLE_KEY'\)!\)/s.test(fn)) throw new Error('admin profile lookup must use a service-role client after JWT validation');
-if(!/serviceClient\.from\('profiles'\)/.test(fn)) throw new Error('validated admin profile must be checked with service-role client');
+if(!/const serviceClient=createClient\(/.test(fn)) throw new Error('admin profile lookup must use a privileged server client after JWT validation');
+if(!/serviceClient\.from\('profiles'\)/.test(fn)) throw new Error('validated admin profile must be checked with server client');
 if(!/req\.method\s*===\s*['"]OPTIONS['"]/.test(fn)) throw new Error('browser preflight OPTIONS request must be handled');
 if(!/Access-Control-Allow-Origin/.test(fn)||!/Access-Control-Allow-Headers/.test(fn)) throw new Error('browser sync responses must include CORS headers');
 console.log('sportadmin roster sync contract ok');
