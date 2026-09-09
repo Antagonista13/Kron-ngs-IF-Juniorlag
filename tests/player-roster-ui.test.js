@@ -5,8 +5,8 @@ const archive = require('../player-roster-archive.js');
 const { buildRosterCardModel, shouldUseCompactLeaderTeamView } = roster;
 const { getArchiveActionLabel, PLAYER_ARCHIVE_CONFIRM_TEXT, canArchivePlayer } = archive;
 
-assert.deepStrictEqual(buildRosterCardModel({full_name:'Axel',shirt_number:17,is_active:true,mobile_phone:'0701',birth_date:'2011-07-15'}),{name:'Axel',number:'#17',mobile:'0701',birthDate:'15 juli 2011',position:'',teamRole:'',actionLabel:'Ta bort från truppen',isActive:true});
-assert.deepStrictEqual(buildRosterCardModel({full_name:'Roney',shirt_number:null,is_active:false,mobile_phone:null,birth_date:null}),{name:'Roney',number:'',mobile:'',birthDate:'',position:'',teamRole:'',actionLabel:'Återaktivera',isActive:false});
+assert.deepStrictEqual(buildRosterCardModel({full_name:'Axel',shirt_number:17,is_active:true,mobile_phone:'0701',birth_date:'2011-07-15'},'admin'),{name:'Axel',number:'#17',mobile:'0701',birthDate:'15 juli 2011',position:'',teamRole:'',actionLabel:'Ta bort från truppen',isActive:true});
+assert.deepStrictEqual(buildRosterCardModel({full_name:'Roney',shirt_number:null,is_active:false,mobile_phone:null,birth_date:null},'admin'),{name:'Roney',number:'',mobile:'',birthDate:'',position:'',teamRole:'',actionLabel:'Återaktivera',isActive:false});
 assert.equal(getArchiveActionLabel(true),'Ta bort');
 assert.equal(getArchiveActionLabel(false),'Återaktivera');
 assert.ok(PLAYER_ARCHIVE_CONFIRM_TEXT.includes('SportAdmin påverkas inte'), 'archive confirmation must explicitly say SportAdmin is unaffected');
