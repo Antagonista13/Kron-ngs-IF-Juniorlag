@@ -1,8 +1,24 @@
 function getArchiveActionLabel(isActive){return isActive?'Ta bort':'Återaktivera';}
 const PLAYER_ARCHIVE_CONFIRM_TEXT='Spelaren tas bara bort från appen. SportAdmin påverkas inte och spelarens historik sparas. Vill du fortsätta?';
 let selectedPlayerName='';
+let archiveAccessPromise=null;
 
 function cleanRosterName(value){return String(value||'').replace(/\s+\((K|VK)\)\s*$/,'').trim();}
+function canArchivePlayer(role,isActive){return role==='admin'&&isActive===true;}
+
+async function loadArchiveAccess(){
+  if(archiveAccessPromise)return archiveAccessPromise;
+  archiveAccessPromise=(async()=>{
+    if(!window.kronangSupabase)return false;
+    const {data:sessionData}=await window.kronangSupabase.auth.getSession();
+    const user=sessionData&&sessionData.session?sessionData.session.user:null;
+    if(!user)return false;
+    const {data:profile,error}=await window.kronangSupabase.from('profiles').select('role,is_active').eq('id',user.id).maybeSingle();
+    if(error||!profile)return false;
+    return canArchivePlayer(profile.role,profile.is_active===true);
+  })();
+  return archiveAccessPromise;
+}
 
 function relabelPlayerArchiveUi(root){
   if(!root||!root.querySelector)return;
@@ -28,6 +44,8 @@ async function injectProfileArchiveAction(){
   const profile=document.querySelector('.player-public-profile');
   if(!profile||profile.querySelector('.player-public-profile-archive')||profile.dataset.archiveLoading==='1')return;
   profile.dataset.archiveLoading='1';
+  const allowed=await loadArchiveAccess();
+  if(!allowed){delete profile.dataset.archiveLoading;return;}
   const {data,error}=await window.kronangSupabase.from('players').select('id,full_name,is_active').eq('full_name',selectedPlayerName).eq('is_active',true).maybeSingle();
   delete profile.dataset.archiveLoading;
   if(error||!data||!profile.isConnected)return;
@@ -46,7 +64,7 @@ async function injectProfileArchiveAction(){
     if(!window.confirm(PLAYER_ARCHIVE_CONFIRM_TEXT))return;
     button.disabled=true;
     button.textContent='Tar bort…';
-    const {error:updateError}=await window.kronangSupabase.from('players').update({is_active:false,updated_at:new Date().toISOString()}).eq('id',data.id);
+    const {error:updateError}=await window.kronangSupabase.rpc('admin_archive_player',{p_player_id:data.id});
     if(updateError){
       button.disabled=false;
       button.textContent=getArchiveActionLabel(true);
@@ -73,7 +91,10 @@ function setupPlayerArchiveUx(){
   },true);
   refresh();
   if(typeof MutationObserver!=='undefined')new MutationObserver(refresh).observe(document.body,{childList:true,subtree:true});
+  if(window.kronangSupabase&&window.kronangSupabase.auth&&window.kronangSupabase.auth.onAuthStateChange){
+    window.kronangSupabase.auth.onAuthStateChange(()=>{archiveAccessPromise=null;});
+  }
 }
 
-if(typeof module!=='undefined'&&module.exports)module.exports={getArchiveActionLabel,PLAYER_ARCHIVE_CONFIRM_TEXT,cleanRosterName};
+if(typeof module!=='undefined'&&module.exports)module.exports={getArchiveActionLabel,PLAYER_ARCHIVE_CONFIRM_TEXT,cleanRosterName,canArchivePlayer};
 if(typeof window!=='undefined'&&typeof document!=='undefined')setupPlayerArchiveUx();
