@@ -34,3 +34,12 @@ test('migration only updates the signed-in players active focus', () => {
   assert.match(sql, /lifecycle_status\s*=\s*'active'/i);
   assert.match(sql, /grant execute[\s\S]*to authenticated/i);
 });
+
+test('editing an active focus creates a fresh leader notification', () => {
+  const sql = fs.readFileSync('supabase/migrations/202609090040_notify_leaders_on_focus_edit.sql', 'utf8');
+  assert.match(sql, /update_my_active_development_focus/i);
+  assert.match(sql, /notify_leaders_of_player_development/i);
+  assert.match(sql, /'player_focus_changed'/i);
+  assert.match(sql, /'development_focus'/i);
+  assert.match(sql, /clock_timestamp\(\)/i);
+});
