@@ -26,4 +26,5 @@ if(!/sportadmin_sync_runs/.test(fn)) throw new Error('sync history recording mis
 if(!/started_at/.test(fn)||!/finished_at/.test(fn)) throw new Error('sync run timestamps missing');
 if(!/status:\s*['"]success['"]/.test(fn)||!/status:\s*['"]failure['"]/.test(fn)) throw new Error('success/failure sync run recording missing');
 if(!/found/.test(fn)||!/imported/.test(fn)||!/error_message/.test(fn)) throw new Error('sync run result metadata missing');
+if(!/global:\s*\{\s*headers:\s*\{\s*Authorization:\s*`Bearer \$\{token\}`\s*\}\s*\}/s.test(fn)) throw new Error('admin JWT must be forwarded to profile lookup');
 console.log('sportadmin roster sync contract ok');
