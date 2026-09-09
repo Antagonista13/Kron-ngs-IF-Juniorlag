@@ -18,8 +18,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  if (!supabaseUrl || !anonKey || !serviceRoleKey) return json({ error: 'Server configuration missing' }, 500);
+  if (!supabaseUrl || !anonKey) return json({ error: 'Server configuration missing' }, 500);
 
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
@@ -46,13 +45,6 @@ Deno.serve(async (req) => {
   const displayTitle = body.displayTitle == null ? null : String(body.displayTitle);
   if (!profileId || !['player', 'parent', 'coach'].includes(role)) return json({ error: 'Invalid approval data' }, 400);
 
-  const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-  const { data: target, error: targetError } = await serviceClient.auth.admin.getUserById(profileId);
-  const email = String(target?.user?.email || '').trim().toLowerCase();
-  if (targetError || !email) return json({ error: 'Applicant email could not be found' }, 400);
-
   const { error: approveError } = await userClient.rpc('admin_approve_user', {
     p_profile_id: profileId,
     p_role: role,
@@ -61,14 +53,5 @@ Deno.serve(async (req) => {
   });
   if (approveError) return json({ error: 'User could not be approved' }, 400);
 
-  const redirectTo = Deno.env.get('APP_URL') || 'https://antagonista13.github.io/Kron-ngs-IF-Juniorlag/';
-  const mailClient = createClient(supabaseUrl, anonKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-  const { error: emailError } = await mailClient.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: false, emailRedirectTo: redirectTo }
-  });
-
-  return json({ ok: true, emailSent: !emailError, emailError: emailError ? 'Approval email could not be sent' : null });
+  return json({ ok: true });
 });
