@@ -19,6 +19,7 @@ jobs:
           if [ -f team-staff.js ]; then node --check team-staff.js; fi
           if [ -f profile-avatar.js ]; then node --check profile-avatar.js; fi
           if [ -f admin-profile-images.js ]; then node --check admin-profile-images.js; fi
+          if [ -f admin-center.js ]; then node --check admin-center.js; fi
           if [ -f player-roster.js ]; then node --check player-roster.js; fi
           if [ -f player-profile-redesign.js ]; then node --check player-profile-redesign.js; fi
           node --check navigation-scroll.js
@@ -115,6 +116,8 @@ jobs:
         run: node tests/admin-user-rpcs.test.js
       - name: Admin save timestamp SQL tests
         run: node --test tests/admin-save-feedback-sql.test.js
+      - name: Admincenter tests
+        run: node --test tests/admin-center.test.js tests/admin-center-sql.test.js
       - name: Permission SQL tests
         run: node tests/permissions-sql.test.js
       - name: Access gate tests

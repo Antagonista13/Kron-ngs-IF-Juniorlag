@@ -38,7 +38,7 @@ test('invite/admin support scripts remain wired',()=>{
  const loader=fs.readFileSync('auth-login-fields.js','utf8');
  assert.match(html,/auth\.js\?v=7/);
  assert.match(html,/admin-profile-images\.js\?v=3/);
- assert.match(html,/admin-page\.css\?v=7/);
+ assert.match(html,/admin-page\.css\?v=8/);
  assert.match(html,/admin-page\.js\?v=5/);
  assert.match(loader,/admin-sportadmin-badge\.js\?v=1/);
 });

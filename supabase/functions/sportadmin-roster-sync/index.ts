@@ -7,6 +7,8 @@ const SOURCES=[
 ];
 const SOURCE="sportadmin_junior";
 
+type TriggeredBy='scheduled'|'admin';
+
 function decodeEntities(value:string){return value.replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');}
 function normalizeName(value:string){return value.normalize('NFKC').replace(/[“”]/g,'"').replace(/\s+/g,' ').trim().replace(/\s+"[^"]+"\s+/g,' ').toLocaleLowerCase('sv-SE');}
 function cleanCandidateName(value:string){return decodeEntities(value).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().replace(/\s+\d{1,2}\s*år.*$/i,'').trim();}
@@ -43,22 +45,27 @@ function extractPlayerNames(html:string){
   }
   return [...new Map(names.map(name=>[normalizeName(name),name])).values()];
 }
-async function authorized(req:Request){
+
+async function authorization(req:Request):Promise<{authorized:boolean;triggeredBy:TriggeredBy|null}>{
   const configuredSyncKey=Deno.env.get('SPORTADMIN_SYNC_KEY')||Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   const suppliedSyncKey=req.headers.get('x-kronang-sync-key')||'';
-  if(configuredSyncKey&&suppliedSyncKey&&suppliedSyncKey===configuredSyncKey)return true;
+  if(configuredSyncKey&&suppliedSyncKey&&suppliedSyncKey===configuredSyncKey)return{authorized:true,triggeredBy:'scheduled'};
   const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'').trim();
-  if(!token)return false;
+  if(!token)return{authorized:false,triggeredBy:null};
   const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!);
   const {data:userData,error:userError}=await authClient.auth.getUser(token);
-  if(userError||!userData.user)return false;
+  if(userError||!userData.user)return{authorized:false,triggeredBy:null};
   const {data:profile}=await authClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
-  return !!(profile&&profile.role==='admin'&&profile.is_active===true);
+  return profile&&profile.role==='admin'&&profile.is_active===true?{authorized:true,triggeredBy:'admin'}:{authorized:false,triggeredBy:null};
 }
 
 Deno.serve(async req=>{
   if(req.method!=='POST') return new Response('Method not allowed',{status:405});
-  if(!(await authorized(req))) return new Response('Unauthorized',{status:401});
+  const auth=await authorization(req);
+  if(!auth.authorized||!auth.triggeredBy) return new Response('Unauthorized',{status:401});
+  const triggeredBy=auth.triggeredBy;
+  const startedAt=new Date().toISOString();
+  const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   try{
     const combined=new Map<string,{full_name:string,source_url:string}>();
     const sourceResults=[];
@@ -73,7 +80,6 @@ Deno.serve(async req=>{
         if(!combined.has(key)) combined.set(key,{full_name,source_url:source.url});
       }
     }
-    const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const {data:players,error:playerError}=await client.from('players').select('id,full_name');
     if(playerError) throw playerError;
     const existing=new Map((players||[]).map((row:any)=>[normalizeName(row.full_name),row.id]));
@@ -96,10 +102,17 @@ Deno.serve(async req=>{
       }
       imported++;
     }
+    const finishedAt=new Date().toISOString();
+    const {error:runError}=await client.from('sportadmin_sync_runs').insert({started_at:startedAt,finished_at:finishedAt,status:'success',found:combined.size,imported,source:SOURCE,error_message:null,triggered_by:triggeredBy});
+    if(runError) throw runError;
     return Response.json({ok:true,source:SOURCE,found:combined.size,imported,sources:sourceResults});
   }catch(error){
     console.error(error);
-    return Response.json({ok:false,message:error instanceof Error?error.message:'Sync failed'},{status:500});
+    const message=error instanceof Error?error.message:'Sync failed';
+    try{
+      await client.from('sportadmin_sync_runs').insert({started_at:startedAt,finished_at:new Date().toISOString(),status:'failure',found:0,imported:0,source:SOURCE,error_message:message,triggered_by:triggeredBy});
+    }catch(recordError){console.error('Could not record failed sync run',recordError);}
+    return Response.json({ok:false,message},{status:500});
   }
 });
 
