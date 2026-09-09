@@ -1,4 +1,4 @@
-function getArchiveActionLabel(isActive){return isActive?'Ta bort från appen':'Återaktivera';}
+function getArchiveActionLabel(isActive){return isActive?'Ta bort':'Återaktivera';}
 const PLAYER_ARCHIVE_CONFIRM_TEXT='Spelaren tas bara bort från appen. SportAdmin påverkas inte och spelarens historik sparas. Vill du fortsätta?';
 let selectedPlayerName='';
 
@@ -14,7 +14,7 @@ function relabelPlayerArchiveUi(root){
     if(first)first.nodeValue='Borttagna/arkiverade spelare ';
   }
   section.querySelectorAll('[data-roster-active] .player-roster-card-actions button').forEach(button=>{
-    if(['Ta bort från truppen','Ta bort från appen'].includes(button.textContent.trim()))button.style.display='none';
+    if(['Ta bort från truppen','Ta bort från appen','Ta bort'].includes(button.textContent.trim()))button.style.display='none';
   });
   section.querySelectorAll('[data-roster-active] .player-roster-card-title strong').forEach(name=>{
     name.style.cursor='pointer';
@@ -34,9 +34,9 @@ async function injectProfileArchiveAction(){
   const button=document.createElement('button');
   button.type='button';
   button.className='player-public-profile-archive';
-  button.textContent='Ta bort från appen';
-  button.style.margin='18px auto 0';
-  button.style.padding='10px 16px';
+  button.textContent=getArchiveActionLabel(true);
+  button.style.margin='10px auto 0';
+  button.style.padding='8px 14px';
   button.style.border='1px solid #d76464';
   button.style.borderRadius='999px';
   button.style.background='transparent';
@@ -49,13 +49,14 @@ async function injectProfileArchiveAction(){
     const {error:updateError}=await window.kronangSupabase.from('players').update({is_active:false,updated_at:new Date().toISOString()}).eq('id',data.id);
     if(updateError){
       button.disabled=false;
-      button.textContent='Ta bort från appen';
+      button.textContent=getArchiveActionLabel(true);
       window.alert('Kunde inte ta bort spelaren från appen. Försök igen.');
       return;
     }
     window.location.reload();
   };
-  profile.appendChild(button);
+  const roleBadge=profile.querySelector('.player-public-profile-role');
+  if(roleBadge)roleBadge.after(button);else profile.appendChild(button);
 }
 
 function setupPlayerArchiveUx(){
