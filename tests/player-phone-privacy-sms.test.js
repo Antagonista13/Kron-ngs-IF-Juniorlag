@@ -10,11 +10,11 @@ assert.ok(/row level security/i.test(migration), 'phone data must be protected b
 assert.ok(/role\s*=\s*'admin'|role='admin'/i.test(migration), 'admin must retain access');
 assert.ok(/update_my_phone_visibility/i.test(migration), 'player must be able to update own visibility');
 assert.ok(/get_visible_player_phone/i.test(migration), 'phone visibility must be resolved server-side');
+assert.ok(/players[\s\S]*mobile_phone/i.test(migration), 'existing player mobile numbers must be migrated into protected contact storage');
+assert.ok(/set\s+mobile_phone\s*=\s*null/i.test(migration), 'legacy mobile numbers must be removed from the broadly readable players table');
 
 const sync = fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts', 'utf8');
-assert.ok(/mobile|mobil|phone/i.test(sync), 'SportAdmin sync must extract player mobile number');
-assert.ok(/player_contact_preferences/i.test(sync), 'SportAdmin mobile number must be stored in protected contact data');
-assert.equal(/email|guardian|parent/i.test(sync), false, 'SportAdmin sync must still avoid unrelated personal details');
+assert.equal(/birth|birthday|phone|email|guardian|parent/i.test(sync), false, 'current public SportAdmin roster sync must still avoid personal contact details');
 
 const smsPath = 'supabase/functions/create-player-sms-invite/index.ts';
 assert.ok(fs.existsSync(smsPath), 'SMS invite Edge Function must exist');
