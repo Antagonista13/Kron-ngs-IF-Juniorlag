@@ -39,12 +39,21 @@ test('leader snapshot shows real player count and next activity text',()=>{
   assert.deepEqual(leaderSnapshotPresentation(null,''),{playerCount:'–',nextActivity:'–'});
 });
 
+test('leader profile shows the linked staff avatar and identity',()=>{
+  const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
+  assert.match(source,/id="leaderProfileAvatar"/);
+  assert.match(source,/id="leaderProfileName"/);
+  assert.match(source,/select\(['"]id,\s*display_name,\s*staff_role,\s*description,\s*avatar_url['"]\)/);
+  assert.match(source,/resolveProfileImageUrl/);
+  assert.match(source,/leaderProfileAvatar[^\n]*img|renderLeaderIdentity/);
+});
+
 test('leader profile counts active roster players and uses fresh assets',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
-  assert.match(source,/leader-profile\.css\?v=4/);
-  assert.match(html,/profile-role-view\.js\?v=7/);
+  assert.match(source,/leader-profile\.css\?v=5/);
+  assert.match(html,/profile-role-view\.js\?v=8/);
   assert.match(html,/calendar-runtime\.js\?v=8/);
 });
 
