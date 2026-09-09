@@ -6,7 +6,6 @@ const SOURCES=[
   {label:'P2009-2010',url:'https://www.kronangsif.se/grupp/?ID=224799'}
 ];
 const SOURCE="sportadmin_junior";
-const SYNC_KEY="sb_publishable_LueK_yc8XAevJC9zMMVktg_hRc1Zdac";
 
 function decodeEntities(value:string){return value.replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');}
 function normalizeName(value:string){return value.normalize('NFKC').replace(/[“”]/g,'"').replace(/\s+/g,' ').trim().replace(/\s+"[^"]+"\s+/g,' ').toLocaleLowerCase('sv-SE');}
@@ -45,14 +44,16 @@ function extractPlayerNames(html:string){
   return [...new Map(names.map(name=>[normalizeName(name),name])).values()];
 }
 async function authorized(req:Request){
-  if(req.headers.get('x-kronang-sync-key')===SYNC_KEY)return true;
+  const configuredSyncKey=Deno.env.get('SPORTADMIN_SYNC_KEY')||Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+  const suppliedSyncKey=req.headers.get('x-kronang-sync-key')||'';
+  if(configuredSyncKey&&suppliedSyncKey&&suppliedSyncKey===configuredSyncKey)return true;
   const token=(req.headers.get('authorization')||'').replace(/^Bearer\s+/i,'').trim();
   if(!token)return false;
   const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!);
   const {data:userData,error:userError}=await authClient.auth.getUser(token);
   if(userError||!userData.user)return false;
   const {data:profile}=await authClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
-  return !!(profile&&profile.role==='admin'&&profile.is_active!==false);
+  return !!(profile&&profile.role==='admin'&&profile.is_active===true);
 }
 
 Deno.serve(async req=>{

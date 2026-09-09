@@ -14,3 +14,5 @@ jobs:
           node-version: '22'
       - name: SportAdmin roster sync contract
         run: node tests/sportadmin-roster-sync.test.js
+      - name: Security stability regressions
+        run: node --test tests/security-stability-round.test.js

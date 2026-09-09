@@ -12,18 +12,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Sync junior rosters
         shell: bash
+        env:
+          SYNC_KEY: ${{ secrets.KRONANG_SPORTADMIN_SYNC_KEY }}
         run: |
-          KEY=$(python - <<'PY'
-          import re
-          text=open('auth.js',encoding='utf-8').read()
-          m=re.search(r'AUTH_SUPABASE_ANON_KEY="([^"]+)"',text)
-          if not m: raise SystemExit('publishable key not found')
-          print(m.group(1))
-          PY
-          )
+          if [ -z "$SYNC_KEY" ]; then
+            echo 'KRONANG_SPORTADMIN_SYNC_KEY is not configured.' >&2
+            exit 1
+          fi
           curl --fail-with-body --silent --show-error \
             -X POST \
             -H 'Content-Type: application/json' \
-            -H "x-kronang-sync-key: $KEY" \
+            -H "x-kronang-sync-key: $SYNC_KEY" \
             --data '{}' \
             'https://ndbwnsiqcnxppikdrwvd.supabase.co/functions/v1/sportadmin-roster-sync'
