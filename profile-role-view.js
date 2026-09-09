@@ -30,14 +30,17 @@ function openProfilePage(pageId) {
 }
 function renderLeaderIdentity(value){
   const item=value||{};
-  const avatar=document.getElementById('leaderProfileAvatar');
-  const name=document.getElementById('leaderProfileName');
-  const staffRole=document.getElementById('leaderProfileStaffRole');
+  const profileHeader=document.querySelector('#profilePage > .profile-header');
+  const avatar=profileHeader&&profileHeader.querySelector('.profile-avatar');
+  const name=profileHeader&&profileHeader.querySelector('h2');
+  const subtitle=document.getElementById('profileSubtitle');
   const displayName=String(item.display_name||'').trim()||'Ledare';
+  const staffRole=String(item.staff_role||'').trim()||'Ledare';
   if(name)name.textContent=displayName;
-  if(staffRole)staffRole.textContent=String(item.staff_role||'').trim()||'Ledare';
+  if(subtitle)subtitle.textContent=staffRole;
   if(!avatar)return;
   avatar.innerHTML='';
+  avatar.setAttribute('aria-label','Profilbild för '+displayName);
   if(item.avatar_url){
     const img=document.createElement('img');img.src=item.avatar_url;img.alt='Profilbild för '+displayName;avatar.appendChild(img);
   }else if(window.KronangProfileAvatar&&window.KronangProfileAvatar.profileFallbackIcon){
@@ -67,7 +70,7 @@ function ensureLeaderProfile() {
   const page=document.getElementById('profilePage'); if(!page)return null;
   let root=document.getElementById('leaderProfile'); if(root)return root;
   root=document.createElement('section'); root.id='leaderProfile'; root.className='leader-profile admin-layout'; root.hidden=true;
-  root.innerHTML='<section class="admin-page-header leader-profile-header"><div><span class="admin-kicker">MIN PROFIL</span><h2 id="leaderProfileRole"></h2><p>Ledare i Kronängs IF Juniorlag</p></div></section><section class="leader-profile-identity"><div class="leader-profile-avatar" id="leaderProfileAvatar" aria-label="Profilbild"></div><div class="leader-profile-identity-copy"><strong id="leaderProfileName">Ledare</strong><span id="leaderProfileStaffRole">Ledare</span></div></section><section class="admin-overview leader-profile-snapshot" aria-label="Profilöversikt"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div id="leaderNextActivityTile" data-profile-page="calendarPage" role="button" tabindex="0" aria-label="Öppna nästa aktivitet i kalendern"><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></section><section class="admin-section"><h3>Om mig</h3><div class="admin-user-card leader-about-card" id="leaderAboutCard"><p id="leaderAboutText">Hämtar din presentation…</p><button type="button" class="leader-about-edit" id="leaderAboutEdit" hidden>REDIGERA</button><form id="leaderAboutForm" class="leader-about-form" hidden><label for="leaderAboutInput">Kort presentation</label><textarea id="leaderAboutInput" maxlength="500" rows="4" placeholder="Berätta kort om dig själv som ledare."></textarea><div class="leader-about-actions"><button type="submit">SPARA</button><button type="button" class="secondary" id="leaderAboutCancel">AVBRYT</button></div><p id="leaderAboutMessage" class="leader-about-message" aria-live="polite"></p></form></div></section><section class="admin-section"><h3>Snabblänkar</h3><div class="admin-user-card"><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button></div></div></section>';
+  root.innerHTML='<section class="admin-overview leader-profile-snapshot" aria-label="Profilöversikt"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div id="leaderNextActivityTile" data-profile-page="calendarPage" role="button" tabindex="0" aria-label="Öppna nästa aktivitet i kalendern"><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></section><section class="admin-section"><h3>Om mig</h3><div class="admin-user-card leader-about-card" id="leaderAboutCard"><p id="leaderAboutText">Hämtar din presentation…</p><button type="button" class="leader-about-edit" id="leaderAboutEdit" hidden>REDIGERA</button><form id="leaderAboutForm" class="leader-about-form" hidden><label for="leaderAboutInput">Kort presentation</label><textarea id="leaderAboutInput" maxlength="500" rows="4" placeholder="Berätta kort om dig själv som ledare."></textarea><div class="leader-about-actions"><button type="submit">SPARA</button><button type="button" class="secondary" id="leaderAboutCancel">AVBRYT</button></div><p id="leaderAboutMessage" class="leader-about-message" aria-live="polite"></p></form></div></section><section class="admin-section"><h3>Snabblänkar</h3><div class="admin-user-card"><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button></div></div></section>';
   page.appendChild(root);
   root.addEventListener('click',function(event){const pageButton=event.target.closest('[data-profile-page]');if(pageButton)openProfilePage(pageButton.dataset.profilePage);if(event.target.closest('#leaderAboutEdit'))setLeaderAboutEditing(true);if(event.target.closest('#leaderAboutCancel'))setLeaderAboutEditing(false);});
   root.addEventListener('keydown',function(event){const pageButton=event.target.closest('[data-profile-page]');if(pageButton&&(event.key==='Enter'||event.key===' ')){event.preventDefault();openProfilePage(pageButton.dataset.profilePage);}});
@@ -118,7 +121,6 @@ function applyProfileRoleView(role) {
   document.querySelectorAll('[data-player-profile-section]').forEach(function(section){section.hidden=!view.showPlayerDevelopment;section.style.display=view.showPlayerDevelopment?'':'none';});
   const parentInfo=document.getElementById('parentProfileInfo');if(parentInfo){parentInfo.hidden=!view.showParentInfo;parentInfo.style.display=view.showParentInfo?'':'none';}
   if(leaderProfile){leaderProfile.hidden=!view.showLeaderProfile;leaderProfile.style.display=view.showLeaderProfile?'':'none';}
-  const roleLabel=document.getElementById('leaderProfileRole');if(roleLabel)roleLabel.textContent=view.roleLabel;
   const subtitle=document.getElementById('profileSubtitle');if(subtitle)subtitle.textContent=view.subtitle;
   refreshLeaderProfile(role).catch(function(error){console.error('Ledarprofil:',error);});
 }

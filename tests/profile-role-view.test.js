@@ -39,13 +39,15 @@ test('leader snapshot shows real player count and next activity text',()=>{
   assert.deepEqual(leaderSnapshotPresentation(null,''),{playerCount:'–',nextActivity:'–'});
 });
 
-test('leader profile shows the linked staff avatar and identity',()=>{
+test('leader profile reuses the main profile header for staff identity without duplicate identity card',()=>{
   const source=fs.readFileSync(path.join(__dirname,'..','profile-role-view.js'),'utf8');
-  assert.match(source,/id="leaderProfileAvatar"/);
-  assert.match(source,/id="leaderProfileName"/);
+  assert.match(source,/document\.querySelector\(['"]#profilePage > \.profile-header['"]\)/);
+  assert.match(source,/profileHeader&&profileHeader\.querySelector\(['"]\.profile-avatar['"]\)/);
+  assert.match(source,/profileHeader&&profileHeader\.querySelector\(['"]h2['"]\)/);
+  assert.doesNotMatch(source,/leader-profile-identity/);
+  assert.doesNotMatch(source,/leader-profile-header/);
   assert.match(source,/select\(['"]id,\s*display_name,\s*staff_role,\s*description,\s*avatar_url['"]\)/);
   assert.match(source,/resolveProfileImageUrl/);
-  assert.match(source,/leaderProfileAvatar[^\n]*img|renderLeaderIdentity/);
 });
 
 test('leader profile counts active roster players and uses fresh assets',()=>{
@@ -53,7 +55,7 @@ test('leader profile counts active roster players and uses fresh assets',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
   assert.match(source,/leader-profile\.css\?v=5/);
-  assert.match(html,/profile-role-view\.js\?v=8/);
+  assert.match(html,/profile-role-view\.js\?v=9/);
   assert.match(html,/calendar-runtime\.js\?v=8/);
 });
 
