@@ -8,7 +8,7 @@ returns table (
   id uuid,
   full_name text,
   shirt_number integer,
-  position text,
+  "position" text,
   team_role text,
   avatar_url text,
   public_about_me text,
