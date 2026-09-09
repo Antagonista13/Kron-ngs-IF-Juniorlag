@@ -28,6 +28,22 @@ function openProfilePage(pageId) {
   if(pageId==='calendarPage'&&typeof window!=='undefined'&&typeof window.testSportAdminCalendar==='function')window.testSportAdminCalendar();
   if (typeof window!=='undefined'&&window.KronangNavigation&&typeof window.KronangNavigation.scrollPageTop==='function') window.KronangNavigation.scrollPageTop();
 }
+function renderLeaderIdentity(value){
+  const item=value||{};
+  const avatar=document.getElementById('leaderProfileAvatar');
+  const name=document.getElementById('leaderProfileName');
+  const staffRole=document.getElementById('leaderProfileStaffRole');
+  const displayName=String(item.display_name||'').trim()||'Ledare';
+  if(name)name.textContent=displayName;
+  if(staffRole)staffRole.textContent=String(item.staff_role||'').trim()||'Ledare';
+  if(!avatar)return;
+  avatar.innerHTML='';
+  if(item.avatar_url){
+    const img=document.createElement('img');img.src=item.avatar_url;img.alt='Profilbild för '+displayName;avatar.appendChild(img);
+  }else if(window.KronangProfileAvatar&&window.KronangProfileAvatar.profileFallbackIcon){
+    avatar.innerHTML=window.KronangProfileAvatar.profileFallbackIcon();
+  }
+}
 function renderLeaderAbout(value){
   const state=leaderAboutPresentation(value);
   const text=document.getElementById('leaderAboutText');
@@ -51,7 +67,7 @@ function ensureLeaderProfile() {
   const page=document.getElementById('profilePage'); if(!page)return null;
   let root=document.getElementById('leaderProfile'); if(root)return root;
   root=document.createElement('section'); root.id='leaderProfile'; root.className='leader-profile admin-layout'; root.hidden=true;
-  root.innerHTML='<section class="admin-page-header leader-profile-header"><div><span class="admin-kicker">MIN PROFIL</span><h2 id="leaderProfileRole"></h2><p>Ledare i Kronängs IF Juniorlag</p></div></section><section class="admin-overview leader-profile-snapshot" aria-label="Profilöversikt"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div id="leaderNextActivityTile" data-profile-page="calendarPage" role="button" tabindex="0" aria-label="Öppna nästa aktivitet i kalendern"><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></section><section class="admin-section"><h3>Om mig</h3><div class="admin-user-card leader-about-card" id="leaderAboutCard"><p id="leaderAboutText">Hämtar din presentation…</p><button type="button" class="leader-about-edit" id="leaderAboutEdit" hidden>REDIGERA</button><form id="leaderAboutForm" class="leader-about-form" hidden><label for="leaderAboutInput">Kort presentation</label><textarea id="leaderAboutInput" maxlength="500" rows="4" placeholder="Berätta kort om dig själv som ledare."></textarea><div class="leader-about-actions"><button type="submit">SPARA</button><button type="button" class="secondary" id="leaderAboutCancel">AVBRYT</button></div><p id="leaderAboutMessage" class="leader-about-message" aria-live="polite"></p></form></div></section><section class="admin-section"><h3>Snabblänkar</h3><div class="admin-user-card"><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button></div></div></section>';
+  root.innerHTML='<section class="admin-page-header leader-profile-header"><div><span class="admin-kicker">MIN PROFIL</span><h2 id="leaderProfileRole"></h2><p>Ledare i Kronängs IF Juniorlag</p></div></section><section class="leader-profile-identity"><div class="leader-profile-avatar" id="leaderProfileAvatar" aria-label="Profilbild"></div><div class="leader-profile-identity-copy"><strong id="leaderProfileName">Ledare</strong><span id="leaderProfileStaffRole">Ledare</span></div></section><section class="admin-overview leader-profile-snapshot" aria-label="Profilöversikt"><div><strong id="leaderPlayerCount">–</strong><span>Spelare</span></div><div id="leaderNextActivityTile" data-profile-page="calendarPage" role="button" tabindex="0" aria-label="Öppna nästa aktivitet i kalendern"><strong id="leaderNextActivity">–</strong><span>Nästa aktivitet</span></div></section><section class="admin-section"><h3>Om mig</h3><div class="admin-user-card leader-about-card" id="leaderAboutCard"><p id="leaderAboutText">Hämtar din presentation…</p><button type="button" class="leader-about-edit" id="leaderAboutEdit" hidden>REDIGERA</button><form id="leaderAboutForm" class="leader-about-form" hidden><label for="leaderAboutInput">Kort presentation</label><textarea id="leaderAboutInput" maxlength="500" rows="4" placeholder="Berätta kort om dig själv som ledare."></textarea><div class="leader-about-actions"><button type="submit">SPARA</button><button type="button" class="secondary" id="leaderAboutCancel">AVBRYT</button></div><p id="leaderAboutMessage" class="leader-about-message" aria-live="polite"></p></form></div></section><section class="admin-section"><h3>Snabblänkar</h3><div class="admin-user-card"><div class="leader-profile-links"><button type="button" data-profile-page="teamPage">LAGET</button><button type="button" data-profile-page="developmentPage">UTVECKLING</button><button type="button" data-profile-page="calendarPage">KALENDER</button></div></div></section>';
   page.appendChild(root);
   root.addEventListener('click',function(event){const pageButton=event.target.closest('[data-profile-page]');if(pageButton)openProfilePage(pageButton.dataset.profilePage);if(event.target.closest('#leaderAboutEdit'))setLeaderAboutEditing(true);if(event.target.closest('#leaderAboutCancel'))setLeaderAboutEditing(false);});
   root.addEventListener('keydown',function(event){const pageButton=event.target.closest('[data-profile-page]');if(pageButton&&(event.key==='Enter'||event.key===' ')){event.preventDefault();openProfilePage(pageButton.dataset.profilePage);}});
@@ -83,7 +99,11 @@ async function refreshLeaderProfile(role){
   const user=sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
   if(user){
     await db.rpc('ensure_my_team_staff_link');
-    const about=await db.from('team_staff').select('id, description').eq('profile_id',user.id).eq('is_active',true).maybeSingle();
+    const about=await db.from('team_staff').select('id, display_name, staff_role, description, avatar_url').eq('profile_id',user.id).eq('is_active',true).maybeSingle();
+    if(about.data){
+      const avatarUrl=window.KronangProfileAvatar&&window.KronangProfileAvatar.resolveProfileImageUrl?await window.KronangProfileAvatar.resolveProfileImageUrl(about.data.avatar_url):about.data.avatar_url;
+      renderLeaderIdentity(Object.assign({},about.data,{avatar_url:avatarUrl}));
+    }else renderLeaderIdentity({});
     renderLeaderAbout({description:about.data&&about.data.description,hasStaffProfile:Boolean(about.data&&!about.error)});
   }
   const players=await db.from('players').select('id',{count:'exact',head:true}).eq('is_active',true);
@@ -104,7 +124,7 @@ function applyProfileRoleView(role) {
 }
 if(typeof module!=='undefined'&&module.exports)module.exports={profileRolePresentation,leaderSnapshotPresentation,leaderAboutPresentation,applyProfileRoleView};
 if(typeof document!=='undefined'){
-  if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=4';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
+  if(!document.querySelector('link[data-leader-profile-style]')){const link=document.createElement('link');link.rel='stylesheet';link.href='leader-profile.css?v=5';link.dataset.leaderProfileStyle='1';document.head.appendChild(link);}
   document.addEventListener('kronang:access-state',function(event){applyProfileRoleView(event.detail&&event.detail.role?event.detail.role:'pending');});
   document.addEventListener('kronang:next-activity-updated',refreshCurrentLeaderProfile);
   document.addEventListener('click',function(event){const button=event.target.closest('.nav-item[data-page="profilePage"]');if(button)refreshCurrentLeaderProfile();});
