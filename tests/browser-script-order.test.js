@@ -13,7 +13,7 @@ test('role permissions and admin access load together as classic browser scripts
 
 test('critical Safari assets are versioned and loaded exactly once', () => {
   const html = fs.readFileSync('index.html', 'utf8');
-  for (const asset of ['home-player-header.js?v=10','leader-tools-profile.js?v=6','calendar-runtime.js?v=8','calendar-bridge.js?v=1']) {
+  for (const asset of ['home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1']) {
     assert.equal(html.split(asset).length - 1, 1, asset + ' must load exactly once');
   }
   assert.ok(html.indexOf('calendar-runtime.js?v=8') < html.indexOf('calendar-bridge.js?v=1'));
