@@ -8,3 +8,9 @@ test('header foreground is isolated above decoration and crest is larger', () =>
   assert.match(source, /\.hero-content\{[^}]*position:relative[^}]*z-index:2/s);
   assert.match(source, /\.logo\{[^}]*width:82px[^}]*height:82px/s);
 });
+
+test('iPhone home screen uses the Kronäng shield as touch icon', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /<link\s+rel="apple-touch-icon"\s+href="20260605_154224349_iOS\.jpg\?v=2">/);
+  assert.match(index, /<meta\s+name="apple-mobile-web-app-title"\s+content="Kronäng Junior">/);
+});
