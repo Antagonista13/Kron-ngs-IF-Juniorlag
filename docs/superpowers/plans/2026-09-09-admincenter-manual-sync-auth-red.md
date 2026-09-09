@@ -1,0 +1,1 @@
+RED checkpoint: the new regression test requires the admin JWT to be forwarded to the profile lookup client. This file exists only to document the observed red phase before the production fix.

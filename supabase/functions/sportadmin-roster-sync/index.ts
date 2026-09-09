@@ -6,6 +6,11 @@ const SOURCES=[
   {label:'P2009-2010',url:'https://www.kronangsif.se/grupp/?ID=224799'}
 ];
 const SOURCE="sportadmin_junior";
+const corsHeaders={
+  'Access-Control-Allow-Origin':'*',
+  'Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type, x-kronang-sync-key',
+  'Access-Control-Allow-Methods':'POST, OPTIONS'
+};
 
 type TriggeredBy='scheduled'|'admin';
 
@@ -55,14 +60,17 @@ async function authorization(req:Request):Promise<{authorized:boolean;triggeredB
   const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!);
   const {data:userData,error:userError}=await authClient.auth.getUser(token);
   if(userError||!userData.user)return{authorized:false,triggeredBy:null};
-  const {data:profile}=await authClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
+  const serviceClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const {data:profile,error:profileError}=await serviceClient.from('profiles').select('role,is_active').eq('id',userData.user.id).maybeSingle();
+  if(profileError)return{authorized:false,triggeredBy:null};
   return profile&&profile.role==='admin'&&profile.is_active===true?{authorized:true,triggeredBy:'admin'}:{authorized:false,triggeredBy:null};
 }
 
 Deno.serve(async req=>{
-  if(req.method!=='POST') return new Response('Method not allowed',{status:405});
+  if(req.method==='OPTIONS') return new Response('ok',{headers:corsHeaders});
+  if(req.method!=='POST') return new Response('Method not allowed',{status:405,headers:corsHeaders});
   const auth=await authorization(req);
-  if(!auth.authorized||!auth.triggeredBy) return new Response('Unauthorized',{status:401});
+  if(!auth.authorized||!auth.triggeredBy) return new Response('Unauthorized',{status:401,headers:corsHeaders});
   const triggeredBy=auth.triggeredBy;
   const startedAt=new Date().toISOString();
   const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -105,14 +113,14 @@ Deno.serve(async req=>{
     const finishedAt=new Date().toISOString();
     const {error:runError}=await client.from('sportadmin_sync_runs').insert({started_at:startedAt,finished_at:finishedAt,status:'success',found:combined.size,imported,source:SOURCE,error_message:null,triggered_by:triggeredBy});
     if(runError) throw runError;
-    return Response.json({ok:true,source:SOURCE,found:combined.size,imported,sources:sourceResults});
+    return Response.json({ok:true,source:SOURCE,found:combined.size,imported,sources:sourceResults},{headers:corsHeaders});
   }catch(error){
     console.error(error);
     const message=error instanceof Error?error.message:'Sync failed';
     try{
       await client.from('sportadmin_sync_runs').insert({started_at:startedAt,finished_at:new Date().toISOString(),status:'failure',found:0,imported:0,source:SOURCE,error_message:message,triggered_by:triggeredBy});
     }catch(recordError){console.error('Could not record failed sync run',recordError);}
-    return Response.json({ok:false,message},{status:500});
+    return Response.json({ok:false,message},{status:500,headers:corsHeaders});
   }
 });
 
