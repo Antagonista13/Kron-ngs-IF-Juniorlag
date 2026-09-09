@@ -1,13 +1,14 @@
 const fs=require('fs');
 function read(path){return fs.readFileSync(path,'utf8');}
 const migration=read('supabase/migrations/202609081500_sportadmin_roster_sync.sql');
+const autoMigration=read('supabase/migrations/202609090001_auto_import_sportadmin_players.sql');
 const fn=read('supabase/functions/sportadmin-roster-sync/index.ts');
 const ui=read('sportadmin-sync-admin.js');
 const schedule=read('.github/workflows/sportadmin-roster-daily.yml');
 if(!/sportadmin_player_candidates/i.test(migration)) throw new Error('candidate table missing');
 if(!/status[^\n]*(pending|approved|dismissed)/i.test(migration)) throw new Error('candidate statuses missing');
-if(!/approve_sportadmin_player_candidate/i.test(migration)) throw new Error('admin approval RPC missing');
-if(!/dismiss_sportadmin_player_candidate/i.test(migration)) throw new Error('admin dismiss RPC missing');
+if(!/acknowledge_sportadmin_player_candidate/i.test(autoMigration)) throw new Error('SportAdmin acknowledgement RPC missing');
+if(!/reviewed_at is null/i.test(autoMigration)) throw new Error('unseen SportAdmin import query missing');
 if(!/schedule:/i.test(schedule)||!/cron:/i.test(schedule)) throw new Error('daily schedule missing');
 if(!/sportadmin-roster-sync/i.test(schedule)) throw new Error('scheduled sync target missing');
 if(!/260563/.test(fn)) throw new Error('P2011 SportAdmin roster source missing');
@@ -16,7 +17,8 @@ if(!/SOURCES/.test(fn)||!/sportadmin_junior/.test(fn)) throw new Error('combined
 if(!/userRow/i.test(fn)||!/Spelare/i.test(fn)) throw new Error('SportAdmin roster row parser missing');
 if(!/players/i.test(fn)||!/full_name/i.test(fn)) throw new Error('existing player comparison missing');
 if(/birth|birthday|phone|email|guardian|parent/i.test(fn)) throw new Error('SportAdmin sync must not import personal details beyond name');
-if(!/pending/i.test(fn)) throw new Error('new SportAdmin players must remain pending');
-if(!/SPORTADMIN/i.test(ui)||!/GODKÄNN/i.test(ui)||!/AVVISA/i.test(ui)) throw new Error('admin review UI missing');
+if(!/from\('players'\)\.insert/.test(fn)||!/status:'approved'/.test(fn)) throw new Error('new SportAdmin players must be added automatically');
+if(!/SPORTADMIN/i.test(ui)||!/MARKERA SOM SEDD/i.test(ui)) throw new Error('admin SportAdmin notification UI missing');
+if(/GODKÄNN|AVVISA/.test(ui)) throw new Error('SportAdmin imports must not require manual approval');
 if(!/sportadmin-roster-sync/.test(ui)) throw new Error('manual sync action missing');
 console.log('sportadmin roster sync contract ok');

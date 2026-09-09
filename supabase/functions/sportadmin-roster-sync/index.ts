@@ -73,26 +73,29 @@ Deno.serve(async req=>{
       }
     }
     const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-    const {data:players,error:playerError}=await client.from('players').select('full_name');
+    const {data:players,error:playerError}=await client.from('players').select('id,full_name');
     if(playerError) throw playerError;
-    const existing=new Set((players||[]).map((row:any)=>normalizeName(row.full_name)));
+    const existing=new Map((players||[]).map((row:any)=>[normalizeName(row.full_name),row.id]));
     const now=new Date().toISOString();
-    let pending=0;
+    let imported=0;
     for(const [normalized_name,item] of combined){
       if(existing.has(normalized_name)) continue;
-      const {data:current,error:findError}=await client.from('sportadmin_player_candidates').select('id,status').eq('source',SOURCE).eq('normalized_name',normalized_name).maybeSingle();
+      const {data:created,error:createError}=await client.from('players').insert({full_name:item.full_name,is_active:true}).select('id').single();
+      if(createError) throw createError;
+      const playerId=created.id;
+      existing.set(normalized_name,playerId);
+      const {data:current,error:findError}=await client.from('sportadmin_player_candidates').select('id').eq('source',SOURCE).eq('normalized_name',normalized_name).maybeSingle();
       if(findError) throw findError;
       if(current){
-        const {error}=await client.from('sportadmin_player_candidates').update({last_seen_at:now,source_url:item.source_url}).eq('id',current.id);
+        const {error}=await client.from('sportadmin_player_candidates').update({full_name:item.full_name,last_seen_at:now,source_url:item.source_url,status:'approved',created_player_id:playerId,reviewed_at:null,reviewed_by:null}).eq('id',current.id);
         if(error) throw error;
-        if(current.status==='pending') pending++;
       }else{
-        const {error}=await client.from('sportadmin_player_candidates').insert({full_name:item.full_name,normalized_name,source:SOURCE,source_url:item.source_url,status:'pending',first_seen_at:now,last_seen_at:now});
+        const {error}=await client.from('sportadmin_player_candidates').insert({full_name:item.full_name,normalized_name,source:SOURCE,source_url:item.source_url,status:'approved',first_seen_at:now,last_seen_at:now,created_player_id:playerId});
         if(error) throw error;
-        pending++;
       }
+      imported++;
     }
-    return Response.json({ok:true,source:SOURCE,found:combined.size,pending,sources:sourceResults});
+    return Response.json({ok:true,source:SOURCE,found:combined.size,imported,sources:sourceResults});
   }catch(error){
     console.error(error);
     return Response.json({ok:false,message:error instanceof Error?error.message:'Sync failed'},{status:500});
