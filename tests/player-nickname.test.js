@@ -19,6 +19,6 @@ assert.match(migration,/add column if not exists nickname text/i);
 assert.match(migration,/list_public_roster_players/i);
 assert.match(migration,/list_coach_roster_players/i);
 
-const sync=fs.readFileSync(path.join(__dirname,'../supabase/functions/sync-sportadmin-roster/index.ts'),'utf8');
+const sync=fs.readFileSync(path.join(__dirname,'../supabase/functions/sportadmin-roster-sync/index.ts'),'utf8');
 assert.doesNotMatch(sync,/nickname\s*:/i);
 console.log('player nickname tests passed');
