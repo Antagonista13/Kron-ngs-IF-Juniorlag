@@ -6,7 +6,7 @@ const roster=require('../player-roster.js');
 const player=roster.normalizePlayer({id:'1',full_name:'Karl Andersson',nickname:'Kalle'});
 assert.strictEqual(player.name,'Karl Andersson');
 assert.strictEqual(player.nickname,'Kalle');
-assert.strictEqual(player.displayName,'Kalle');
+assert.strictEqual(player.displayName,'Karl "Kalle" Andersson');
 assert.strictEqual(roster.normalizePlayer({full_name:'Karl Andersson',nickname:'   '}).displayName,'Karl Andersson');
 
 const validated=roster.validatePlayerInput({name:'Karl Andersson',nickname:'Kalle'});
@@ -15,8 +15,11 @@ assert.strictEqual(validated.value.full_name,'Karl Andersson');
 assert.strictEqual(validated.value.nickname,'Kalle');
 
 const card=roster.buildRosterCardModel({full_name:'Karl Andersson',nickname:'Kalle'},'player');
-assert.strictEqual(card.name,'Kalle');
+assert.strictEqual(card.name,'Karl "Kalle" Andersson');
 assert.strictEqual(roster.buildRosterCardModel({full_name:'Karl Andersson',nickname:'   '},'player').name,'Karl Andersson');
+
+const singleName=roster.normalizePlayer({full_name:'Pelé',nickname:'Pele'});
+assert.strictEqual(singleName.displayName,'Pelé "Pele"');
 
 const rosterJs=fs.readFileSync(path.join(__dirname,'../player-roster.js'),'utf8');
 assert.match(rosterJs,/makeRosterField\('Smeknamn','text','nickname'\)/);
