@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 
 const source=fs.existsSync('admin-player-card-edit.js')?fs.readFileSync('admin-player-card-edit.js','utf8'):'';
+const mirror=fs.readFileSync('admin-development-mirror.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 
 test('only admin gets edit action inside opened player card',()=>{
@@ -13,9 +14,8 @@ test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/Redigera/);
 });
 
-test('admin player-card edit module is loaded after roster module',()=>{
-  const roster=html.indexOf('player-roster.js?v=7');
-  const edit=html.indexOf('admin-player-card-edit.js?v=1');
-  assert.ok(roster>=0);
-  assert.ok(edit>roster);
+test('admin runtime loads the player-card edit module',()=>{
+  assert.match(mirror,/admin-player-card-edit\.js\?v=1/);
+  assert.match(mirror,/ensureAdminPlayerCardEditModule/);
+  assert.ok(html.includes('admin-development-mirror.js?v=2'));
 });
