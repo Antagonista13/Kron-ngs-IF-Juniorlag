@@ -14,9 +14,20 @@ test('admin development explicitly reuses the coach worklist without changing co
   assert.match(source,/coachRosterSearch/);
 });
 
+test('admin development creates the canonical leader host before starting the worklist',()=>{
+  assert.match(source,/function\s+ensureAdminDevelopmentHost\s*\(/);
+  assert.match(source,/coachDevelopmentView/);
+  assert.match(source,/coachPlayerList/);
+  assert.match(source,/coachPlayerDevelopment/);
+  const ensureCall=source.indexOf('ensureAdminDevelopmentHost();');
+  const worklistCall=source.indexOf('KronangCoachDevelopmentWorklist.setup');
+  assert.ok(ensureCall>=0,'admin setup must ensure its host');
+  assert.ok(worklistCall>ensureCall,'host must exist before the shared worklist starts');
+});
+
 test('admin mirror loads after the canonical coach worklist',()=>{
   const worklist=html.indexOf('coach-development-worklist.js?v=9');
-  const mirror=html.indexOf('admin-development-mirror.js?v=1');
+  const mirror=html.indexOf('admin-development-mirror.js?v=2');
   assert.ok(worklist>=0);
   assert.ok(mirror>worklist);
 });
