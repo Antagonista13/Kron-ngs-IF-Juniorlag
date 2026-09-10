@@ -7,20 +7,11 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     return document.body&&document.body.dataset?document.body.dataset.accessRole:'';
   }
 
-  function findRosterEditButton(card){
-    if(!card||!card.querySelectorAll)return null;
-    return Array.from(card.querySelectorAll('.player-roster-card-actions button')).find(function(button){
-      return button.textContent.trim()==='Redigera';
-    })||null;
-  }
-
   function injectAdminPlayerEditAction(){
     if(typeof document==='undefined'||!canEditPlayerFromPublicCard(currentRole()))return;
     const profile=document.querySelector('.player-public-profile');
     if(!profile||profile.querySelector('.player-public-profile-edit'))return;
     if(!selectedRosterCard||!selectedRosterCard.isConnected)return;
-    const rosterEdit=findRosterEditButton(selectedRosterCard);
-    if(!rosterEdit)return;
 
     const button=document.createElement('button');
     button.type='button';
@@ -35,20 +26,15 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     button.style.color='#f4d97e';
     button.style.fontWeight='800';
     button.onclick=function(){
-      if(!rosterEdit.isConnected)return;
+      if(!selectedRosterCard||!selectedRosterCard.isConnected)return;
       const back=profile.querySelector('.player-public-profile-back');
       if(back)back.click();
-      setTimeout(function(){
-        if(!rosterEdit.isConnected)return;
-        rosterEdit.click();
-        setTimeout(function(){
-          const form=document.querySelector('#playerRosterSection .player-roster-form');
-          if(!form||form.hidden)return;
-          form.scrollIntoView({behavior:'auto',block:'start'});
-          const name=form.elements&&form.elements.full_name;
-          if(name)name.focus({preventScroll:true});
-        },0);
-      },80);
+      selectedRosterCard.dispatchEvent(new CustomEvent('kronang:edit-roster-player',{bubbles:false}));
+      const form=document.querySelector('#playerRosterSection .player-roster-form');
+      if(!form||form.hidden)return;
+      form.scrollIntoView({behavior:'auto',block:'start'});
+      const name=form.elements&&form.elements.full_name;
+      if(name)name.focus({preventScroll:true});
     };
 
     const archive=profile.querySelector('.player-public-profile-archive');
