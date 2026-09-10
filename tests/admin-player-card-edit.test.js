@@ -15,11 +15,14 @@ test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/rosterEdit\.click\(\)/);
   assert.match(source,/\.player-roster-form/);
   assert.match(source,/scrollIntoView/);
-  assert.match(source,/back\.click\(\)[\s\S]{0,500}rosterEdit\.click\(\)/);
+});
+
+test('admin waits for public profile close before opening roster editor',()=>{
+  assert.match(source,/back\.click\(\)[\s\S]{0,300}setTimeout\s*\(\s*function\s*\(\)\s*\{[\s\S]{0,500}rosterEdit\.click\(\)/);
 });
 
 test('admin runtime loads the bumped player-card edit module',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=3/);
+  assert.match(mirror,/admin-player-card-edit\.js\?v=4/);
   assert.match(mirror,/ensureAdminPlayerCardEditModule/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'));
 });
