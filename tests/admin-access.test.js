@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const { validateApproval, validateInvite } = require('../admin-access.js');
 
 test('player approval requires a linked player', () => {
@@ -30,4 +31,10 @@ test('invite validates email and expected role', () => {
   for (const role of ['', 'player', 'parent', 'coach']) {
     assert.equal(validateInvite({ email: 'test@example.com', fullName: 'Test', expectedRole: role }).ok, true);
   }
+});
+
+test('admin player edit closes the public profile before opening the roster form', () => {
+  const source = fs.readFileSync('admin-player-card-edit.js','utf8');
+  assert.match(source,/\.player-public-profile-back/);
+  assert.match(source,/back\.click\(\)[\s\S]{0,500}rosterEdit\.click\(\)/);
 });
