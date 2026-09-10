@@ -63,7 +63,7 @@ test('admin closes opened player card before revealing roster edit form',()=>{
   assert.match(adminPlayerCardEdit,/back\.click\(\)[\s\S]{0,500}rosterEdit\.click\(\)/);
   assert.match(adminPlayerCardEdit,/\.player-roster-form/);
   assert.match(adminPlayerCardEdit,/scrollIntoView/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=3/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=4/);
   assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror entrypoint must remain loaded');
 });
