@@ -61,5 +61,7 @@ test('admin can edit from inside an opened player card',()=>{
   assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
   assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
   assert.match(adminPlayerCardEdit,/Redigera/);
-  assert.ok(html.indexOf('admin-player-card-edit.js?v=1')>html.indexOf('player-roster.js?v=7'),'admin player-card edit must load after roster');
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=1/);
+  assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
+  assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror cache must be bumped');
 });
