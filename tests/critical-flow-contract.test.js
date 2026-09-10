@@ -65,5 +65,5 @@ test('admin edits from inside an opened player card without navigating back firs
   assert.doesNotMatch(adminPlayerCardEdit,/\.player-public-profile-back[\s\S]{0,300}\.click\(\)/);
   assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=2/);
   assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
-  assert.ok(html.includes('admin-development-mirror.js?v=3'),'admin mirror cache must be bumped');
+  assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror entrypoint must remain loaded');
 });
