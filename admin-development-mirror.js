@@ -9,10 +9,35 @@
     const legacySearch=document.getElementById('coachRosterSearch');
     if(legacySearch){const wrapper=legacySearch.closest('.coach-roster-search');if(wrapper&&!wrapper.closest('#developmentWorklist'))wrapper.remove();}
   }
+  function ensureAdminDevelopmentHost(){
+    const page=document.getElementById('developmentPage');
+    if(!page)return null;
+    let view=document.getElementById('coachDevelopmentView');
+    if(!view){
+      view=document.createElement('section');
+      view.id='coachDevelopmentView';
+      view.className='card';
+      view.innerHTML='<h2>Spelare</h2><p>Sök eller filtrera laget och öppna en spelares utvecklingsprofil.</p>';
+      page.appendChild(view);
+    }
+    if(!document.getElementById('developmentWorklist')&&!document.getElementById('coachPlayerList')){
+      const list=document.createElement('div');
+      list.id='coachPlayerList';
+      list.innerHTML='<p>Spelare hämtas...</p>';
+      view.appendChild(list);
+    }
+    if(!document.getElementById('coachPlayerDevelopment')){
+      const detail=document.createElement('div');
+      detail.id='coachPlayerDevelopment';
+      view.appendChild(detail);
+    }
+    return view;
+  }
   async function syncAdminDevelopment(){
     const role=currentRole();
     if(role!=='admin')return;
     removeLegacyAdminDevelopment();
+    ensureAdminDevelopmentHost();
     if(root.KronangCoachDevelopmentWorklist&&typeof root.KronangCoachDevelopmentWorklist.setup==='function')await root.KronangCoachDevelopmentWorklist.setup();
     removeLegacyAdminDevelopment();
     const page=document.getElementById('developmentPage');
