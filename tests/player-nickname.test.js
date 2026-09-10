@@ -14,6 +14,10 @@ assert.strictEqual(validated.ok,true);
 assert.strictEqual(validated.value.full_name,'Karl Andersson');
 assert.strictEqual(validated.value.nickname,'Kalle');
 
+const card=roster.buildRosterCardModel({full_name:'Karl Andersson',nickname:'Kalle'},'player');
+assert.strictEqual(card.name,'Kalle');
+assert.strictEqual(roster.buildRosterCardModel({full_name:'Karl Andersson',nickname:'   '},'player').name,'Karl Andersson');
+
 const migration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/202609100001_player_nickname.sql'),'utf8');
 assert.match(migration,/add column if not exists nickname text/i);
 assert.match(migration,/list_public_roster_players/i);
