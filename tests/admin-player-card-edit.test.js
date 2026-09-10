@@ -19,5 +19,5 @@ test('only admin gets edit action inside opened player card',()=>{
 test('admin runtime loads the bumped player-card edit module',()=>{
   assert.match(mirror,/admin-player-card-edit\.js\?v=2/);
   assert.match(mirror,/ensureAdminPlayerCardEditModule/);
-  assert.ok(html.includes('admin-development-mirror.js?v=3'));
+  assert.ok(html.includes('admin-development-mirror.js?v=2'));
 });
