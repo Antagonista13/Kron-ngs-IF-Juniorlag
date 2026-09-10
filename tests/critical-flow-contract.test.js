@@ -56,12 +56,14 @@ test('admin development owns a fallback host before starting the shared leader w
   assert.ok(ensureCall>=0&&setupCall>ensureCall,'admin must create the worklist host first');
 });
 
-test('admin can edit from inside an opened player card',()=>{
+test('admin edits player name inline from opened player card',()=>{
   assert.match(adminPlayerCardEdit,/player-public-profile-edit/);
   assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
-  assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
-  assert.match(adminPlayerCardEdit,/Redigera/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=1/);
+  assert.match(adminPlayerCardEdit,/player-public-profile-name-input/);
+  assert.match(adminPlayerCardEdit,/Spara namn/);
+  assert.match(adminPlayerCardEdit,/from\(['"]players['"]\)\.update\(\{full_name:/);
+  assert.doesNotMatch(adminPlayerCardEdit,/\.player-public-profile-back[\s\S]{0,300}\.click\(\)/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=2/);
   assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
-  assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror cache must be bumped');
+  assert.ok(html.includes('admin-development-mirror.js?v=3'),'admin mirror cache must be bumped');
 });
