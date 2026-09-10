@@ -28,3 +28,12 @@ test('new owner styling suppresses duplicate legacy player goal surfaces', () =>
   }
   assert.match(css, /data-player-main-goal-owner/);
 });
+
+test('player goal editor has compact mobile spacing and clears fixed bottom navigation', () => {
+  const css = fs.readFileSync('player-main-goal.css','utf8');
+  assert.match(css, /@media\(max-width:559px\)/);
+  assert.match(css, /\.player-main-goal-editor label\{[^}]*margin:10px 0 4px/);
+  assert.match(css, /\.player-main-goal-editor textarea\{[^}]*min-height:88px[^}]*max-height:140px/);
+  assert.match(css, /\.player-main-goal button\{[^}]*min-height:42px/);
+  assert.match(css, /#developmentPage\[data-player-main-goal-owner="true"\]\{[^}]*padding-bottom:140px/);
+});

@@ -22,4 +22,15 @@
 .player-main-goal-success p,.player-main-goal-coach p,.player-main-goal-returned p{margin:0;line-height:1.45}
 .player-main-goal-waiting{margin-top:16px;padding:12px;border-radius:12px;background:#222;font-weight:700}
 .player-main-goal-message{min-height:20px;margin:10px 0 0;color:#ddd;font-size:.85rem}
+@media(max-width:559px){
+#developmentPage[data-player-main-goal-owner="true"]{padding-bottom:140px}
+.player-main-goal{margin-bottom:12px;padding:16px;border-radius:16px}
+.player-main-goal-head{gap:10px;margin-bottom:12px}
+.player-main-goal-editor label{margin:10px 0 4px;font-size:.76rem}
+.player-main-goal-editor input,.player-main-goal-editor textarea{margin-top:5px;padding:10px;border-radius:10px}
+.player-main-goal-editor textarea{min-height:88px;max-height:140px}
+.player-main-goal-actions{gap:8px;margin-top:12px}
+.player-main-goal button{min-height:42px;border-radius:10px}
+.player-main-goal-message{min-height:0;margin-top:8px}
+}
 @media(min-width:560px){.player-main-goal-actions{grid-template-columns:1fr 1fr}}
