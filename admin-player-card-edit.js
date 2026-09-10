@@ -36,6 +36,8 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     button.style.fontWeight='800';
     button.onclick=function(){
       if(!rosterEdit.isConnected)return;
+      const back=profile.querySelector('.player-public-profile-back');
+      if(back)back.click();
       rosterEdit.click();
       setTimeout(function(){
         const form=document.querySelector('#playerRosterSection .player-roster-form');
