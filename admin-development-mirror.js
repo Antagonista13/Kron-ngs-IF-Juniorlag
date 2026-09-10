@@ -36,7 +36,7 @@
   function ensureAdminPlayerCardEditModule(){
     if(root.KronangAdminPlayerCardEdit||document.querySelector('script[data-admin-player-card-edit]'))return;
     const script=document.createElement('script');
-    script.src='admin-player-card-edit.js?v=1';
+    script.src='admin-player-card-edit.js?v=2';
     script.defer=true;
     script.dataset.adminPlayerCardEdit='true';
     document.head.appendChild(script);
