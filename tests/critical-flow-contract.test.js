@@ -5,6 +5,8 @@ const html=fs.readFileSync('index.html','utf8');
 const home=fs.readFileSync('home-player-header.js','utf8');
 const leader=fs.readFileSync('leader-tools-profile.js','utf8');
 const admin=fs.readFileSync('admin-page.js','utf8');
+const adminDevelopment=fs.readFileSync('admin-development-mirror.js','utf8');
+const adminPlayerCardEdit=fs.existsSync('admin-player-card-edit.js')?fs.readFileSync('admin-player-card-edit.js','utf8'):'';
 const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
 const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
@@ -44,4 +46,20 @@ test('SportAdmin sync automatically adds new roster players without creating app
   assert.match(sportadminSync,/status:'approved'/);
   assert.match(sportadminSync,/created_player_id:/);
   assert.doesNotMatch(sportadminSync,/auth\.admin\.createUser|invite-user|profiles.*insert/i);
+});
+
+test('admin development owns a fallback host before starting the shared leader worklist',()=>{
+  assert.match(adminDevelopment,/function\s+ensureAdminDevelopmentHost\s*\(/);
+  assert.match(adminDevelopment,/coachPlayerList/);
+  const ensureCall=adminDevelopment.indexOf('ensureAdminDevelopmentHost();');
+  const setupCall=adminDevelopment.indexOf('KronangCoachDevelopmentWorklist.setup');
+  assert.ok(ensureCall>=0&&setupCall>ensureCall,'admin must create the worklist host first');
+});
+
+test('admin can edit from inside an opened player card',()=>{
+  assert.match(adminPlayerCardEdit,/player-public-profile-edit/);
+  assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
+  assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
+  assert.match(adminPlayerCardEdit,/Redigera/);
+  assert.ok(html.indexOf('admin-player-card-edit.js?v=1')>html.indexOf('player-roster.js?v=7'),'admin player-card edit must load after roster');
 });
