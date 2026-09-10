@@ -36,5 +36,6 @@ test('invite validates email and expected role', () => {
 test('admin player edit closes the public profile before opening the roster form', () => {
   const source = fs.readFileSync('admin-player-card-edit.js','utf8');
   assert.match(source,/\.player-public-profile-back/);
-  assert.match(source,/back\.click\(\)[\s\S]{0,500}rosterEdit\.click\(\)/);
+  assert.match(source,/back\.click\(\)[\s\S]{0,500}dispatchEvent\(new CustomEvent\('kronang:edit-roster-player'/);
+  assert.doesNotMatch(source,/rosterEdit\.click\(\)/);
 });
