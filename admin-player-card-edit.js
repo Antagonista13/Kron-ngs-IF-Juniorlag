@@ -35,9 +35,15 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     button.style.color='#f4d97e';
     button.style.fontWeight='800';
     button.onclick=function(){
-      const back=profile.querySelector('.player-public-profile-back');
-      if(back)back.click();
-      setTimeout(function(){if(rosterEdit.isConnected)rosterEdit.click();},0);
+      if(!rosterEdit.isConnected)return;
+      rosterEdit.click();
+      setTimeout(function(){
+        const form=document.querySelector('#playerRosterSection .player-roster-form');
+        if(!form||form.hidden)return;
+        form.scrollIntoView({behavior:'smooth',block:'start'});
+        const name=form.elements&&form.elements.full_name;
+        if(name)name.focus();
+      },0);
     };
 
     const archive=profile.querySelector('.player-public-profile-archive');
