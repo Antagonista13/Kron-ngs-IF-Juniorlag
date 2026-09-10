@@ -6,13 +6,13 @@ const source=fs.existsSync('admin-player-card-edit.js')?fs.readFileSync('admin-p
 const mirror=fs.readFileSync('admin-development-mirror.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 
-test('only admin gets inline name edit inside opened player card',()=>{
+test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/function\s+canEditPlayerFromPublicCard\s*\(/);
   assert.match(source,/role\s*===\s*['"]admin['"]/);
   assert.match(source,/player-public-profile-edit/);
-  assert.match(source,/player-public-profile-name-input/);
-  assert.match(source,/Spara namn/);
-  assert.match(source,/from\(['"]players['"]\)\.update\(\{full_name:/);
+  assert.match(source,/rosterEdit\.click\(\)/);
+  assert.match(source,/\.player-roster-form/);
+  assert.match(source,/scrollIntoView/);
   assert.doesNotMatch(source,/\.player-public-profile-back[\s\S]{0,300}\.click\(\)/);
 });
 
