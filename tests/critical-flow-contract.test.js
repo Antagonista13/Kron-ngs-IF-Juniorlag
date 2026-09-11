@@ -8,6 +8,7 @@ const admin=fs.readFileSync('admin-page.js','utf8');
 const adminDevelopment=fs.readFileSync('admin-development-mirror.js','utf8');
 const adminPlayerCardEdit=fs.existsSync('admin-player-card-edit.js')?fs.readFileSync('admin-player-card-edit.js','utf8'):'';
 const playerRoster=fs.readFileSync('player-roster.js','utf8');
+const playerRosterCss=fs.readFileSync('player-roster.css','utf8');
 const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
 const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
@@ -84,6 +85,12 @@ test('admin mobile falls back to player contact preferences',()=>{
   assert.match(adminPlayerCardEdit,/from\('player_contact_preferences'\)\.select\('mobile_phone'\)/);
   assert.match(adminPlayerCardEdit,/\.eq\('player_id',playerId\)\.maybeSingle\(\)/);
   assert.match(adminPlayerCardEdit,/playerMobile\s*\|\|\s*contactMobile/);
+});
+
+test('player profile phone links are explicit tel links and stay white on dark profile',()=>{
+  assert.match(adminPlayerCardEdit,/link\.href='tel:'/);
+  assert.match(playerRosterCss,/\.player-public-profile\s+a\[href\^="tel:"\]\s*\{[^}]*color:#fff!important/);
+  assert.match(playerRosterCss,/-webkit-text-fill-color:#fff/);
 });
 
 test('saving admin player details refreshes visible position and team role',()=>{
