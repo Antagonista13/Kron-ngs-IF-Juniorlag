@@ -57,7 +57,7 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamFocusManager:has(
 assert.ok(css.includes('#teamFocusManager:has(#teamFocusForm:not([hidden]))>#openTeamFocusManager{display:none}'), 'focus opener must disappear while focus editor is open');
 assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:has(#teamChallengeForm:not([hidden])){grid-column:1/-1;min-height:0}'), 'open challenge editor should use the full mobile width without stretching its neighbour');
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
-assert.ok(index.includes('player-roster.css?v=8'), 'roster css cache version must be current');
+assert.ok(index.includes('player-roster.css?v=9'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=11'), 'roster js cache version must be current after fetch-before-close editor fix');
 assert.ok(index.includes('player-roster-archive.js?v=4'), 'player profile archive UX cache version must be current');
 console.log('player roster ui tests passed');
