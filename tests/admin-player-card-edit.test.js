@@ -13,17 +13,21 @@ test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/player-public-profile-edit/);
 });
 
-test('admin player card uses direct roster edit bridge instead of replaying hidden button clicks',()=>{
-  assert.match(roster,/kronang:edit-roster-player/);
-  assert.match(roster,/addEventListener\(['"]kronang:edit-roster-player['"]/);
-  assert.match(source,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
-  assert.match(source,/dispatchEvent\(/);
+test('admin player card calls the roster editor API directly by player id',()=>{
+  assert.match(roster,/dataset\.playerId\s*=\s*p\.id/);
+  assert.match(roster,/KronangPlayerRoster/);
+  assert.match(roster,/openEditorById/);
+  assert.match(source,/selectedRosterCard\.dataset\.playerId/);
+  assert.match(source,/KronangPlayerRoster/);
+  assert.match(source,/openEditorById\(playerId\)/);
+  assert.doesNotMatch(source,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
+  assert.doesNotMatch(source,/dispatchEvent\(/);
   assert.doesNotMatch(source,/rosterEdit\.click\(\)/);
-  assert.doesNotMatch(source,/setTimeout\s*\(\s*function\s*\(\)\s*\{[\s\S]{0,500}rosterEdit\.click\(\)/);
 });
 
 test('admin runtime loads the bumped player-card edit module',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=5/);
+  assert.match(mirror,/admin-player-card-edit\.js\?v=6/);
   assert.match(mirror,/ensureAdminPlayerCardEditModule/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'));
+  assert.ok(html.includes('player-roster.js?v=10'));
 });
