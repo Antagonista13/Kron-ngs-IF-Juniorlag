@@ -68,7 +68,7 @@ test('admin player edit stays inside the open profile and saves directly by play
   assert.match(adminPlayerCardEdit,/player-public-profile-edit-form/);
   assert.doesNotMatch(adminPlayerCardEdit,/openEditorById\(/);
   assert.doesNotMatch(adminPlayerCardEdit,/back\.click\(\)/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=8/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=9/);
 });
 
 test('admin player profile shows mobile and edit mode clears bottom navigation',()=>{
