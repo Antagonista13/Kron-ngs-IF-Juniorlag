@@ -69,7 +69,7 @@ test('admin player edit stays inside the open profile and saves directly by play
   assert.match(adminPlayerCardEdit,/player-public-profile-edit-form/);
   assert.doesNotMatch(adminPlayerCardEdit,/openEditorById\(/);
   assert.doesNotMatch(adminPlayerCardEdit,/back\.click\(\)/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=10/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=11/);
 });
 
 test('admin player profile shows mobile and edit mode clears bottom navigation',()=>{
@@ -91,6 +91,12 @@ test('player profile phone links are explicit tel links and stay white on dark p
   assert.match(adminPlayerCardEdit,/link\.href='tel:'/);
   assert.match(playerRosterCss,/\.player-public-profile\s+a\[href\^="tel:"\]\s*\{[^}]*color:#fff!important/);
   assert.match(playerRosterCss,/-webkit-text-fill-color:#fff/);
+});
+
+test('admin player profile removes the privacy module duplicate phone row',()=>{
+  assert.match(adminPlayerCardEdit,/function\s+removeDuplicatePhoneRows\s*\(/);
+  assert.match(adminPlayerCardEdit,/querySelectorAll\('\.player-public-profile-phone'\)/);
+  assert.match(adminPlayerCardEdit,/removeDuplicatePhoneRows\(profile\)/);
 });
 
 test('saving admin player details refreshes visible position and team role',()=>{
