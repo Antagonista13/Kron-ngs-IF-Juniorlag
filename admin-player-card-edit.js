@@ -41,6 +41,16 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     select.value=value||'';label.appendChild(select);form.appendChild(label);return select;
   }
 
+  async function resolveAdminMobile(playerId,playerMobile){
+    const override=String(playerMobile||'').trim();
+    if(override)return override;
+    if(!root.kronangSupabase||!playerId)return'';
+    const{data,error}=await root.kronangSupabase.from('player_contact_preferences').select('mobile_phone').eq('player_id',playerId).maybeSingle();
+    if(error||!data)return'';
+    const contactMobile=String(data.mobile_phone||'').trim();
+    return playerMobile||contactMobile;
+  }
+
   function upsertAdminMobile(profile,mobile){
     if(!profile)return;
     let row=profile.querySelector('.player-public-profile-mobile-admin');
@@ -55,9 +65,11 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     if(profile.querySelector('.player-public-profile-mobile-admin'))return;
     profile.dataset.adminMobileLoading='1';
     const{data,error}=await root.kronangSupabase.from('players').select('mobile_phone').eq('id',playerId).maybeSingle();
+    if(error||!data){delete profile.dataset.adminMobileLoading;return;}
+    const mobile=await resolveAdminMobile(playerId,data.mobile_phone);
     delete profile.dataset.adminMobileLoading;
-    if(error||!data||!profile.isConnected)return;
-    ensureInlineStyles();upsertAdminMobile(profile,data.mobile_phone);
+    if(!profile.isConnected)return;
+    ensureInlineStyles();upsertAdminMobile(profile,mobile);
   }
 
   function syncVisiblePlayerDetails(profile,payload){
@@ -98,12 +110,13 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     const{data,error}=await root.kronangSupabase.from('players').select('id,full_name,nickname,mobile_phone,birth_date,shirt_number,position,team_role').eq('id',playerId).maybeSingle();
     triggerButton.disabled=false;
     if(error||!data)return false;
+    const effectiveMobile=await resolveAdminMobile(playerId,data.mobile_phone);
 
-    ensureInlineStyles();upsertAdminMobile(profile,data.mobile_phone);profile.classList.add('is-admin-editing');
+    ensureInlineStyles();upsertAdminMobile(profile,effectiveMobile);profile.classList.add('is-admin-editing');
     const form=document.createElement('form');form.className='player-public-profile-edit-form';
     addField(form,'Namn','full_name','text',data.full_name);
     addField(form,'Smeknamn','nickname','text',data.nickname);
-    addField(form,'Mobilnummer','mobile_phone','tel',data.mobile_phone);
+    addField(form,'Mobilnummer','mobile_phone','tel',effectiveMobile);
     addField(form,'Födelsedatum','birth_date','date',data.birth_date);
     const shirt=addField(form,'Tröjnummer','shirt_number','number',data.shirt_number===null?'':String(data.shirt_number));shirt.min='1';shirt.max='99';
     addSelect(form,'Position','position',data.position,[['','Ingen position'],['Målvakt','Målvakt'],['Försvarare','Försvarare'],['Mittfältare','Mittfältare'],['Anfallare','Anfallare']]);
