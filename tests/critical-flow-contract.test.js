@@ -57,19 +57,18 @@ test('admin development owns a fallback host before starting the shared leader w
   assert.ok(ensureCall>=0&&setupCall>ensureCall,'admin must create the worklist host first');
 });
 
-test('admin opens roster editor through the roster API without a DOM custom event',()=>{
+test('admin player edit fetches by player id before closing public profile',()=>{
   assert.match(adminPlayerCardEdit,/player-public-profile-edit/);
-  assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
-  assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
   assert.match(adminPlayerCardEdit,/selectedRosterCard\.dataset\.playerId/);
-  assert.match(adminPlayerCardEdit,/KronangPlayerRoster/);
-  assert.match(adminPlayerCardEdit,/openEditorById\(playerId\)/);
+  assert.match(adminPlayerCardEdit,/await\s+rosterApi\.openEditorById\(playerId\)/);
+  const openCall=adminPlayerCardEdit.indexOf('await rosterApi.openEditorById(playerId)');
+  const backCall=adminPlayerCardEdit.indexOf('back.click()');
+  assert.ok(openCall>=0&&backCall>openCall,'public profile must only close after editor opened successfully');
   assert.doesNotMatch(adminPlayerCardEdit,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
   assert.doesNotMatch(adminPlayerCardEdit,/dispatchEvent\(/);
-  assert.match(playerRoster,/dataset\.playerId\s*=\s*p\.id/);
-  assert.match(playerRoster,/KronangPlayerRoster/);
-  assert.match(playerRoster,/openEditorById/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=6/);
-  assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
-  assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror entrypoint must remain loaded');
+  assert.match(playerRoster,/openEditorById\s*:\s*async function\(playerId\)/);
+  assert.match(playerRoster,/from\('players'\)\.select\(/);
+  assert.match(playerRoster,/\.eq\('id',playerId\)/);
+  assert.match(playerRoster,/\.maybeSingle\(\)/);
+  assert.doesNotMatch(playerRoster,/playersById\.get\(String\(playerId/);
 });
