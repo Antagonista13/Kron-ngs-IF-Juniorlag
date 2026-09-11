@@ -20,7 +20,7 @@ if(!/players/i.test(fn)||!/full_name/i.test(fn)) throw new Error('existing playe
 if(/birth|birthday|phone|email|guardian|parent/i.test(fn)) throw new Error('SportAdmin sync must not import personal details beyond name');
 if(!/from\('players'\)\.insert/.test(fn)||!/status:'approved'/.test(fn)) throw new Error('new SportAdmin players must be added automatically');
 if(!/sportadmin_player_presence/.test(fn)||!/presenceByNormalizedName/.test(fn)) throw new Error('existing SportAdmin identity map missing');
-if(!/from\('players'\)\.update\(\{full_name:item\.full_name/.test(fn)) throw new Error('existing player full_name must be refreshed from SportAdmin');
+if(!/from\('players'\)\.update\(\{full_name:canonicalPlayerName\(item\.full_name\)/.test(fn)) throw new Error('existing player full_name must be refreshed from canonical SportAdmin name');
 if(!/SPORTADMIN/i.test(ui)||!/MARKERA SOM SEDD/i.test(ui)) throw new Error('admin SportAdmin notification UI missing');
 if(/GODKÄNN|AVVISA/.test(ui)) throw new Error('SportAdmin imports must not require manual approval');
 if(!/sportadmin-roster-sync/.test(adminCenter)) throw new Error('Admincenter manual sync action missing');

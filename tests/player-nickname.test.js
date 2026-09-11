@@ -35,4 +35,6 @@ assert.match(migration,/list_coach_roster_players/i);
 
 const sync=fs.readFileSync(path.join(__dirname,'../supabase/functions/sportadmin-roster-sync/index.ts'),'utf8');
 assert.doesNotMatch(sync,/nickname\s*:/i);
+assert.match(sync,/function canonicalPlayerName\(/);
+assert.match(sync,/full_name:canonicalPlayerName\(item\.full_name\)/);
 console.log('player nickname tests passed');

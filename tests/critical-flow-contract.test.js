@@ -43,7 +43,7 @@ test('admin has a separate SportAdmin notification badge',()=>{
 });
 
 test('SportAdmin sync automatically adds new roster players without creating app accounts',()=>{
-  assert.match(sportadminSync,/from\('players'\)\.insert\(\{full_name:item\.full_name,is_active:true\}\)/);
+  assert.match(sportadminSync,/from\('players'\)\.insert\(\{full_name:canonicalPlayerName\(item\.full_name\),is_active:true\}\)/);
   assert.match(sportadminSync,/status:'approved'/);
   assert.match(sportadminSync,/created_player_id:/);
   assert.doesNotMatch(sportadminSync,/auth\.admin\.createUser|invite-user|profiles.*insert/i);
