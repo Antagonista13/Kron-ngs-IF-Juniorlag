@@ -8,6 +8,7 @@ assert.strictEqual(player.name,'Karl Andersson');
 assert.strictEqual(player.nickname,'Kalle');
 assert.strictEqual(player.displayName,'Karl "Kalle" Andersson');
 assert.strictEqual(roster.normalizePlayer({full_name:'Karl Andersson',nickname:'   '}).displayName,'Karl Andersson');
+assert.strictEqual(roster.normalizePlayer({full_name:'Abdulazzim "SIM" Hakmi',nickname:'Sim'}).displayName,'Abdulazzim "Sim" Hakmi');
 
 const validated=roster.validatePlayerInput({name:'Karl Andersson',nickname:'Kalle'});
 assert.strictEqual(validated.ok,true);
@@ -35,4 +36,6 @@ assert.match(migration,/list_coach_roster_players/i);
 
 const sync=fs.readFileSync(path.join(__dirname,'../supabase/functions/sportadmin-roster-sync/index.ts'),'utf8');
 assert.doesNotMatch(sync,/nickname\s*:/i);
+assert.match(sync,/function canonicalPlayerName\(/);
+assert.match(sync,/full_name:canonicalPlayerName\(item\.full_name\)/);
 console.log('player nickname tests passed');
