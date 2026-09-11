@@ -33,10 +33,10 @@ test('invite validates email and expected role', () => {
   }
 });
 
-test('admin player edit closes the public profile before opening the roster form', () => {
+test('admin player edit opens the roster form before closing the public profile', () => {
   const source = fs.readFileSync('admin-player-card-edit.js','utf8');
   assert.match(source,/\.player-public-profile-back/);
-  assert.match(source,/back\.click\(\)[\s\S]{0,500}openEditorById\(playerId\)/);
+  assert.match(source,/await\s+rosterApi\.openEditorById\(playerId\)[\s\S]{0,500}back\.click\(\)/);
   assert.doesNotMatch(source,/dispatchEvent\(/);
   assert.doesNotMatch(source,/new CustomEvent\(/);
   assert.doesNotMatch(source,/rosterEdit\.click\(\)/);
