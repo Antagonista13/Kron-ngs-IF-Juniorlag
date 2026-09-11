@@ -13,21 +13,20 @@ test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/player-public-profile-edit/);
 });
 
-test('admin player card calls the roster editor API directly by player id',()=>{
-  assert.match(roster,/dataset\.playerId\s*=\s*p\.id/);
-  assert.match(roster,/KronangPlayerRoster/);
-  assert.match(roster,/openEditorById/);
+test('admin player card fetches player by id and only then closes profile',()=>{
+  assert.match(roster,/openEditorById\s*:\s*async function\(playerId\)/);
+  assert.match(roster,/from\('players'\)\.select\(/);
+  assert.match(roster,/\.eq\('id',playerId\)\.maybeSingle\(\)/);
   assert.match(source,/selectedRosterCard\.dataset\.playerId/);
-  assert.match(source,/KronangPlayerRoster/);
-  assert.match(source,/openEditorById\(playerId\)/);
+  assert.match(source,/await\s+rosterApi\.openEditorById\(playerId\)/);
+  const openCall=source.indexOf('await rosterApi.openEditorById(playerId)');
+  const backCall=source.indexOf('back.click()');
+  assert.ok(openCall>=0&&backCall>openCall);
   assert.doesNotMatch(source,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
   assert.doesNotMatch(source,/dispatchEvent\(/);
-  assert.doesNotMatch(source,/rosterEdit\.click\(\)/);
 });
 
-test('admin runtime loads the bumped player-card edit module',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=6/);
-  assert.match(mirror,/ensureAdminPlayerCardEditModule/);
-  assert.ok(html.includes('admin-development-mirror.js?v=2'));
-  assert.ok(html.includes('player-roster.js?v=10'));
+test('admin runtime loads bumped editor assets',()=>{
+  assert.match(mirror,/admin-player-card-edit\.js\?v=7/);
+  assert.ok(html.includes('player-roster.js?v=11'));
 });
