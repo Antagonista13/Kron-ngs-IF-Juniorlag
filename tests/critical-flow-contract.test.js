@@ -12,7 +12,7 @@ const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
 const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
 test('critical Safari assets are versioned and loaded exactly once',()=>{
-  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9']){
+  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9','player-roster.js?v=10']){
     assert.equal(html.split(asset).length-1,1,asset+' must load exactly once');
   }
   assert.ok(html.indexOf('calendar-runtime.js?v=8')<html.indexOf('calendar-bridge.js?v=1'),'calendar bridge must load after runtime');
@@ -57,15 +57,19 @@ test('admin development owns a fallback host before starting the shared leader w
   assert.ok(ensureCall>=0&&setupCall>ensureCall,'admin must create the worklist host first');
 });
 
-test('admin opens roster editor through a direct player edit bridge',()=>{
+test('admin opens roster editor through the roster API without a DOM custom event',()=>{
   assert.match(adminPlayerCardEdit,/player-public-profile-edit/);
   assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
   assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
-  assert.match(adminPlayerCardEdit,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
-  assert.match(adminPlayerCardEdit,/dispatchEvent\(/);
-  assert.doesNotMatch(adminPlayerCardEdit,/rosterEdit\.click\(\)/);
-  assert.match(playerRoster,/addEventListener\(['"]kronang:edit-roster-player['"]/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=5/);
+  assert.match(adminPlayerCardEdit,/selectedRosterCard\.dataset\.playerId/);
+  assert.match(adminPlayerCardEdit,/KronangPlayerRoster/);
+  assert.match(adminPlayerCardEdit,/openEditorById\(playerId\)/);
+  assert.doesNotMatch(adminPlayerCardEdit,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
+  assert.doesNotMatch(adminPlayerCardEdit,/dispatchEvent\(/);
+  assert.match(playerRoster,/dataset\.playerId\s*=\s*p\.id/);
+  assert.match(playerRoster,/KronangPlayerRoster/);
+  assert.match(playerRoster,/openEditorById/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=6/);
   assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror entrypoint must remain loaded');
 });
