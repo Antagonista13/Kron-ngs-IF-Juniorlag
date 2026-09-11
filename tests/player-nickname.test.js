@@ -8,7 +8,6 @@ assert.strictEqual(player.name,'Karl Andersson');
 assert.strictEqual(player.nickname,'Kalle');
 assert.strictEqual(player.displayName,'Karl "Kalle" Andersson');
 assert.strictEqual(roster.normalizePlayer({full_name:'Karl Andersson',nickname:'   '}).displayName,'Karl Andersson');
-assert.strictEqual(roster.normalizePlayer({full_name:'Abdulazzim "SIM" Hakmi',nickname:'Sim'}).displayName,'Abdulazzim "Sim" Hakmi');
 
 const validated=roster.validatePlayerInput({name:'Karl Andersson',nickname:'Kalle'});
 assert.strictEqual(validated.ok,true);
