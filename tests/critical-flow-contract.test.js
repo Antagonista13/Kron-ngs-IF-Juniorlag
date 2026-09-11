@@ -68,7 +68,7 @@ test('admin player edit stays inside the open profile and saves directly by play
   assert.match(adminPlayerCardEdit,/player-public-profile-edit-form/);
   assert.doesNotMatch(adminPlayerCardEdit,/openEditorById\(/);
   assert.doesNotMatch(adminPlayerCardEdit,/back\.click\(\)/);
-  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=9/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=10/);
 });
 
 test('admin player profile shows mobile and edit mode clears bottom navigation',()=>{
@@ -77,6 +77,13 @@ test('admin player profile shows mobile and edit mode clears bottom navigation',
   assert.match(adminPlayerCardEdit,/is-admin-editing/);
   assert.match(adminPlayerCardEdit,/safe-area-inset-bottom/);
   assert.match(adminPlayerCardEdit,/padding-bottom/);
+});
+
+test('admin mobile falls back to player contact preferences',()=>{
+  assert.match(adminPlayerCardEdit,/function\s+resolveAdminMobile\s*\(/);
+  assert.match(adminPlayerCardEdit,/from\('player_contact_preferences'\)\.select\('mobile_phone'\)/);
+  assert.match(adminPlayerCardEdit,/\.eq\('player_id',playerId\)\.maybeSingle\(\)/);
+  assert.match(adminPlayerCardEdit,/playerMobile\s*\|\|\s*contactMobile/);
 });
 
 test('saving admin player details refreshes visible position and team role',()=>{
