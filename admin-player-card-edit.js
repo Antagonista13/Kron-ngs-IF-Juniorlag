@@ -25,14 +25,17 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     button.style.background='transparent';
     button.style.color='#f4d97e';
     button.style.fontWeight='800';
-    button.onclick=function(){
+    button.onclick=async function(){
       if(!selectedRosterCard||!selectedRosterCard.isConnected)return;
       const playerId=selectedRosterCard.dataset&&selectedRosterCard.dataset.playerId;
       const rosterApi=root&&root.KronangPlayerRoster;
       if(!playerId||!rosterApi||typeof rosterApi.openEditorById!=='function')return;
+      button.disabled=true;
+      const opened=await rosterApi.openEditorById(playerId);
+      button.disabled=false;
+      if(!opened)return;
       const back=profile.querySelector('.player-public-profile-back');
       if(back)back.click();
-      if(!rosterApi.openEditorById(playerId))return;
       const form=document.querySelector('#playerRosterSection .player-roster-form');
       if(!form||form.hidden)return;
       form.scrollIntoView({behavior:'auto',block:'start'});
