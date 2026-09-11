@@ -51,8 +51,14 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     return playerMobile||contactMobile;
   }
 
+  function removeDuplicatePhoneRows(profile){
+    if(!profile)return;
+    profile.querySelectorAll('.player-public-profile-phone').forEach(function(row){row.remove();});
+  }
+
   function upsertAdminMobile(profile,mobile){
     if(!profile)return;
+    removeDuplicatePhoneRows(profile);
     let row=profile.querySelector('.player-public-profile-mobile-admin');
     const value=String(mobile||'').trim();
     if(!value){if(row)row.remove();return;}
@@ -163,6 +169,7 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     if(typeof document==='undefined'||!canEditPlayerFromPublicCard(currentRole()))return;
     const profile=document.querySelector('.player-public-profile');
     if(!profile||!selectedRosterCard||!selectedRosterCard.isConnected)return;
+    removeDuplicatePhoneRows(profile);
     const playerId=selectedRosterCard.dataset&&selectedRosterCard.dataset.playerId;
     if(playerId)ensureAdminMobile(profile,playerId);
     if(profile.querySelector('.player-public-profile-edit'))return;
