@@ -12,7 +12,7 @@ const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
 const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
 test('critical Safari assets are versioned and loaded exactly once',()=>{
-  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9','player-roster.js?v=10']){
+  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=8','calendar-bridge.js?v=1','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9','player-roster.js?v=11']){
     assert.equal(html.split(asset).length-1,1,asset+' must load exactly once');
   }
   assert.ok(html.indexOf('calendar-runtime.js?v=8')<html.indexOf('calendar-bridge.js?v=1'),'calendar bridge must load after runtime');
@@ -71,4 +71,5 @@ test('admin player edit fetches by player id before closing public profile',()=>
   assert.match(playerRoster,/\.eq\('id',playerId\)/);
   assert.match(playerRoster,/\.maybeSingle\(\)/);
   assert.doesNotMatch(playerRoster,/playersById\.get\(String\(playerId/);
+  assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=7/);
 });
