@@ -12,6 +12,7 @@ assert.strictEqual(roster.getPlayerCardDestination('player',player),'public');
 assert.strictEqual(roster.getPlayerCardDestination('parent',player),'public');
 assert.strictEqual(roster.getPlayerCardDestination('coach',player),'public');
 assert.strictEqual(roster.getPlayerCardDestination('admin',player),'public');
+assert.strictEqual(roster.formatPlayerDisplayName('Abdulazzim Hakmi','Sim'),'Abdulazzim "Sim" Hakmi');
 
 const source=fs.readFileSync(require.resolve('../player-roster.js'),'utf8');
 const css=fs.readFileSync(require.resolve('../player-roster.css'),'utf8');
@@ -28,9 +29,11 @@ assert.match(css,/\.player-public-profile-avatar\{[^}]*width:min\(78vw,360px\)[^
 assert.match(css,/z-index:1000/, 'fullscreen player card must sit above app navigation');
 
 assert.match(enhanced,/select\('full_name,nickname,shirt_number,position,team_role,public_about_me'\)/, 'enhanced public profile must fetch nickname');
-assert.match(enhanced,/signature\.textContent=data\.nickname\|\|data\.full_name/, 'enhanced profile must display nickname with full-name fallback');
+assert.match(enhanced,/root\.KronangPlayerNameFormatter\(data\.full_name,data\.nickname\)/, 'enhanced profile must keep the full name and insert nickname instead of replacing the name');
+assert.doesNotMatch(enhanced,/signature\.textContent=data\.nickname\|\|data\.full_name/, 'nickname must never replace the full player name');
+assert.match(enhanced,/quoted\.test\(full\)/, 'enhanced name formatter must detect an already quoted nickname');
 assert.match(enhanced,/profile\.querySelector\('\.player-public-profile-about'\)/, 'enhancement must reuse the existing about card instead of appending duplicates');
-assert.match(teamController,/player-public-profile-v2\.js\?v=5/, 'team page must load the fixed profile enhancer with a fresh cache version');
-assert.match(html,/team-page-content\.js\?v=7/, 'page must load the fixed team controller with a fresh cache version');
+assert.match(teamController,/player-public-profile-v2\.js\?v=6/, 'team page must load the fixed profile enhancer with a fresh cache version');
+assert.match(html,/team-page-content\.js\?v=7/, 'page must load the fixed team controller');
 
 console.log('player public profile tests passed');
