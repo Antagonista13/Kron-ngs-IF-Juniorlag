@@ -57,14 +57,17 @@ test('admin development owns a fallback host before starting the shared leader w
   assert.ok(ensureCall>=0&&setupCall>ensureCall,'admin must create the worklist host first');
 });
 
-test('admin opens roster editor through a direct player edit bridge',()=>{
+test('admin opens roster editor through the roster API without a DOM custom event',()=>{
   assert.match(adminPlayerCardEdit,/player-public-profile-edit/);
   assert.match(adminPlayerCardEdit,/role\s*===\s*['"]admin['"]/);
   assert.match(adminPlayerCardEdit,/\.player-public-profile-back/);
-  assert.match(adminPlayerCardEdit,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
-  assert.match(adminPlayerCardEdit,/dispatchEvent\(/);
-  assert.doesNotMatch(adminPlayerCardEdit,/rosterEdit\.click\(\)/);
-  assert.match(playerRoster,/addEventListener\(['"]kronang:edit-roster-player['"]/);
+  assert.match(adminPlayerCardEdit,/selectedRosterCard\.dataset\.playerId/);
+  assert.match(adminPlayerCardEdit,/KronangPlayerRoster\.openEditorById/);
+  assert.doesNotMatch(adminPlayerCardEdit,/new CustomEvent\(['"]kronang:edit-roster-player['"]/);
+  assert.doesNotMatch(adminPlayerCardEdit,/dispatchEvent\(/);
+  assert.match(playerRoster,/dataset\.playerId\s*=\s*p\.id/);
+  assert.match(playerRoster,/KronangPlayerRoster/);
+  assert.match(playerRoster,/openEditorById/);
   assert.match(adminDevelopment,/admin-player-card-edit\.js\?v=5/);
   assert.match(adminDevelopment,/ensureAdminPlayerCardEditModule/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'),'admin mirror entrypoint must remain loaded');
