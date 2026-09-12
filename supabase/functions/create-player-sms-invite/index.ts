@@ -97,7 +97,6 @@ Deno.serve(async (req) => {
     email,
     display_name: fullName || player.full_name,
     expected_role: 'player',
-    team_function: null,
     status: 'pending',
     invited_by: caller.id,
     updated_at: new Date().toISOString()
