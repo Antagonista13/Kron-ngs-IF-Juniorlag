@@ -24,5 +24,6 @@ create index if not exists player_onboarding_tokens_expiry_idx
 alter table public.player_onboarding_tokens enable row level security;
 
 -- Edge Functions use the service role. Browsers must never read or write token rows directly.
+revoke all on public.player_onboarding_tokens from public;
 revoke all on public.player_onboarding_tokens from anon;
 revoke all on public.player_onboarding_tokens from authenticated;
