@@ -17,5 +17,11 @@ jobs:
           node --check admin-player-sms.js
           node --check player-phone-visibility.js
           node --check role-permissions.js
+          if [ -f player-onboarding-invite.js ]; then node --check player-onboarding-invite.js; fi
+          if [ -f player-onboarding.js ]; then node --check player-onboarding.js; fi
       - name: Player phone privacy and SMS invite contract
         run: node tests/player-phone-privacy-sms.test.js
+      - name: SMS-first player onboarding backend contract
+        run: node tests/player-sms-onboarding.test.js
+      - name: SMS-first player onboarding UI contract
+        run: node --test tests/player-sms-onboarding-ui.test.js
