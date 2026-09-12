@@ -23,3 +23,5 @@ jobs:
         run: node tests/player-phone-privacy-sms.test.js
       - name: SMS-first player onboarding backend contract
         run: node tests/player-sms-onboarding.test.js
+      - name: SMS-first player onboarding UI contract
+        run: node --test tests/player-sms-onboarding-ui.test.js
