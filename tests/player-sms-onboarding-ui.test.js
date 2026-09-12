@@ -7,7 +7,7 @@ const read = (path) => fs.readFileSync(path, 'utf8');
 test('pre-auth onboarding screen owns ?onboard links before normal login', () => {
   assert.ok(fs.existsSync('player-onboarding.js'), 'player onboarding UI module must exist');
   const ui = read('player-onboarding.js');
-  const auth = read('auth.js');
+  const loader = read('auth-login-fields.js');
   const html = read('index.html');
   assert.match(ui, /URLSearchParams/);
   assert.match(ui, /onboard/);
@@ -17,16 +17,16 @@ test('pre-auth onboarding screen owns ?onboard links before normal login', () =>
   assert.match(ui, /Bekräfta lösenord/i);
   assert.match(ui, /complete-player-onboarding/);
   assert.match(ui, /signInWithPassword/);
-  assert.match(auth, /KronangPlayerOnboarding/);
-  assert.match(auth, /isActive/);
-  assert.ok(html.indexOf('player-onboarding.js') >= 0 && html.indexOf('player-onboarding.js') < html.indexOf('auth.js'), 'onboarding UI must load before normal auth');
+  assert.match(ui, /data-player-onboarding-active|playerOnboardingActive/i);
+  assert.match(loader, /player-onboarding\.js\?v=1/);
+  assert.match(loader, /document\.write/);
+  assert.ok(html.indexOf('auth-login-fields.js') >= 0 && html.indexOf('auth-login-fields.js') < html.indexOf('auth.js'), 'onboarding loader must execute before normal auth');
 });
 
 test('Laget player profile exposes SMS invite only through the admin onboarding helper', () => {
   assert.ok(fs.existsSync('player-onboarding-invite.js'), 'admin player onboarding invite helper must exist');
   const invite = read('player-onboarding-invite.js');
-  const html = read('index.html');
-  const css = read('player-roster.css');
+  const loader = read('auth-login-fields.js');
   assert.match(invite, /role\s*!==\s*['"]admin['"]/);
   assert.match(invite, /create-player-onboarding/);
   assert.match(invite, /BJUD IN VIA SMS/);
@@ -34,8 +34,8 @@ test('Laget player profile exposes SMS invite only through the admin onboarding 
   assert.match(invite, /sms:/);
   assert.match(invite, /playerId/);
   assert.match(invite, /MISSING_PHONE/);
-  assert.match(css, /player-onboarding-action/);
-  assert.match(html, /player-onboarding-invite\.js/);
+  assert.match(invite, /player-onboarding-action/);
+  assert.match(loader, /player-onboarding-invite\.js\?v=1/);
 });
 
 test('legacy parent and coach email invitation endpoint remains present', () => {
