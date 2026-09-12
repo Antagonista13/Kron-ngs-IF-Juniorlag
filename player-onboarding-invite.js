@@ -6,15 +6,21 @@
   async function currentRole(){if(!root.kronangSupabase)return'';const session=await root.kronangSupabase.auth.getSession(),user=session.data.session&&session.data.session.user;if(!user)return'';const result=await root.kronangSupabase.from('profiles').select('role,is_active').eq('id',user.id).maybeSingle();return result.data&&result.data.is_active!==false?String(result.data.role||''):'';}
   async function decorate(){
     if(role !== 'admin'||!lastPlayerId||!root.kronangSupabase)return;
-    const profile=document.querySelector('.player-public-profile');if(!profile||profile.querySelector('.player-onboarding-action'))return;
-    const result=await root.kronangSupabase.from('players').select('id,full_name,profile_id,is_active').eq('id',lastPlayerId).maybeSingle();const player=result.data;if(result.error||!player||player.is_active!==true)return;
-    const section=document.createElement('section');section.className='player-onboarding-action';const status=document.createElement('p');status.className='player-onboarding-action-status';section.appendChild(status);
-    if(player.profile_id){status.textContent='Konto anslutet';status.classList.add('connected');profile.appendChild(section);return;}
-    const button=document.createElement('button');button.type='button';button.textContent='BJUD IN VIA SMS';section.prepend(button);status.textContent='';
-    button.addEventListener('click',async function(){button.disabled=true;button.textContent='SKAPAR INBJUDAN…';status.textContent='';const created=await root.kronangSupabase.functions.invoke('create-player-onboarding',{body:{playerId:player.id}});button.disabled=false;button.textContent='BJUD IN VIA SMS';
-      if(created.error||!created.data||!created.data.ok){const code=created.data&&created.data.code;if(code==='MISSING_PHONE')status.textContent='Spelaren saknar registrerat mobilnummer.';else if(code==='PLAYER_ALREADY_LINKED'){status.textContent='Konto anslutet';button.remove();status.classList.add('connected');}else status.textContent=(created.data&&created.data.error)||'SMS-inbjudan kunde inte skapas.';return;}
-      status.textContent='SMS är förberett – tryck på Skicka i Meddelanden.';root.location.href=smsUri(created.data.phone,messageText(created.data.playerName||player.full_name,created.data.inviteUrl));
-    });profile.appendChild(section);
+    const profile=document.querySelector('.player-public-profile');if(!profile||profile.querySelector('.player-onboarding-action')||profile.dataset.playerOnboardingDecorating==='1')return;
+    profile.dataset.playerOnboardingDecorating='1';
+    try{
+      const result=await root.kronangSupabase.from('players').select('id,full_name,profile_id,is_active').eq('id',lastPlayerId).maybeSingle();const player=result.data;if(result.error||!player||player.is_active!==true)return;
+      if(profile.querySelector('.player-onboarding-action'))return;
+      const section=document.createElement('section');section.className='player-onboarding-action';const status=document.createElement('p');status.className='player-onboarding-action-status';section.appendChild(status);
+      if(player.profile_id){status.textContent='Konto anslutet';status.classList.add('connected');profile.appendChild(section);return;}
+      const button=document.createElement('button');button.type='button';button.textContent='BJUD IN VIA SMS';section.prepend(button);status.textContent='';
+      button.addEventListener('click',async function(){button.disabled=true;button.textContent='SKAPAR INBJUDAN…';status.textContent='';const created=await root.kronangSupabase.functions.invoke('create-player-onboarding',{body:{playerId:player.id}});button.disabled=false;button.textContent='BJUD IN VIA SMS';
+        if(created.error||!created.data||!created.data.ok){const code=created.data&&created.data.code;if(code==='MISSING_PHONE')status.textContent='Spelaren saknar registrerat mobilnummer.';else if(code==='PLAYER_ALREADY_LINKED'){status.textContent='Konto anslutet';button.remove();status.classList.add('connected');}else status.textContent=(created.data&&created.data.error)||'SMS-inbjudan kunde inte skapas.';return;}
+        status.textContent='SMS är förberett – tryck på Skicka i Meddelanden.';root.location.href=smsUri(created.data.phone,messageText(created.data.playerName||player.full_name,created.data.inviteUrl));
+      });profile.appendChild(section);
+    }finally{
+      delete profile.dataset.playerOnboardingDecorating;
+    }
   }
   function rememberFromEvent(event){const card=event.target&&event.target.closest?event.target.closest('.player-roster-card[data-player-id]'):null;if(!card)return;if(event.type==='click'&&event.target.closest('button,a,input,select,textarea,label'))return;if(event.type==='keydown'&&event.key!=='Enter'&&event.key!==' ')return;lastPlayerId=card.dataset.playerId||'';root.setTimeout(decorate,0);root.setTimeout(decorate,120);}
   async function setup(){if(ready||!root.kronangSupabase||!root.document)return;role=await currentRole();if(role !== 'admin')return;addStyles();ready=true;document.addEventListener('click',rememberFromEvent,true);document.addEventListener('keydown',rememberFromEvent,true);const observer=new MutationObserver(function(){if(document.querySelector('.player-public-profile')&&lastPlayerId)decorate();});observer.observe(document.body,{childList:true,subtree:true});}
