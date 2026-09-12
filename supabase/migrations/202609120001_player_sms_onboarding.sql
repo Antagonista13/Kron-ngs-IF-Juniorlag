@@ -14,6 +14,9 @@ create table if not exists public.player_onboarding_tokens (
 create index if not exists player_onboarding_tokens_player_idx
   on public.player_onboarding_tokens(player_id, created_at desc);
 
+create index if not exists player_onboarding_tokens_created_by_idx
+  on public.player_onboarding_tokens(created_by);
+
 create index if not exists player_onboarding_tokens_expiry_idx
   on public.player_onboarding_tokens(expires_at)
   where consumed_at is null and revoked_at is null;
