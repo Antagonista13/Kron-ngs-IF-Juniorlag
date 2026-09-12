@@ -25,3 +25,5 @@ jobs:
         run: node tests/player-sms-onboarding.test.js
       - name: SMS-first player onboarding UI contract
         run: node --test tests/player-sms-onboarding-ui.test.js
+      - name: Player onboarding status dedup regression
+        run: node --test tests/player-onboarding-dedup.test.js
