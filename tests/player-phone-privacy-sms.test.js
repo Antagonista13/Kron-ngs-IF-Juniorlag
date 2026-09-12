@@ -28,6 +28,7 @@ const authLookup = sms.indexOf('auth.admin.listUsers');
 const invitationLookup = sms.indexOf("from('user_invitations')\n    .select('id,email,status')");
 assert.ok(authLookup >= 0 && invitationLookup >= 0 && authLookup < invitationLookup, 'SMS invite must verify the real Auth user before stale invitation metadata can block a retry');
 assert.ok(/update\(\{\s*status:\s*'rejected'/i.test(sms) && /eq\('status',\s*'accepted'\)/i.test(sms), 'orphaned accepted invitations must be retired before a new SMS invite is created');
+assert.equal(/team_function\s*:/i.test(sms), false, 'SMS invite must not insert the removed team_function column');
 
 const adminSms = fs.readFileSync('admin-player-sms.js', 'utf8');
 assert.ok(/Bjud in via SMS/i.test(adminSms), 'admin must get an SMS invite action for players');
