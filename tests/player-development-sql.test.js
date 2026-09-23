@@ -91,3 +91,10 @@ test('coach focus feedback avoids duplicate unread notifications for the same fo
   assert.match(sql, /on conflict \(recipient_profile_id, source_key\)/);
   assert.match(sql, /where read_at is null/);
 });
+
+
+test('coach focus feedback RPC is limited to authenticated callers', () => {
+  const sql = fs.readFileSync(focusFeedbackNotificationPath, 'utf8').toLowerCase();
+  assert.match(sql, /revoke execute on function public\.add_coach_focus_comment\(uuid, text\) from public, anon/);
+  assert.match(sql, /grant execute on function public\.add_coach_focus_comment\(uuid, text\) to authenticated/);
+});
