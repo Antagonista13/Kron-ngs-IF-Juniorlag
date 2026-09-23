@@ -4,6 +4,7 @@ const fs = require('node:fs');
 
 const sqlPath = 'supabase/migrations/202609040011_player_development_workflow.sql';
 const bidirectionalPath = 'supabase/migrations/202609040012_bidirectional_development_notifications.sql';
+const focusFeedbackNotificationPath = 'supabase/migrations/202609230003_focus_feedback_notifications.sql';
 
 test('migration defines development workflow entities and RPCs', () => {
   const sql = fs.readFileSync(sqlPath, 'utf8').toLowerCase();
@@ -71,4 +72,22 @@ test('player-owned writes notify leaders in the same database transaction', () =
   assert.match(sql, /create or replace function public\.create_my_development_focus/);
   assert.match(sql, /create or replace function public\.save_player_self_assessment/);
   assert.match(sql, /perform public\.notify_leaders_of_player_development/);
+});
+
+
+test('coach focus feedback notifies the player on the matching focus', () => {
+  const sql = fs.readFileSync(focusFeedbackNotificationPath, 'utf8').toLowerCase();
+  assert.match(sql, /insert into public\.development_notifications/);
+  assert.match(sql, /'coach_focus_feedback'/);
+  assert.match(sql, /'development_focus'/);
+  assert.match(sql, /p_focus_id/);
+  assert.match(sql, /v_player_profile_id/);
+});
+
+test('coach focus feedback avoids duplicate unread notifications for the same focus', () => {
+  const sql = fs.readFileSync(focusFeedbackNotificationPath, 'utf8').toLowerCase();
+  assert.match(sql, /source_key/);
+  assert.match(sql, /coach_focus_feedback:/);
+  assert.match(sql, /on conflict \(recipient_profile_id, source_key\)/);
+  assert.match(sql, /where read_at is null/);
 });
