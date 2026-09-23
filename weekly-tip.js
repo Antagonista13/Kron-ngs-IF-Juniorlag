@@ -48,8 +48,11 @@ async function showTip(){
 }
 
 function fileExt(file){const n=(file&&file.name||'').toLowerCase();return n.includes('.')?n.split('.').pop():'jpg';}
+function teamStorageKey(team){return String(team||'').trim().toLocaleLowerCase('sv-SE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'');}
 async function uploadImage(file){
-  const path=String(profile.team)+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+fileExt(file);
+  const teamKey=teamStorageKey(profile.team);
+  if(!teamKey)throw new Error('Lagnamnet kunde inte användas för bildlagring.');
+  const path=teamKey+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+fileExt(file);
   const {error}=await root.kronangSupabase.storage.from(BUCKET).upload(path,file,{contentType:file.type||'image/jpeg',cacheControl:'3600'});
   if(error)throw error; return path;
 }
