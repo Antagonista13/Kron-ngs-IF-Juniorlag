@@ -79,3 +79,7 @@ begin
   return v_row;
 end;
 $function$;
+
+
+revoke execute on function public.add_coach_focus_comment(uuid, text) from public, anon;
+grant execute on function public.add_coach_focus_comment(uuid, text) to authenticated;
