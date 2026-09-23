@@ -49,8 +49,7 @@ async function showTip(){
 
 function fileExt(file){const n=(file&&file.name||'').toLowerCase();return n.includes('.')?n.split('.').pop():'jpg';}
 async function uploadImage(file){
-  const safeTeam=String(profile.team).replace(/[^a-zA-Z0-9_-]/g,'_');
-  const path=safeTeam+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+fileExt(file);
+  const path=String(profile.team)+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+fileExt(file);
   const {error}=await root.kronangSupabase.storage.from(BUCKET).upload(path,file,{contentType:file.type||'image/jpeg',cacheControl:'3600'});
   if(error)throw error; return path;
 }
