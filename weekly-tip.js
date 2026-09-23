@@ -68,7 +68,11 @@ async function showEditor(){
     try{
       let imagePath=current&&current.image_path||null;
       const selected=file.files&&file.files[0];
-      if(selected)imagePath=await uploadImage(selected);
+      if(selected){
+        if(!String(selected.type||'').startsWith('image/'))throw new Error('Välj en bildfil.');
+        if(selected.size>10*1024*1024)throw new Error('Bilden är för stor. Välj en bild under 10 MB.');
+        imagePath=await uploadImage(selected);
+      }
       const row={team:profile.team,title:body.querySelector('#weeklyTipTitle').value.trim(),body:body.querySelector('#weeklyTipText').value.trim(),image_path:imagePath,updated_by:profile.id,updated_at:new Date().toISOString()};
       if(!row.title||!row.body)throw new Error('Rubrik och text måste fyllas i.');
       const {error}=await root.kronangSupabase.from('team_weekly_tips').upsert(row,{onConflict:'team'}); if(error)throw error;
@@ -87,7 +91,7 @@ async function removeTip(){
   const {error}=await root.kronangSupabase.from('team_weekly_tips').delete().eq('team',profile.team);
   if(error){alert('Tipset kunde inte tas bort.');return;}
   if(old)await root.kronangSupabase.storage.from(BUCKET).remove([old]);
-  current=null;await renderCard();closeModal();
+  current=null;closeModal();await load();
 }
 
 async function load(){
