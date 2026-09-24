@@ -13,10 +13,10 @@ const sportadminBadge=fs.readFileSync('admin-sportadmin-badge.js','utf8');
 const sportadminSync=fs.readFileSync('supabase/functions/sportadmin-roster-sync/index.ts','utf8');
 
 test('critical Safari assets are versioned and loaded exactly once',()=>{
-  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=9','calendar-bridge.js?v=2','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9','player-roster.js?v=11']){
+  for(const asset of ['navigation-scroll.js?v=3','home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=10','calendar-bridge.js?v=3','player-main-goal.js?v=1','coach-main-goal-review.js?v=1','coach-development-worklist.js?v=9','player-roster.js?v=11']){
     assert.equal(html.split(asset).length-1,1,asset+' must load exactly once');
   }
-  assert.ok(html.indexOf('calendar-runtime.js?v=9')<html.indexOf('calendar-bridge.js?v=2'),'calendar bridge must load after runtime');
+  assert.ok(html.indexOf('calendar-runtime.js?v=10')<html.indexOf('calendar-bridge.js?v=3'),'calendar bridge must load after runtime');
   assert.ok(html.indexOf('player-main-goal.js?v=1')<html.indexOf('development-profile.js?v=5'),'player main goal must own the player goal surface before legacy development profile');
   assert.ok(html.indexOf('coach-main-goal-review.js?v=1')<html.indexOf('coach-development-worklist.js?v=9'),'coach main goal review must load before the worklist');
 });
