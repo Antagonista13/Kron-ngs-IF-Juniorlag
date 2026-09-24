@@ -33,6 +33,7 @@ assert.ok(js.includes("classList.toggle('leader-team-view'") || js.includes('cla
 assert.ok(archiveJs.includes('Borttagna/arkiverade spelare'), 'inactive roster section should be labelled as archived players');
 assert.ok(archiveJs.includes('player-public-profile-archive'), 'archive action should be rendered inside the opened player profile');
 assert.ok(archiveJs.includes("closest('[data-roster-active]')"), 'archive UX should identify clicks from the active roster list');
+assert.ok(archiveJs.includes("target.dataset&&target.dataset.playerId"), 'archive action should carry the exact selected player id into the profile');
 assert.ok(archiveJs.includes("button.style.display='none'"), 'active roster list should hide the old remove button');
 assert.ok(archiveJs.includes("rpc('admin_archive_player'"), 'profile archive action must use the admin-only server RPC');
 assert.ok(!archiveJs.includes("from('players').update({is_active:false"), 'browser must not archive players through direct table update');
@@ -59,5 +60,5 @@ assert.ok(css.includes('#teamPage.leader-team-view.active>#teamChallengeManager:
 assert.ok(css.includes('#teamChallengeManager:has(#teamChallengeForm:not([hidden]))>#openTeamChallengeManager{display:none}'), 'challenge opener must disappear while challenge editor is open');
 assert.ok(index.includes('player-roster.css?v=9'), 'roster css cache version must be current');
 assert.ok(index.includes('player-roster.js?v=11'), 'roster js cache version must be current after fetch-before-close editor fix');
-assert.ok(index.includes('player-roster-archive.js?v=4'), 'player profile archive UX cache version must be current');
+assert.ok(index.includes('player-roster-archive.js?v=5'), 'player profile archive UX cache version must be current');
 console.log('player roster ui tests passed');
