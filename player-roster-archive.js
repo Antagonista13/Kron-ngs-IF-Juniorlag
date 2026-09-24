@@ -1,5 +1,5 @@
 function getArchiveActionLabel(isActive){return isActive?'Ta bort':'Återaktivera';}
-const PLAYER_ARCHIVE_CONFIRM_TEXT='Spelaren tas bara bort från appen. SportAdmin påverkas inte och spelarens historik sparas. Vill du fortsätta?';
+const PLAYER_ARCHIVE_CONFIRM_TEXT='Ta bort spelaren från laget i appen? Spelarens historik sparas och eventuell appåtkomst stängs. SportAdmin påverkas inte. Vill du fortsätta?';
 let selectedPlayerName='';
 let archiveAccessPromise=null;
 
@@ -52,7 +52,7 @@ async function injectProfileArchiveAction(){
   const button=document.createElement('button');
   button.type='button';
   button.className='player-public-profile-archive';
-  button.textContent=getArchiveActionLabel(true);
+  button.textContent='TA BORT FRÅN LAGET';
   button.style.margin='10px auto 0';
   button.style.padding='8px 14px';
   button.style.border='1px solid #d76464';
@@ -67,7 +67,7 @@ async function injectProfileArchiveAction(){
     const {error:updateError}=await window.kronangSupabase.rpc('admin_archive_player',{p_player_id:data.id});
     if(updateError){
       button.disabled=false;
-      button.textContent=getArchiveActionLabel(true);
+      button.textContent='TA BORT FRÅN LAGET';
       window.alert('Kunde inte ta bort spelaren från appen. Försök igen.');
       return;
     }

@@ -36,11 +36,11 @@ assert.ok(archiveJs.includes("closest('[data-roster-active]')"), 'archive UX sho
 assert.ok(archiveJs.includes("button.style.display='none'"), 'active roster list should hide the old remove button');
 assert.ok(archiveJs.includes("rpc('admin_archive_player'"), 'profile archive action must use the admin-only server RPC');
 assert.ok(!archiveJs.includes("from('players').update({is_active:false"), 'browser must not archive players through direct table update');
-assert.ok(archiveJs.includes("button.textContent=getArchiveActionLabel(true)"), 'opened player profile remove button should use the short Ta bort label');
+assert.ok(archiveJs.includes("button.textContent='TA BORT FRÅN LAGET'"), 'opened player profile remove button should use the clear Ta bort från laget label');
 assert.ok(archiveJs.includes("profile.querySelector('.player-public-profile-role')"), 'remove button should look for the captain/vice-captain badge');
 assert.ok(archiveJs.includes('roleBadge.after(button)'), 'remove button should be placed immediately below the captain/vice-captain badge');
 assert.ok(archiveJs.includes('window.confirm('), 'removing an active player should require confirmation');
-assert.ok(archiveJs.includes('Spelaren tas bara bort från appen'), 'confirmation should explain local-only removal');
+assert.ok(archiveJs.includes('SportAdmin påverkas inte'), 'confirmation should explain that SportAdmin is unaffected');
 assert.ok(/admin_archive_player/i.test(archiveMigration),'migration must define an admin-only archive RPC');
 assert.ok(/old\.is_active\s*=\s*true[\s\S]*new\.is_active\s*=\s*false/i.test(archiveMigration),'migration must guard active-to-inactive player transitions');
 assert.ok(/current_profile_role\(\)[\s\S]*admin/i.test(archiveMigration),'database archive guard must require admin role');
