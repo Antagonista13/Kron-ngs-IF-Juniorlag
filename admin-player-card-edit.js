@@ -187,7 +187,7 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     if(!profile||!selectedRosterCard||!selectedRosterCard.isConnected)return;
     removeDuplicatePhoneRows(profile);
     const playerId=selectedRosterCard.dataset&&selectedRosterCard.dataset.playerId;
-    if(playerId)ensureAdminMobile(profile,playerId);
+    if(playerId){ensureAdminMobile(profile,playerId);ensureAdminRemoveAction(profile,playerId);}
     if(profile.querySelector('.player-public-profile-edit'))return;
     const button=document.createElement('button');
     button.type='button';button.className='player-public-profile-edit';button.textContent='Redigera spelare';
