@@ -10,6 +10,8 @@ test('only admin gets edit action inside opened player card',()=>{
   assert.match(source,/function\s+canEditPlayerFromPublicCard\s*\(/);
   assert.match(source,/role\s*===\s*['"]admin['"]/);
   assert.match(source,/player-public-profile-edit/);
+  assert.match(source,/TA BORT FRÅN LAGET/);
+  assert.match(source,/rpc\('admin_archive_player'/);
 });
 
 test('admin edits player inline inside the open profile instead of bridging to roster form',()=>{
@@ -27,4 +29,10 @@ test('admin edits player inline inside the open profile instead of bridging to r
 test('admin runtime loads the inline editor with a fresh cache version',()=>{
   assert.match(mirror,/admin-player-card-edit\.js\?v=8/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'));
+});
+
+test('team page loads the admin player action module directly',()=>{
+  const team=fs.readFileSync('team-page-content.js','utf8');
+  assert.match(team,/admin-player-card-edit\.js\?v=12/);
+  assert.match(team,/adminPlayerCardEditTeamScript/);
 });
