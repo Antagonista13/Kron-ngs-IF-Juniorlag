@@ -36,3 +36,9 @@ test('team page loads the admin player action module directly',()=>{
   assert.match(team,/admin-player-card-edit\.js\?v=12/);
   assert.match(team,/adminPlayerCardEditTeamScript/);
 });
+
+test('remove action is ensured before an existing edit action can short-circuit injection',()=>{
+  const ensureIndex=source.indexOf('ensureAdminRemoveAction(profile,playerId)');
+  const returnIndex=source.indexOf("if(profile.querySelector('.player-public-profile-edit'))return;");
+  assert.ok(ensureIndex>=0&&returnIndex>=0&&ensureIndex<returnIndex);
+});
