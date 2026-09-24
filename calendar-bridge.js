@@ -3,7 +3,8 @@ const FEED='https://kronangs-kalender.h-bergqvist.workers.dev/';
 function esc(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 function value(block,field){const m=block.match(new RegExp('^'+field+'[^:]*:(.*)$','m'));return m?m[1].trim():'';}
 function parseDate(raw){const m=String(raw||'').match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/);return m?new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]):null;}
-function parse(ics){return(ics.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g)||[]).map(block=>({date:parseDate(value(block,'DTSTART')),summary:value(block,'SUMMARY'),location:value(block,'LOCATION'),description:value(block,'DESCRIPTION'),group:value(block,'X-KRONANG-GROUP')||'P11'})).filter(item=>item.date instanceof Date&&!Number.isNaN(item.date.getTime()));}
+function unfoldIcs(ics){return String(ics||'').replace(/\r?\n[ \t]/g,'');}
+function parse(ics){ics=unfoldIcs(ics);return(ics.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g)||[]).map(block=>({date:parseDate(value(block,'DTSTART')),summary:value(block,'SUMMARY'),location:value(block,'LOCATION'),description:value(block,'DESCRIPTION'),group:value(block,'X-KRONANG-GROUP')||'P11'})).filter(item=>item.date instanceof Date&&!Number.isNaN(item.date.getTime()));}
 function typeFor(title){const t=String(title||'').toLowerCase();if(t.includes('match'))return['MATCH','⚽','match'];if(t.includes('träning'))return['TRÄNING','🏃','training'];if(t.includes('domar'))return['UPPDRAG','🟨','other'];return['ÖVRIGT','📋','other'];}
 function groupClass(group){return String(group||'').toUpperCase()==='P09/10'?'group-p0910':'group-p11';}
 function groupHeader(item){return `<div class="calendar-team"><span>JUNIORLAGET</span><strong>${esc(item.group||'P11')}</strong></div>`;}

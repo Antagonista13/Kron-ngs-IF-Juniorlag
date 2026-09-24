@@ -56,7 +56,7 @@ test('leader profile counts active roster players and uses fresh assets',()=>{
   assert.match(source,/\.eq\(['"]is_active['"],\s*true\)/);
   assert.match(source,/leader-profile\.css\?v=5/);
   assert.match(html,/profile-role-view\.js\?v=9/);
-  assert.match(html,/calendar-runtime\.js\?v=9/);
+  assert.match(html,/calendar-runtime\.js\?v=10/);
 });
 
 test('leader next activity is clickable and loads calendar directly',()=>{
