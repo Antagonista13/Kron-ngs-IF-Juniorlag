@@ -1,6 +1,7 @@
 function getArchiveActionLabel(isActive){return isActive?'Ta bort':'Återaktivera';}
 const PLAYER_ARCHIVE_CONFIRM_TEXT='Ta bort spelaren från laget i appen? Spelarens historik sparas och eventuell appåtkomst stängs. SportAdmin påverkas inte. Vill du fortsätta?';
 let selectedPlayerName='';
+let selectedPlayerId='';
 let archiveAccessPromise=null;
 
 function cleanRosterName(value){return String(value||'').replace(/\s+\((K|VK)\)\s*$/,'').trim();}
@@ -40,13 +41,15 @@ function relabelPlayerArchiveUi(root){
 }
 
 async function injectProfileArchiveAction(){
-  if(typeof document==='undefined'||!selectedPlayerName||!window.kronangSupabase)return;
+  if(typeof document==='undefined'||(!selectedPlayerId&&!selectedPlayerName)||!window.kronangSupabase)return;
   const profile=document.querySelector('.player-public-profile');
   if(!profile||profile.querySelector('.player-public-profile-archive')||profile.dataset.archiveLoading==='1')return;
   profile.dataset.archiveLoading='1';
   const allowed=await loadArchiveAccess();
   if(!allowed){delete profile.dataset.archiveLoading;return;}
-  const {data,error}=await window.kronangSupabase.from('players').select('id,full_name,is_active').eq('full_name',selectedPlayerName).eq('is_active',true).maybeSingle();
+  let query=window.kronangSupabase.from('players').select('id,full_name,is_active').eq('is_active',true);
+  query=selectedPlayerId?query.eq('id',selectedPlayerId):query.eq('full_name',selectedPlayerName);
+  const {data,error}=await query.maybeSingle();
   delete profile.dataset.archiveLoading;
   if(error||!data||!profile.isConnected)return;
   const button=document.createElement('button');
@@ -83,9 +86,10 @@ function setupPlayerArchiveUx(){
   document.addEventListener('click',event=>{
     const target=event.target&&event.target.closest?event.target.closest('.player-roster-card'):null;
     const activeCard=target&&target.closest('[data-roster-active]');
-    if(!activeCard||!target.querySelector('.player-roster-card-actions'))return;
+    if(!activeCard)return;
     if(event.target.closest('button,a,input,select,textarea,label'))return;
     const name=target.querySelector('.player-roster-card-title strong');
+    selectedPlayerId=target.dataset&&target.dataset.playerId||'';
     selectedPlayerName=cleanRosterName(name&&name.textContent);
     setTimeout(injectProfileArchiveAction,0);
   },true);
