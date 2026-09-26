@@ -41,6 +41,10 @@ jobs:
           node --check profile-role-view.js
           node --check leader-tools-profile.js
           if [ -f weekly-tip.js ]; then node --check weekly-tip.js; fi
+          node --check player-chat-data.js
+          node --check player-chat.js
+          node --check player-chat-entrypoints.js
+          node --check player-chat-unread.js
       - name: CI stability coverage
         run: node --test tests/ci-stability-coverage.test.js
       - name: Critical mobile flow contract
@@ -109,6 +113,8 @@ jobs:
         run: node --test tests/team-challenge.test.js
       - name: Role permission tests
         run: node --test tests/role-permissions.test.js
+      - name: Player chat tests
+        run: node --test tests/player-chat-security.test.js tests/player-chat-data.test.js tests/player-chat-ui.test.js tests/player-chat-entrypoints.test.js
       - name: Calendar 2.0 tests
         run: node --test tests/calendar.test.js
       - name: Browser script compatibility tests
