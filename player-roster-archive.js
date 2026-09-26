@@ -52,6 +52,7 @@ async function injectProfileArchiveAction(){
   const {data,error}=await query.maybeSingle();
   delete profile.dataset.archiveLoading;
   if(error||!data||!profile.isConnected)return;
+  if(profile.querySelector('.player-public-profile-archive'))return;
   const button=document.createElement('button');
   button.type='button';
   button.className='player-public-profile-archive';
