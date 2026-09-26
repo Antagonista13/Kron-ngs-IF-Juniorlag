@@ -1,0 +1,3 @@
+const test=require('node:test');const assert=require('node:assert/strict');const P=require('../role-permissions.js');
+test('player chat role gates allow player own chat and leaders',()=>{assert.equal(P.canUseOwnPlayerChat('player'),true);assert.equal(P.canUseOwnPlayerChat('admin'),false);assert.equal(P.canUsePlayerChatAsLeader('admin'),true);assert.equal(P.canUsePlayerChatAsLeader('coach'),true);});
+test('player chat role gates deny parent pending and unknown',()=>{for(const r of ['parent','pending','wat']){assert.equal(P.canUseOwnPlayerChat(r),false);assert.equal(P.canUsePlayerChatAsLeader(r),false);}});
