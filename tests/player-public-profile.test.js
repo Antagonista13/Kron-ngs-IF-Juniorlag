@@ -28,7 +28,7 @@ assert.match(css,/\.player-public-profile\{[^}]*position:fixed[^}]*inset:0/, 'op
 assert.match(css,/\.player-public-profile-avatar\{[^}]*width:min\(78vw,360px\)[^}]*height:min\(78vw,360px\)/, 'fullscreen player portrait must be substantially larger');
 assert.match(css,/z-index:1000/, 'fullscreen player card must sit above app navigation');
 
-assert.match(enhanced,/select\('full_name,nickname,shirt_number,position,team_role,public_about_me'\)/, 'enhanced public profile must fetch nickname');
+assert.match(enhanced,/select\('id,full_name,nickname,shirt_number,position,team_role,public_about_me'\)/, 'enhanced public profile must fetch nickname');
 assert.match(enhanced,/root\.KronangPlayerNameFormatter\(data\.full_name,data\.nickname\)/, 'enhanced profile must keep the full name and insert nickname instead of replacing the name');
 assert.doesNotMatch(enhanced,/signature\.textContent=data\.nickname\|\|data\.full_name/, 'nickname must never replace the full player name');
 assert.match(enhanced,/quoted\.test\(full\)/, 'enhanced name formatter must detect an already quoted nickname');
