@@ -45,6 +45,7 @@ jobs:
           node --check player-chat.js
           node --check player-chat-entrypoints.js
           node --check player-chat-unread.js
+          node --check player-chat-inbox.js
       - name: CI stability coverage
         run: node --test tests/ci-stability-coverage.test.js
       - name: Critical mobile flow contract
