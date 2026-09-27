@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');
+test('home inbox is compact and opens unread overview',()=>{const s=fs.readFileSync('player-chat-inbox.js','utf8');assert.match(s,/homePlayerChatCard/);assert.match(s,/getUnreadSummary/);assert.match(s,/slice\(0,2\)/);assert.match(s,/openInbox/);});
+test('team nav gets total unread badge',()=>{const s=fs.readFileSync('player-chat-inbox.js','utf8');assert.match(s,/data-page="teamPage"/);assert.match(s,/nav-chat-unread/);});
+test('read receipts use insert not update-requiring upsert',()=>{const s=fs.readFileSync('player-chat-data.js','utf8');assert.match(s,/player_chat_reads'\)\.insert\(payload\)/);assert.doesNotMatch(s,/player_chat_reads'\)\.upsert/);});
