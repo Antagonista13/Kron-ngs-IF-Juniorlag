@@ -115,7 +115,7 @@ jobs:
       - name: Role permission tests
         run: node --test tests/role-permissions.test.js
       - name: Player chat tests
-        run: node --test tests/player-chat-security.test.js tests/player-chat-data.test.js tests/player-chat-ui.test.js tests/player-chat-entrypoints.test.js
+        run: node --test tests/player-chat-security.test.js tests/player-chat-data.test.js tests/player-chat-ui.test.js tests/player-chat-entrypoints.test.js tests/player-chat-inbox.test.js
       - name: Calendar 2.0 tests
         run: node --test tests/calendar.test.js
       - name: Browser script compatibility tests
