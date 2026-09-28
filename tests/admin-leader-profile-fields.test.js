@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');
+test('admin leader card exposes editable title and description',()=>{const s=fs.readFileSync('admin-page.js','utf8');assert.match(s,/data-field="title"/);assert.match(s,/data-field="description"/);assert.match(s,/Kort beskrivning/);});
+test('leader details sync to team staff profile',()=>{const s=fs.readFileSync('admin-page.js','utf8');assert.match(s,/admin_save_team_staff/);assert.match(s,/saveLeaderStaff/);assert.match(s,/staffForEmail/);});
+test('admin leader textarea is mobile editable',()=>{const s=fs.readFileSync('admin-page.css','utf8');assert.match(s,/admin-user-card textarea/);assert.match(s,/font-size:16px/);});
