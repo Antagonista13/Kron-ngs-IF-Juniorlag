@@ -20,3 +20,11 @@ test('admin users use a stable editor outside the dynamically reorganized card l
   assert.match(js,/data-action="open-editor"/);
   assert.match(js,/adminUserEditDialog/);
 });
+
+test('saving a leader refreshes the team staff view and reuses a matching staff name', () => {
+  const adminJs = fs.readFileSync(path.join(__dirname, '..', 'admin-page.js'), 'utf8');
+  const staffJs = fs.readFileSync(path.join(__dirname, '..', 'team-staff.js'), 'utf8');
+  assert.match(adminJs,/staffForUser/);
+  assert.match(adminJs,/kronang:team-staff-updated/);
+  assert.match(staffJs,/kronang:team-staff-updated/);
+});
