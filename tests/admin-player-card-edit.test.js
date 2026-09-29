@@ -42,3 +42,9 @@ test('remove action is ensured before an existing edit action can short-circuit 
   const returnIndex=source.indexOf("if(profile.querySelector('.player-public-profile-edit'))return;");
   assert.ok(ensureIndex>=0&&returnIndex>=0&&ensureIndex<returnIndex);
 });
+
+
+test('inline admin player editor offers wide positions', () => {
+  assert.ok(source.includes("['Ytterback','Ytterback']"), 'inline editor must offer Ytterback');
+  assert.ok(source.includes("['Yttermittfältare','Yttermittfältare']"), 'inline editor must offer Yttermittfältare');
+});
