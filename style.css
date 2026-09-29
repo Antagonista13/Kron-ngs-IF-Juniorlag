@@ -166,3 +166,5 @@ button { font-family: inherit; }
   .coach-comment { min-height: 68px; }
   .coach-history-card { padding: 16px; border-radius: 15px; }
 }
+/* Pull to refresh */
+.pull-refresh-indicator{position:fixed;z-index:9999;top:env(safe-area-inset-top,0);left:50%;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#111;color:#fff;font-size:12px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transform:translate(-50%,-100%);transition:opacity .15s ease,transform .18s ease}.pull-refresh-indicator.visible{opacity:1}.pull-refresh-indicator.ready .pull-refresh-icon{transform:rotate(180deg)}.pull-refresh-indicator.refreshing .pull-refresh-icon{animation:pull-refresh-spin .7s linear infinite}.pull-refresh-icon{display:inline-block;font-size:16px;transition:transform .18s ease}@keyframes pull-refresh-spin{to{transform:rotate(360deg)}}
