@@ -27,13 +27,13 @@ test('admin edits player inline inside the open profile instead of bridging to r
 });
 
 test('admin runtime loads the inline editor with a fresh cache version',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=8/);
+  assert.match(mirror,/admin-player-card-edit\.js\?v=13/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'));
 });
 
 test('team page loads the admin player action module directly',()=>{
   const team=fs.readFileSync('team-page-content.js','utf8');
-  assert.match(team,/admin-player-card-edit\.js\?v=12/);
+  assert.match(team,/admin-player-card-edit\.js\?v=13/);
   assert.match(team,/adminPlayerCardEditTeamScript/);
 });
 
@@ -41,4 +41,10 @@ test('remove action is ensured before an existing edit action can short-circuit 
   const ensureIndex=source.indexOf('ensureAdminRemoveAction(profile,playerId)');
   const returnIndex=source.indexOf("if(profile.querySelector('.player-public-profile-edit'))return;");
   assert.ok(ensureIndex>=0&&returnIndex>=0&&ensureIndex<returnIndex);
+});
+
+
+test('inline admin player editor offers wide positions', () => {
+  assert.ok(source.includes("['Ytterback','Ytterback']"), 'inline editor must offer Ytterback');
+  assert.ok(source.includes("['Yttermittfältare','Yttermittfältare']"), 'inline editor must offer Yttermittfältare');
 });

@@ -89,7 +89,7 @@ jobs:
       - name: Player public profile tests
         run: node tests/player-public-profile.test.js
       - name: Player roster UI tests
-        run: node --test tests/player-roster-ui.test.js tests/player-roster-open-profile.test.js
+        run: node --test tests/player-roster-ui.test.js tests/player-roster-open-profile.test.js tests/admin-player-card-edit.test.js
       - name: Player shirt number source tests
         run: node tests/player-shirt-number-source.test.js
       - name: Auth tests
