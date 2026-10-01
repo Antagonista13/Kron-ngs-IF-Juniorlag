@@ -27,13 +27,13 @@ test('admin edits player inline inside the open profile instead of bridging to r
 });
 
 test('admin runtime loads the inline editor with a fresh cache version',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=13/);
+  assert.match(mirror,/admin-player-card-edit\.js\?v=14/);
   assert.ok(html.includes('admin-development-mirror.js?v=2'));
 });
 
 test('team page loads the admin player action module directly',()=>{
   const team=fs.readFileSync('team-page-content.js','utf8');
-  assert.match(team,/admin-player-card-edit\.js\?v=13/);
+  assert.match(team,/admin-player-card-edit\.js\?v=14/);
   assert.match(team,/adminPlayerCardEditTeamScript/);
 });
 
@@ -44,7 +44,10 @@ test('remove action is ensured before an existing edit action can short-circuit 
 });
 
 
-test('inline admin player editor offers wide positions', () => {
+test('inline admin player editor offers detailed positions', () => {
+  assert.ok(source.includes("['Innerback','Innerback']"), 'inline editor must offer Innerback');
   assert.ok(source.includes("['Ytterback','Ytterback']"), 'inline editor must offer Ytterback');
-  assert.ok(source.includes("['Yttermittfältare','Yttermittfältare']"), 'inline editor must offer Yttermittfältare');
+  assert.ok(source.includes("['Innermittfält','Innermittfält']"), 'inline editor must offer Innermittfält');
+  assert.ok(source.includes("['Yttermittfält','Yttermittfält']"), 'inline editor must offer Yttermittfält');
+  assert.ok(!source.includes("['Yttermittfältare','Yttermittfältare']"), 'old Yttermittfältare option must be removed');
 });
