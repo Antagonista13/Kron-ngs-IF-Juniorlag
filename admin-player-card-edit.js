@@ -101,7 +101,7 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
       if(cardName){const marker=teamRoleMarker(payload.team_role);cardName.textContent=displayName(payload.full_name,payload.nickname)+(marker?' '+marker:'');}
       const meta=selectedRosterCard.querySelector('.player-roster-card-meta');
       if(meta){
-        const positions=['Målvakt','Försvarare','Ytterback','Mittfältare','Yttermittfältare','Anfallare'];
+        const positions=['Målvakt','Försvarare','Innerback','Ytterback','Mittfältare','Innermittfält','Yttermittfält','Anfallare'];
         let cardPosition=Array.from(meta.querySelectorAll('span')).find(function(node){return positions.includes(node.textContent.trim());});
         if(positionValue){if(!cardPosition){cardPosition=document.createElement('span');meta.prepend(cardPosition);}cardPosition.textContent=positionValue;}else if(cardPosition)cardPosition.remove();
       }
@@ -125,7 +125,7 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
     addField(form,'Mobilnummer','mobile_phone','tel',effectiveMobile);
     addField(form,'Födelsedatum','birth_date','date',data.birth_date);
     const shirt=addField(form,'Tröjnummer','shirt_number','number',data.shirt_number===null?'':String(data.shirt_number));shirt.min='1';shirt.max='99';
-    addSelect(form,'Position','position',data.position,[['','Ingen position'],['Målvakt','Målvakt'],['Försvarare','Försvarare'],['Ytterback','Ytterback'],['Mittfältare','Mittfältare'],['Yttermittfältare','Yttermittfältare'],['Anfallare','Anfallare']]);
+    addSelect(form,'Position','position',data.position,[['','Ingen position'],['Målvakt','Målvakt'],['Försvarare','Försvarare'],['Innerback','Innerback'],['Ytterback','Ytterback'],['Mittfältare','Mittfältare'],['Innermittfält','Innermittfält'],['Yttermittfält','Yttermittfält'],['Anfallare','Anfallare']]);
     addSelect(form,'Lagroll','team_role',data.team_role,[['','Ingen lagroll'],['captain','Kapten'],['vice_captain','Vicekapten']]);
     const actions=document.createElement('div');actions.className='player-public-profile-edit-actions';
     const cancel=document.createElement('button');cancel.type='button';cancel.className='player-public-profile-edit-cancel';cancel.textContent='Avbryt';
