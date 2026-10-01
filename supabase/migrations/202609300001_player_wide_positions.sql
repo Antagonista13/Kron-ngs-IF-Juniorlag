@@ -9,9 +9,11 @@ alter table public.players
       array[
         'Målvakt'::text,
         'Försvarare'::text,
+        'Innerback'::text,
         'Ytterback'::text,
         'Mittfältare'::text,
-        'Yttermittfältare'::text,
+        'Innermittfält'::text,
+        'Yttermittfält'::text,
         'Anfallare'::text
       ]
     )
