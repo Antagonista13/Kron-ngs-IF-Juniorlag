@@ -51,3 +51,14 @@ test('player account linking uses clear language and exact name suggestion', () 
   assert.equal(suggestPlayerForAccount('emil bergqvist', players), '1');
   assert.equal(suggestPlayerForAccount('Emil', players), '');
 });
+
+
+test('locked admin can edit own presentation without unlocking admin access', () => {
+  const source = fs.readFileSync('admin-page.js', 'utf8');
+  assert.match(source, /open-admin-profile/);
+  assert.match(source, /REDIGERA PROFIL/);
+  assert.match(source, /role\.disabled=user\.role==='admin'/);
+  assert.match(source, /active\.disabled=user\.role==='admin'/);
+  assert.match(source, /if\(user\.role==='admin'\)/);
+  assert.match(source, /await saveLeaderStaff\(user,title,description\)/);
+});
