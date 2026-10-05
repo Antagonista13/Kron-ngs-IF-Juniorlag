@@ -10,5 +10,5 @@ assert.ok(css.includes('overflow-y:auto'), 'focused editor must scroll independe
 assert.ok(css.includes('z-index:2000'), 'focused editor should sit above bottom navigation');
 assert.ok(css.includes('body:has(.team-editor-focus-open) .bottom-nav{display:none}'), 'bottom navigation should be hidden while editing');
 assert.ok(css.includes('body:has(.team-editor-focus-open){overflow:hidden}'), 'background app should not scroll while editor is open');
-assert.ok(index.includes('team-posts.css?v=12'), 'team editor focus mode should bust the stylesheet cache');
+require('./helpers/asset-version.cjs')(index,'team-posts.css',13);
 console.log('team editor focus mode tests passed');

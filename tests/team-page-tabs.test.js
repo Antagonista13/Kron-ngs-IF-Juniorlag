@@ -3,9 +3,10 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
 const source=fs.readFileSync('team-page-content.js','utf8');
+const assertAssetVersion=require('./helpers/asset-version.cjs');
 
 test('team page loads the tabbed content controller',()=>{
-  assert.match(html,/team-page-content\.js\?v=4/);
+  assertAssetVersion(html,'team-page-content.js',7);
 });
 
 test('team page puts Team Manager information before the member tabs',()=>{

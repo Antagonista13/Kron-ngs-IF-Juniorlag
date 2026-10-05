@@ -13,10 +13,10 @@ test('role permissions and admin access load together as classic browser scripts
 
 test('critical Safari assets are versioned and loaded exactly once', () => {
   const html = fs.readFileSync('index.html', 'utf8');
-  for (const asset of ['home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=14','calendar-bridge.js?v=3']) {
+  for (const asset of ['home-player-header.js?v=10','leader-tools-profile.js?v=7','calendar-runtime.js?v=15','calendar-bridge.js?v=4']) {
     assert.equal(html.split(asset).length - 1, 1, asset + ' must load exactly once');
   }
-  assert.ok(html.indexOf('calendar-runtime.js?v=14') < html.indexOf('calendar-bridge.js?v=3'));
+  assert.ok(html.indexOf('calendar-runtime.js?v=15') < html.indexOf('calendar-bridge.js?v=4'));
 });
 
 test('Home next activity keeps routing to Calendar', () => {

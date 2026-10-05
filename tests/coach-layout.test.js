@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCoachLayoutModel, isRedundantAssessmentHeading } = require('../coach-layout.js');
+const { buildCoachLayoutModel } = require('../coach-layout.js');
 
 test('defines the four coach tool blocks in the intended order', () => {
   assert.deepEqual(buildCoachLayoutModel(), {
@@ -14,8 +14,5 @@ test('defines the four coach tool blocks in the intended order', () => {
   });
 });
 
-test('treats any extra direct h3 in the assessment card as redundant', () => {
-  assert.equal(isRedundantAssessmentHeading('H3', 0), false);
-  assert.equal(isRedundantAssessmentHeading('H3', 1), true);
-  assert.equal(isRedundantAssessmentHeading('P', 1), false);
-});
+// Repeated player headings are covered by coach-assessment-heading.test.js.
+// The old mutation-based cleanup helper was intentionally removed.

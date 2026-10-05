@@ -24,7 +24,7 @@ window.loadNextActivityHome=async function(){const host=document.getElementById(
 function setupCalendarNavigation(){const button=document.querySelector('.nav-item[data-page="calendarPage"]');if(!button||button.dataset.calendarRuntimeBound==='1')return;button.dataset.calendarRuntimeBound='1';button.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));const page=document.getElementById('calendarPage');if(page)page.classList.add('active');document.querySelectorAll('.nav-item').forEach(nav=>nav.classList.remove('active'));button.classList.add('active');window.scrollTo(0,0);window.testSportAdminCalendar();},true);}
 setupCalendarNavigation();
 window.loadNextActivityHome();
-function refreshNextActivityHome(){invalidateCalendarFeedCache();window.loadNextActivityHome();}
+function refreshNextActivityHome(){invalidateCalendarFeedCache();window.loadNextActivityHome();const calendarPage=document.getElementById('calendarPage');if(calendarPage&&calendarPage.classList.contains('active'))window.testSportAdminCalendar();}
 setInterval(refreshNextActivityHome,60000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshNextActivityHome();});
 window.addEventListener('pageshow',refreshNextActivityHome);

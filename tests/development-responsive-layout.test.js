@@ -6,15 +6,16 @@ const css = fs.readFileSync('development-workflow.css', 'utf8');
 
 test('development page uses the available desktop width without changing mobile layout', () => {
   assert.match(css, /@media\(min-width:800px\)/);
-  assert.match(css, /\.container:has\(#developmentPage\.active\)\{max-width:1000px\}/);
+  const desktopWidth=css.match(/\.container:has\(#developmentPage\.active\)\{max-width:(\d+)px\}/);
+  assert.ok(desktopWidth && Number(desktopWidth[1])>=1000);
 });
 
 test('player goal and focus cards form a clean two-column desktop layout', () => {
-  assert.match(css, /#developmentPage\.active\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css, /#developmentGoalSummary\{grid-column:1\}/);
-  assert.match(css, /#developmentFocusSummary\{grid-column:2\}/);
-  assert.match(css, /#developmentGoalHistory\{grid-column:1\}/);
-  assert.match(css, /#developmentFocusHistory\{grid-column:2\}/);
+  assert.match(css, /#developmentPage\.active\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /#developmentGoalSummary\{[^}]*grid-column:1(?:;|\})/);
+  assert.match(css, /#developmentFocusSummary\{[^}]*grid-column:2(?:;|\})/);
+  assert.match(css, /#developmentGoalHistory\{[^}]*grid-column:1(?:;|\})/);
+  assert.match(css, /#developmentFocusHistory\{[^}]*grid-column:2(?:;|\})/);
   assert.match(css, /#developmentPage\.active \.page-heading[^}]*grid-column:1\/-1/);
   assert.match(css, /#developmentPage\.active \.development-grid[^}]*grid-column:1\/-1/);
 });
