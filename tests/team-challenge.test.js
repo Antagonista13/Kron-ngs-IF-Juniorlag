@@ -27,7 +27,7 @@ test('weekly challenge requires title and instruction', () => {
 
 test('challenge view model includes completed state', () => {
   assert.deepEqual(buildTeamChallengeViewModel({ id: 'c1', title: '1000 TOUCHES', instruction: 'Träna.', completed: true }), {
-    id: 'c1', title: '1000 TOUCHES', instruction: 'Träna.', completed: true
+    id: 'c1', title: '1000 TOUCHES', instruction: 'Träna.', completed: true, createdAt: null, completedAt: null
   });
 });
 
