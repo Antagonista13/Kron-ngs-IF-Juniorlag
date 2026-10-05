@@ -21,8 +21,9 @@ SUMMARY:Söndagsmatch
 END:VEVENT
 END:VCALENDAR`;
 
-function app(time) {
+function app(time, { failFirstFetch = false, feedText = feed } = {}) {
   let now = new Date(time).getTime(), offline = false;
+  let requests = 0;
   const home = { innerHTML: '' }, calendar = { innerHTML: '' };
   const calendarPage = { classList: { contains: () => false } };
   const events = {}, documentEvents = {}, saved = new Map();
@@ -43,7 +44,7 @@ function app(time) {
       dispatchEvent() {}
     },
     CustomEvent: class {},
-    fetch: async () => { if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
+    fetch: async () => { requests++; if (offline || (failFirstFetch && requests === 1)) throw new Error('offline'); return { ok: true, text: async () => feedText }; },
     setInterval(fn) { events.minute = fn; }
   });
   vm.runInContext(fs.readFileSync('calendar-management.js', 'utf8'), context);
@@ -56,9 +57,59 @@ function app(time) {
     setTime(value) { now = new Date(value).getTime(); },
     goOffline() { offline = true; },
     clearCache() { saved.clear(); },
+    requestCount() { return requests; },
     async settle() { await new Promise(resolve => setImmediate(resolve)); }
   };
 }
+
+test('opening Calendar repairs a failed Home fetch using the successful feed without another request', async () => {
+  const a = app('2026-10-02T17:00:00+02:00', { failFirstFetch: true });
+  await a.settle();
+  assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  await a.window.testSportAdminCalendar();
+  assert.match(a.calendar.innerHTML, /Fredagsträning/);
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.equal(a.requestCount(), 2);
+  a.goOffline();
+  a.setTime('2026-10-03T07:00:00+02:00');
+  a.events.focus();
+  await a.settle();
+  assert.match(a.home.innerHTML, /Söndagsmatch/);
+  assert.doesNotMatch(a.home.innerHTML, /Fredagsträning/);
+});
+
+test('Calendar still renders when Home cannot process the successful feed', async () => {
+  const a = app('2026-10-02T17:00:00+02:00');
+  await a.settle();
+  delete a.window.KronangCalendarManagement;
+  await a.window.loadNextActivityHome();
+  assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  await a.window.testSportAdminCalendar();
+  assert.match(a.calendar.innerHTML, /Fredagsträning/);
+});
+
+test('Calendar displays activities while the Home update is waiting', async () => {
+  const a = app('2026-10-02T17:00:00+02:00');
+  await a.settle();
+  let release;
+  a.window.updateCalendarFromFeed = () => new Promise(resolve => { release = resolve; });
+  const rendering = a.window.testSportAdminCalendar();
+  await a.settle();
+  try { assert.match(a.calendar.innerHTML, /Fredagsträning/); }
+  finally { release(); await rendering; }
+});
+
+test('a successful empty Calendar feed clears the Home error without fetching again', async () => {
+  const a = app('2026-10-02T17:00:00+02:00', {
+    failFirstFetch: true, feedText: 'BEGIN:VCALENDAR\nEND:VCALENDAR'
+  });
+  await a.settle();
+  assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  await a.window.testSportAdminCalendar();
+  assert.match(a.calendar.innerHTML, /Inga kommande aktiviteter/);
+  assert.match(a.home.innerHTML, /Ingen kommande aktivitet/);
+  assert.equal(a.requestCount(), 2);
+});
 
 test('Home and Calendar both keep an ongoing activity until its end', async () => {
   const a = app('2026-10-02T19:00:00+02:00');
