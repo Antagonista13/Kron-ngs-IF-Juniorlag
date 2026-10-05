@@ -168,6 +168,7 @@ async function loadCoachRosterSummary() {
   if (assessmentsResult.error) console.error("Kunde inte hämta spelaröversiktens bedömningar:", assessmentsResult.error);
   const items = buildCoachRosterSummary(players, goalsResult.data || [], focusesResult.data || [], assessmentsResult.data || []);
   renderCoachTeamOverview(items); renderCoachRosterSummary(items); setupCoachRosterSearch(items);
+  document.dispatchEvent(new CustomEvent("kronang:coach-roster-ready"));
 }
 
 function waitForCoachRosterSummary(attempt) {

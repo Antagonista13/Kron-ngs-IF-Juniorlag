@@ -45,19 +45,7 @@ navItems.forEach(function (item) {
    VECKANS UTMANING
 ========================= */
 
-const challengeButton = document.getElementById("challengeButton");
-
-if (challengeButton) {
-
-  challengeButton.addEventListener("click", function () {
-
-    challengeButton.textContent = "UTMANING KLAR! 🔥";
-    challengeButton.style.background = "#333";
-
-  });
-
-}
-
+// team-challenge.js saves completion before updating the button.
 
 /* =========================
    SPORTADMIN KALENDER TEST
