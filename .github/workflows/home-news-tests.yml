@@ -146,6 +146,8 @@ jobs:
         run: node tests/admin-approval-email.test.js
       - name: Invite function tests
         run: node tests/invite-function.test.js
+      - name: Complete regression suite
+        run: TZ=Europe/Stockholm node --test tests/*.test.js
       - name: Security leak checks
         run: |
           if grep -R "SUPABASE_SERVICE_ROLE_KEY" -- *.js tests 2>/dev/null; then exit 1; fi

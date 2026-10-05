@@ -7,8 +7,8 @@ const css=fs.readFileSync('leader-profile.css','utf8');
 
 test('leader profile mirrors admin visual structure without admin tools',()=>{
   assert.match(source,/leader-profile admin-layout/);
-  assert.match(source,/admin-page-header/);
-  assert.match(source,/admin-kicker/);
+  // Leader identity now reuses the main profile header instead of a second header.
+  assert.match(source,/#profilePage > \.profile-header/);
   assert.match(source,/admin-overview/);
   assert.doesNotMatch(source,/id="leaderAdminQuickLink"/);
   assert.doesNotMatch(source,/id="leaderAdminStatus"/);

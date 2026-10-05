@@ -6,7 +6,7 @@ test('builds a clear coach player detail header', () => {
   assert.deepEqual(buildCoachPlayerPageViewModel('Testspelare'), {
     title: 'Testspelare',
     backLabel: '← Tillbaka till spelaröversikten',
-    subtitle: 'Mål · Fokus · Bedömning · Jämförelse · Historik'
+    subtitle: 'Utveckling just nu · Återkoppling · Bedömning · Historik'
   });
 });
 
@@ -16,10 +16,9 @@ test('uses a safe fallback when player name is missing', () => {
 
 test('builds internal navigation for the coach player page', () => {
   assert.deepEqual(buildCoachPlayerNavigation(), [
-    { label: 'Mål', target: 'coachPlayerContext' },
-    { label: 'Fokus', target: 'coachPlayerContext' },
+    { label: 'Utveckling just nu', target: 'coachPlayerContext' },
+    { label: 'Återkoppling', target: 'coachFocusFeedbackControls' },
     { label: 'Bedömning', target: 'coachPlayerDevelopment' },
-    { label: 'Jämförelse', target: 'coachComparisonCard' },
     { label: 'Historik', target: 'coachHistorySection' }
   ]);
 });
