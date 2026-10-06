@@ -70,8 +70,8 @@ const api={challengeWeek,challengeWeekRange,buildChallengeProgress,challengeProg
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 root.KronangChallengeProgress=api;
 if(root.document){
-  let viewer=null,data=null,generation=0,selected=null;
-  function clear(){generation++;viewer=null;data=null;selected=null;document.querySelectorAll('.challenge-progress-card,.challenge-roster-stat').forEach(n=>n.remove());}
+  let viewer=null,data=null,generation=0,selected=null,selectedMount=null;
+  function clear(){generation++;viewer=null;data=null;selected=null;selectedMount=null;document.querySelectorAll('.challenge-progress-card,.challenge-roster-stat').forEach(n=>n.remove());}
   function card(id,mount,label){
     let node=document.getElementById(id);if(node)return node;
     node=document.createElement('section');node.id=id;node.className='card challenge-progress-card';
@@ -80,7 +80,7 @@ if(root.document){
   }
   function renderCard(node){
     const player=node.id==='playerChallengeProgress'?viewer:data&&data.players.find(p=>p.id===selected);
-    if(!data||!player)return;
+    if(!data||!player){node.querySelector('.challenge-progress-content').textContent=!selected&&node.id==='coachChallengeProgress'?'Spelaren saknar ett kopplat spelarkonto för utmaningsstatistik.':data?'Utmaningsstatistik saknas för den här spelaren.':'Hämtar utmaningsstatistik...';return;}
     node.querySelector('.challenge-progress-content').innerHTML=challengeProgressHtml(buildChallengeProgress(data.challenges,data.completions,player,{weeks:Number(node.querySelector('select').value)}));
   }
   function render(){
@@ -90,15 +90,15 @@ if(root.document){
       const node=card('playerChallengeProgress',page,'Mina utmaningar');node.setAttribute('data-player-profile-section','');renderCard(node);
     }else{
       for(const player of data.players){
-        const button=document.querySelector('.coach-player-button[data-player-id="'+player.id+'"]');if(!button)continue;
-        const mount=button.closest('.coach-roster-player')||button.parentNode;
+        const button=document.querySelector('.development-player-open[data-profile-id="'+player.id+'"]')||document.querySelector('.coach-player-button[data-player-id="'+player.id+'"]');if(!button)continue;
+        const mount=button.querySelector('.development-player-card-main')||button.closest('.coach-roster-player')||button.parentNode;
         let summary=mount.querySelector('.challenge-roster-stat[data-challenge-player="'+player.id+'"]');
-        if(!summary){summary=document.createElement('p');summary.className='challenge-roster-stat';summary.dataset.challengePlayer=player.id;mount.appendChild(summary);}
+        if(!summary){summary=document.createElement('span');summary.className='challenge-roster-stat';summary.dataset.challengePlayer=player.id;mount.appendChild(summary);}
         const model=buildChallengeProgress(data.challenges,data.completions,player);
         const state=model.current?(model.current.status==='completed'?'Veckan klar ✓':model.current.status==='ongoing'?'Veckan pågår':'Ej genomförd'):'Ingen utmaning denna vecka';
         summary.textContent=state+' · '+model.completed+' av '+model.total+' klara'+(model.percent===null?'':' · '+model.percent+' %');
       }
-      if(selected){const mount=document.getElementById('coachDevelopmentView');if(!mount)return;const node=card('coachChallengeProgress',mount,'Spelarens utmaningar');renderCard(node);}
+      if(selected||selectedMount){const mount=selectedMount||document.getElementById('coachDevelopmentView');if(!mount)return;const node=card('coachChallengeProgress',mount,'Spelarens utmaningar');const header=mount.querySelector('.development-workflow-profile > header');if(header)header.after(node);renderCard(node);}
     }
   }
   async function refresh(){
@@ -128,12 +128,24 @@ if(root.document){
   setInterval(render,60000);
   document.addEventListener('kronang:challenge-changed',refresh);
   document.addEventListener('kronang:coach-roster-ready',render);
+  document.addEventListener('kronang:development-roster-ready',render);
+  document.addEventListener('kronang:development-player-opened',event=>{
+    if(!event.detail?.container?.isConnected)return;
+    if(viewer&&!['coach','admin'].includes(viewer.role))return;
+    selected=event.detail.profileId||null;selectedMount=event.detail.container;
+    document.getElementById('coachChallengeProgress')?.remove();
+    if(!viewer){refresh();return;}
+    const node=card('coachChallengeProgress',selectedMount,'Spelarens utmaningar');
+    const header=selectedMount.querySelector('.development-workflow-profile > header');if(header)header.after(node);
+    renderCard(node);if(!data)refresh();
+  });
+  document.addEventListener('kronang:development-player-closed',()=>{selected=null;selectedMount=null;document.getElementById('coachChallengeProgress')?.remove();});
   document.addEventListener('kronang:auth-signed-out',clear);
   document.addEventListener('kronang:auth-signed-in',()=>{clear();refresh();});
   document.addEventListener('click',event=>{
     const button=event.target.closest('.coach-player-button');
-    if(button&&viewer&&['coach','admin'].includes(viewer.role)){selected=button.dataset.playerId;document.getElementById('coachChallengeProgress')?.remove();if(data)render();else refresh();}
-    if(event.target.closest('.coach-player-page-back')){selected=null;document.getElementById('coachChallengeProgress')?.remove();}
+    if(button&&viewer&&['coach','admin'].includes(viewer.role)){selected=button.dataset.playerId;selectedMount=null;document.getElementById('coachChallengeProgress')?.remove();if(data)render();else refresh();}
+    if(event.target.closest('.coach-player-page-back')){selected=null;selectedMount=null;document.getElementById('coachChallengeProgress')?.remove();}
     if(event.target.closest('.nav-item[data-page="profilePage"],.nav-item[data-page="developmentPage"]'))refresh();
   });
   function wait(){if(!root.kronangSupabase){setTimeout(wait,100);return;}refresh();}

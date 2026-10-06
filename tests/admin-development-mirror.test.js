@@ -26,7 +26,7 @@ test('admin development creates the canonical leader host before starting the wo
 });
 
 test('admin mirror loads after the canonical coach worklist',()=>{
-  const worklist=html.indexOf('coach-development-worklist.js?v=9');
+  const worklist=html.indexOf('coach-development-worklist.js?v=10');
   const mirror=html.indexOf('admin-development-mirror.js?v=2');
   assert.ok(worklist>=0);
   assert.ok(mirror>worklist);
