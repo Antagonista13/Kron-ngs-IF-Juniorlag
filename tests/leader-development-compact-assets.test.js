@@ -5,5 +5,5 @@ const html=fs.readFileSync('index.html','utf8');
 test('compact leader development assets are cache bumped',()=>{
  assert.match(html,/leader-development-dashboard\.css\?v=7/);
  assert.match(html,/development-workflow\.js\?v=3/);
- assert.match(html,/coach-development-worklist\.js\?v=9/);
+ assert.match(html,/coach-development-worklist\.js\?v=10/);
 });

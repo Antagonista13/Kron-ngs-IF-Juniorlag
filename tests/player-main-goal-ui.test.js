@@ -14,7 +14,7 @@ test('player main goal maps lifecycle to approved Swedish labels', () => {
 test('new player main goal module owns player goal surface before legacy modules load', () => {
   const html = fs.readFileSync('index.html','utf8');
   const mainGoal = html.indexOf('player-main-goal.js?v=1');
-  const profile = html.indexOf('development-profile.js?v=5');
+  const profile = html.indexOf('development-profile.js?v=6');
   const goalSummary = html.indexOf('goal-summary.js?v=8');
   assert.ok(mainGoal > -1);
   assert.ok(mainGoal < profile);
