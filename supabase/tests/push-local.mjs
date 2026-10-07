@@ -23,6 +23,9 @@ insert into profiles(role,team,is_active,full_name) values('player','KIF',true,'
 insert into players(profile_id,is_active) select id,true from profiles where role='player';`);
 await db.exec(readFileSync('supabase/migrations/20261007111219_web_push.sql','utf8'));
 await db.exec(readFileSync('supabase/migrations/20261007114030_push_key_safe_update.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/20261007185320_leader_message_push.sql','utf8'));
 try { await db.exec(readFileSync('supabase/tests/web_push.sql','utf8')); } catch(error) { console.error(error.message,error.code,error.where);process.exit(1); }
 console.log('PostgreSQL push integration assertions passed (rolled back).');
+try { await db.exec(readFileSync('supabase/tests/leader_web_push.sql','utf8')); } catch(error) { console.error(error.message,error.code,error.where);process.exit(1); }
+console.log('Leader push read isolation assertions passed (rolled back).');
 await db.close();

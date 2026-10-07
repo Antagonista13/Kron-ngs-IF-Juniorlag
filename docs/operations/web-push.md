@@ -42,3 +42,11 @@ Keep all-player delivery disabled until this checklist is observed. Test-notific
 Additive migrations `20261007111219_web_push` and `20261007114030_push_key_safe_update` applied. The second migration supplies the explicit singleton WHERE predicate required by PostgREST safeupdate. The real authenticated initialization failed before that fix, then succeeded without exposing keys. Worker authorization and own-device test endpoints reject missing/wrong tokens with HTTP 401. Source fixture SQL ran live and rolled back; preferences, subscriptions, notifications and jobs all returned to zero. Phone trial and frontend publication remain pending.
 
 Final Edge deployment: `kif-push` version 5, bundle SHA256 `64a1fea62b6f565d1ca9afa6a578e0172987e99704cd71acca19770206da7db5`. Authenticated disabled dispatch: HTTP 200, processed 0. Repeat initialization: HTTP 409, original keys retained. Missing/wrong authorization: HTTP 401. Real Web Push encryption is checked with a generated browser ECDH key and a successful decrypt of the generic payload; no real phone delivery claimed.
+
+## Leader message notifications
+
+Apply migration `20261007185320_leader_message_push.sql` before publishing the leader frontend. It adds `push_config.leader_delivery_enabled=false` and extends opt-in RPCs to active `admin`/`coach`. After PR publication, enable only `leader_delivery_enabled=true where singleton`; keep `delivery_enabled` and `pilot_profile_id` unchanged. The existing worker requires no redeployment. Rollback: set `leader_delivery_enabled=false` (do not remove additive schema).
+
+Leaders activate on each device under Profil → Notiser → Aktivera notiser. Their category is Meddelanden only. New player messages fan out to opted-in active same-team staff. A staff reply goes only to the player. Read receipts and notification eligibility remain per recipient; reading or replying never clears another staff member's badge. A notification click opens the source player's chat using RLS-protected lookups. Test with two staff accounts: both unread, first reads → only their badge clears, second remains unread until opening. No permission or silent default subscription changes.
+
+Existing player rollout stays limited to the configured pilot. Leader opt-in does not enable notification delivery to additional players.
