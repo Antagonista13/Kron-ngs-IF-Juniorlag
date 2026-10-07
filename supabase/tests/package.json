@@ -1,0 +1,1 @@
+{"private": true, "type": "module", "scripts": {"test:push": "cd ../.. && node supabase/tests/push-local.mjs", "test:dom": "cd ../.. && node supabase/tests/push-dom.mjs", "test:crypto": "cd ../.. && node supabase/tests/push-crypto.mjs"}, "devDependencies": {"@electric-sql/pglite": "0.3.14", "jsdom": "26.1.0", "web-push": "3.6.7"}}
