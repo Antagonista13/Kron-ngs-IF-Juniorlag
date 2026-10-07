@@ -1,0 +1,23 @@
+name: Player web push tests
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix supabase/tests
+      - run: node --test tests/*.test.js
+      - run: npm run test:push --prefix supabase/tests
+      - run: npm run test:dom --prefix supabase/tests
+      - run: npm run test:crypto --prefix supabase/tests
+      - name: Browser script syntax
+        run: |
+          node --check push-subscriptions.js
+          node --check push-notifications.js
+          node --check push-routing.js
+          node --check service-worker.js

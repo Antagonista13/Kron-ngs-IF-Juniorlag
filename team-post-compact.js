@@ -25,6 +25,7 @@ function toggleCompactTeamPost(card){
   if(!card)return;
   const expanded=card.classList.toggle('team-post-expanded');
   card.setAttribute('aria-expanded',String(expanded));
+  if(expanded&&typeof window!=='undefined')window.KronangPushNotifications?.markPostRead(card.dataset.postId);
   const button=card.querySelector('[data-action="toggle"]');
   if(button)button.textContent=expanded?'VISA MINDRE':'VISA MER';
 }
