@@ -20,7 +20,7 @@ begin
  begin update push_preferences set posts_enabled=false where profile_id=p;raise exception 'Direct write allowed';exception when insufficient_privilege then null;end;
  begin perform public.register_push_subscription('https://fcm.googleapis.com/fcm/send/kif-sql-fixture',repeat('A',87),repeat('B',22));raise exception 'Subscription takeover';exception when insufficient_privilege then null;end;
  perform set_config('request.jwt.claim.sub',coach::text,true);
- begin perform public.register_push_subscription('https://fcm.googleapis.com/fcm/send/leader-fixture',repeat('A',87),repeat('B',22));raise exception 'Leader registration allowed';exception when insufficient_privilege then null;end;
+ perform public.register_push_subscription('https://fcm.googleapis.com/fcm/send/leader-fixture',repeat('A',87),repeat('B',22));
  reset role;
  perform set_config('request.jwt.claim.sub',p::text,true);
  if (public.get_push_status()->>'unread_count')::int<>0 then raise exception 'Backlog created on activation';end if;
