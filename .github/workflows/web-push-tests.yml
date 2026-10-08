@@ -12,6 +12,7 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix supabase/tests
       - run: node --test tests/*.test.js
+      - run: node supabase/tests/player-positions.mjs
       - run: npm run test:push --prefix supabase/tests
       - run: npm run test:dom --prefix supabase/tests
       - run: npm run test:crypto --prefix supabase/tests
