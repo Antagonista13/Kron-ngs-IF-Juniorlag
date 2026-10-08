@@ -22,3 +22,7 @@
 .message-nav-item .nav-icon-wrap{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:background .18s ease,color .18s ease,transform .18s ease}
 .message-nav-item .nav-icon-wrap>span{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:10px}
 .message-nav-item .nav-icon-wrap>span svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+body:not([data-access-role]) .message-nav-item,
+body[data-access-role="parent"] .message-nav-item,
+body[data-access-role="pending"] .message-nav-item{display:none}
