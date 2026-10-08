@@ -17,3 +17,6 @@
  .message-nav-item{min-width:44px}
  .message-nav-item small{font-size:8px}
 }
+
+.message-nav-icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.message-nav-item .nav-icon-wrap>span{display:none}
