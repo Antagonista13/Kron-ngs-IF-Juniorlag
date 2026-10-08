@@ -34,6 +34,6 @@ assert.doesNotMatch(enhanced,/signature\.textContent=data\.nickname\|\|data\.ful
 assert.match(enhanced,/quoted\.test\(full\)/, 'enhanced name formatter must detect an already quoted nickname');
 assert.match(enhanced,/profile\.querySelector\('\.player-public-profile-about'\)/, 'enhancement must reuse the existing about card instead of appending duplicates');
 assert.match(teamController,/player-public-profile-v2\.js\?v=6/, 'team page must load the fixed profile enhancer with a fresh cache version');
-assert.match(html,/team-page-content\.js\?v=7/, 'page must load the fixed team controller');
+assert.match(html,/team-page-content\.js\?v=8/, 'page must load the fixed team controller');
 
 console.log('player public profile tests passed');
