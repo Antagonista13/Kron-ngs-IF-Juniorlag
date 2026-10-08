@@ -1,28 +1,11 @@
 (function(root){
-let ownRender=null;
 async function profile(){const c=root.kronangSupabase;if(!c)return null;const{data:u}=await c.auth.getUser();if(!u.user)return null;const{data}=await c.from('profiles').select('id,full_name,role,is_active').eq('id',u.user.id).maybeSingle();return data;}
 function makeButton(playerId,name){const b=document.createElement('button');b.type='button';b.className='player-chat-entry';b.dataset.playerChatId=playerId;b.innerHTML='<span>MEDDELANDEN</span><span data-player-chat-badge></span>';b.addEventListener('click',()=>root.KronangPlayerChat.open({playerId,playerName:name}));return b;}
-async function refreshOwnUnread(){if(root.KronangPlayerChatUnread?.refresh)await root.KronangPlayerChatUnread.refresh();}
 async function ensureOwn(){
- if(ownRender)return ownRender;
- ownRender=(async()=>{
-  const p=await profile();const perms=root.KronangPermissions;if(!p||!p.is_active||!perms?.canUseOwnPlayerChat(p.role))return;
-  const page=document.getElementById('developmentPage');if(!page)return;
-  const existing=[...page.querySelectorAll('[data-player-chat-own]')];
-  if(existing.length){
-   existing.slice(1).forEach(el=>el.remove());
-   await refreshOwnUnread();
-   return existing[0];
-  }
-  const id=await root.KronangPlayerChatData.ownPlayerId();if(!id)return;
-  const wrap=document.createElement('section');wrap.className='card';wrap.dataset.playerChatOwn='true';
-  const h=document.createElement('h3');h.textContent='Meddelanden från ledarstaben';
-  const copy=document.createElement('p');copy.textContent='Fråga, svara och få personliga tips och positiv feedback.';
-  wrap.append(h,copy,makeButton(id,p.full_name||'Meddelanden'));page.insertBefore(wrap,page.children[1]||null);
-  await refreshOwnUnread();
-  return wrap;
- })().finally(()=>{ownRender=null;});
- return ownRender;
+ const page=document.getElementById('developmentPage');
+ if(page)page.querySelectorAll('[data-player-chat-own]').forEach(el=>el.remove());
+ const p=await profile(),perms=root.KronangPermissions;
+ if(!p||!p.is_active||!perms?.canUseOwnPlayerChat(p.role))return;
 }
 async function ensureLeaderProfile(){const p=await profile(),perms=root.KronangPermissions;if(!p||!p.is_active||!perms?.canUsePlayerChatAsLeader(p.role))return;const card=document.querySelector('.player-public-profile[data-player-id]');if(!card||card.querySelector('.player-chat-entry'))return;const button=makeButton(card.dataset.playerId,card.dataset.playerName||card.querySelector('h2')?.textContent||'Spelare');const about=card.querySelector('.player-public-profile-about');if(about)card.insertBefore(button,about);else card.append(button);}
 function refresh(){ensureOwn().catch(console.error);ensureLeaderProfile().catch(console.error);}
