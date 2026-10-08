@@ -77,6 +77,6 @@ root.addEventListener('focus',refresh);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
 document.addEventListener('kronang:auth-signed-in',refresh);
 document.addEventListener('kronang:auth-signed-out',()=>{refreshVersion++;activeProfile=null;activePlayerId=null;setNavVisible(false);clearUnread();document.getElementById('playerChatInboxOverlay')?.remove();});
-bindNav();setTimeout(refresh,1700);
+bindNav();refresh();
 root.KronangPlayerChatInbox={refresh,openInbox,openPlayer,openMessages};
 })(window);
