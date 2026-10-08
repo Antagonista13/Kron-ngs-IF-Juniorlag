@@ -27,13 +27,13 @@ test('admin edits player inline inside the open profile instead of bridging to r
 });
 
 test('admin runtime loads the inline editor with a fresh cache version',()=>{
-  assert.match(mirror,/admin-player-card-edit\.js\?v=14/);
-  assert.ok(html.includes('admin-development-mirror.js?v=2'));
+  assert.match(mirror,/admin-player-card-edit\.js\?v=15/);
+  assert.ok(html.includes('admin-development-mirror.js?v=3'));
 });
 
 test('team page loads the admin player action module directly',()=>{
   const team=fs.readFileSync('team-page-content.js','utf8');
-  assert.match(team,/admin-player-card-edit\.js\?v=14/);
+  assert.match(team,/admin-player-card-edit\.js\?v=15/);
   assert.match(team,/adminPlayerCardEditTeamScript/);
 });
 

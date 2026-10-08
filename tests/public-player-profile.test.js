@@ -11,7 +11,7 @@ test('team controller loads public profile features once with current cache vers
   const doc={getElementById:id=>ids.get(id),createElement:()=>({}),body:{appendChild:append},head:{appendChild:append}};
   const {loadPlayerProfileFeatures}=require('../team-page-content.js');
   loadPlayerProfileFeatures(doc);loadPlayerProfileFeatures(doc);
-  assert.deepEqual(scripts,['player-public-profile-v2.js?v=6','player-public-about.js?v=2','admin-player-card-edit.js?v=14']);
+  assert.deepEqual(scripts,['player-public-profile-v2.js?v=6','player-public-about.js?v=2','admin-player-card-edit.js?v=15']);
 });
 
 test('public player profile is large and personal',()=>{

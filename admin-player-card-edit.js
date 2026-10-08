@@ -166,10 +166,12 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
   }
 
   function ensureAdminRemoveAction(profile,playerId){
-    if(!profile||!playerId||profile.querySelector('.player-public-profile-archive'))return;
+    if(!profile||!playerId)return;
+    const existing=profile.querySelector('.player-public-profile-archive');
+    if(existing){if(profile.lastElementChild!==existing)profile.appendChild(existing);return;}
     const remove=document.createElement('button');
     remove.type='button';remove.className='player-public-profile-archive';remove.textContent='TA BORT FRÅN LAGET';
-    remove.style.display='block';remove.style.margin='12px auto 0';remove.style.padding='9px 16px';remove.style.border='1px solid #d76464';remove.style.borderRadius='999px';remove.style.background='transparent';remove.style.color='#ff8b8b';remove.style.fontWeight='850';
+    remove.style.display='block';remove.style.margin='32px auto 0';remove.style.padding='9px 16px';remove.style.border='1px solid #d76464';remove.style.borderRadius='999px';remove.style.background='transparent';remove.style.color='#ff8b8b';remove.style.fontWeight='850';
     remove.onclick=async function(){
       if(!root.confirm('Ta bort spelaren från laget i appen? Spelarens historik sparas och eventuell appåtkomst stängs. SportAdmin påverkas inte. Vill du fortsätta?'))return;
       remove.disabled=true;remove.textContent='Tar bort…';
@@ -177,8 +179,7 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
       if(error){remove.disabled=false;remove.textContent='TA BORT FRÅN LAGET';root.alert('Kunde inte ta bort spelaren från appen. Försök igen.');return;}
       root.location.reload();
     };
-    const edit=profile.querySelector('.player-public-profile-edit');
-    if(edit)edit.insertAdjacentElement('afterend',remove);else profile.appendChild(remove);
+    profile.appendChild(remove);
   }
 
   function injectAdminPlayerEditAction(){
@@ -199,8 +200,8 @@ function canEditPlayerFromPublicCard(role){return role==='admin';}
       const opened=await openInlineEditor(profile,id,button);
       if(!opened){button.disabled=false;button.textContent='Försök igen';setTimeout(function(){button.textContent='Redigera spelare';},1200);}
     };
-    const archive=profile.querySelector('.player-public-profile-archive');
-    if(archive)profile.insertBefore(button,archive);else profile.appendChild(button);
+    const anchor=profile.querySelector('.player-public-profile-mobile-admin')||profile.querySelector('.player-public-profile-role')||profile.querySelector('.player-public-profile-birth')||profile.querySelector('h2');
+    if(anchor)anchor.insertAdjacentElement('afterend',button);else profile.prepend(button);
     ensureAdminRemoveAction(profile,playerId);
   }
 
