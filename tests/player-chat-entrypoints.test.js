@@ -7,3 +7,5 @@ test('bottom navigation has dedicated messages action outside page navigation',(
 test('messages action routes player directly and leaders to inbox with shared unread badge',()=>{const s=fs.readFileSync('player-chat-inbox.js','utf8');assert.match(s,/canUseOwnPlayerChat/);assert.match(s,/canUsePlayerChatAsLeader/);assert.match(s,/openMessages/);assert.match(s,/data-message-chat-badge/);assert.match(s,/openInbox/);});
 
 test('messages nav uses the shared navigation icon family',()=>{const html=fs.readFileSync('index.html','utf8'),home=fs.readFileSync('home-player-header.js','utf8'),css=fs.readFileSync('player-chat.css','utf8');assert.match(html,/data-message-nav-icon/);assert.match(home,/message:'<svg/);assert.match(home,/buildNavIcon\('message'\)/);assert.match(css,/stroke-width:1\.8/);assert.match(css,/width:22px;height:22px/);});
+
+test('messages nav label matches other nav typography',()=>{const css=fs.readFileSync('player-chat.css','utf8');assert.match(css,/\.message-nav-item small\{font-size:10px;font-weight:700;letter-spacing:\.15px/);assert.doesNotMatch(css,/\.message-nav-item small\{font-size:8px/);});
