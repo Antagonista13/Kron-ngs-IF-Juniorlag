@@ -15,7 +15,7 @@ async function app(role='player'){
 test('player Home opens own conversation directly and unread badge disappears after reading',async()=>{
  const f=await app();try{const d=f.w.document,card=d.getElementById('homePlayerChatCard');
  assert.equal(card.hidden,false);assert.match(card.textContent,/2 olästa meddelanden/);
- const badge=d.querySelector('[data-page="developmentPage"] [data-player-chat-nav-badge]');assert.equal(badge.textContent,'2');assert.equal(badge.hidden,false);
+ const badge=d.querySelector('[data-player-chat-nav] [data-message-chat-badge]');assert.equal(badge.textContent,'2');assert.equal(badge.hidden,false);
  assert.equal(d.querySelector('[data-page="teamPage"] [data-team-chat-badge]')?.hidden??true,true);
  card.click();assert.deepEqual(JSON.parse(JSON.stringify(f.getOpened())),{playerId:'player-1',playerName:'Testspelare'});assert.equal(d.getElementById('playerChatInboxOverlay'),null);
  f.setCount(0);f.w.dispatchEvent(new f.w.CustomEvent('kronang:player-chat-read'));await new Promise(r=>setTimeout(r,0));assert.equal(card.hidden,true);assert.equal(badge.hidden,true);
@@ -23,6 +23,6 @@ test('player Home opens own conversation directly and unread badge disappears af
  f.logout();f.w.document.dispatchEvent(new f.w.CustomEvent('kronang:auth-signed-out'));assert.equal(card.hidden,true);assert.equal(badge.hidden,true);
  }finally{f.dom.window.close();}
 });
-test('leader retains player inbox on Home and badge by Laget',async()=>{
- const f=await app('coach');try{const d=f.w.document;assert.match(d.getElementById('homePlayerChatCard').textContent,/spelare har skrivit/);assert.equal(d.querySelector('[data-team-chat-badge]').textContent,'2');d.getElementById('homePlayerChatCard').click();await new Promise(r=>setTimeout(r,0));assert.ok(d.getElementById('playerChatInboxOverlay'));assert.equal(d.querySelector('[data-player-chat-nav-badge]')?.hidden??true,true);}finally{f.dom.window.close();}
+test('leader retains player inbox on Home and shared Messages badge',async()=>{
+ const f=await app('coach');try{const d=f.w.document;assert.match(d.getElementById('homePlayerChatCard').textContent,/spelare har skrivit/);assert.equal(d.querySelector('[data-message-chat-badge]').textContent,'2');d.getElementById('homePlayerChatCard').click();await new Promise(r=>setTimeout(r,0));assert.ok(d.getElementById('playerChatInboxOverlay'));assert.equal(d.querySelector('[data-player-chat-nav-badge]')?.hidden??true,true);}finally{f.dom.window.close();}
 });
