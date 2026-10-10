@@ -36,7 +36,7 @@ test('admin form controls stay at iOS-safe 16px on mobile and page cannot overfl
 test('invite/admin support scripts remain wired',()=>{
  const html=fs.readFileSync('index.html','utf8');
  const loader=fs.readFileSync('auth-login-fields.js','utf8');
- assert.match(html,/auth\.js\?v=7/);
+ assert.match(html,/auth\.js\?v=8/);
  assert.match(html,/admin-profile-images\.js\?v=3/);
  assert.match(html,/admin-page\.css\?v=10/);
  assert.match(html,/admin-page\.js\?v=9/);
