@@ -21,11 +21,12 @@ SUMMARY:Söndagsmatch
 END:VEVENT
 END:VCALENDAR`;
 
-function app(time) {
+function app(time, withLegacyStartup = false) {
   let now = new Date(time).getTime(), offline = false;
   const home = { innerHTML: '' }, calendar = { innerHTML: '' };
   const calendarPage = { classList: { contains: () => false } };
   const events = {}, documentEvents = {}, saved = new Map();
+  let rejectLegacy;
   const NativeDate = Date;
   class ClockDate extends NativeDate {
     constructor(...args) { super(...(args.length ? args : [now])); }
@@ -43,16 +44,23 @@ function app(time) {
       dispatchEvent() {}
     },
     CustomEvent: class {},
-    fetch: async () => { if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
+    fetch: async url => { if (withLegacyStartup && !url.includes('?')) return new Promise((resolve, reject) => { rejectLegacy = reject; }); if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
     setInterval(fn) { events.minute = fn; }
   });
   vm.runInContext(fs.readFileSync('calendar-management.js', 'utf8'), context);
   // Only replace the remote hidden-events lookup, keeping the actual filters and renderers.
   window.KronangCalendarManagement.loadHiddenCalendarKeys = async () => [];
+  if (withLegacyStartup) {
+    const script = fs.readFileSync('script.js', 'utf8');
+    const start = script.indexOf('/* =========================\n   NÄSTA AKTIVITET - STARTSIDA');
+    const end = script.indexOf('const SUPABASE_URL', start);
+    vm.runInContext(script.slice(start, end), context);
+  }
   vm.runInContext(fs.readFileSync('calendar-runtime.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('calendar-bridge.js', 'utf8'), context);
   return {
     home, calendar, calendarPage, window, events, documentEvents, context,
+    failLegacy() { if (rejectLegacy) rejectLegacy(new Error("late legacy failure")); },
     setTime(value) { now = new Date(value).getTime(); },
     goOffline() { offline = true; },
     clearCache() { saved.clear(); },
@@ -113,4 +121,14 @@ test('offline cache removes completed activities and failure never leaves old Ho
   a.events.focus();
   await a.settle();
   assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+});
+
+test('a late legacy startup failure cannot overwrite a successful Home calendar', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', true);
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  a.failLegacy();
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.doesNotMatch(a.home.innerHTML, /Kalendern kunde inte laddas/);
 });
