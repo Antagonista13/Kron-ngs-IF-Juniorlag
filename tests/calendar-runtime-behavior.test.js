@@ -21,8 +21,8 @@ SUMMARY:Söndagsmatch
 END:VEVENT
 END:VCALENDAR`;
 
-function app(time, withLegacyStartup = false, initialOffline = false) {
-  let now = new Date(time).getTime(), offline = initialOffline, nextFetch;
+function app(time, withLegacyStartup = false, initialOffline = false, initialFailures = 0) {
+  let now = new Date(time).getTime(), offline = initialOffline, nextFetch, failures = initialFailures, requests = 0;
   const home = { innerHTML: '' }, calendar = { innerHTML: '' };
   const calendarPage = { classList: { contains: () => false } };
   const events = {}, documentEvents = {}, saved = new Map();
@@ -44,8 +44,9 @@ function app(time, withLegacyStartup = false, initialOffline = false) {
       dispatchEvent() {}
     },
     CustomEvent: class {},
-    fetch: async url => { if (nextFetch) { const result = nextFetch; nextFetch = null; return result; } if (withLegacyStartup && !url.includes('?')) return new Promise((resolve, reject) => { rejectLegacy = reject; }); if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
-    setInterval(fn) { events.minute = fn; }
+    fetch: async url => { requests++; if (failures > 0) { failures--; throw new Error('startup connection unavailable'); } if (nextFetch) { const result = nextFetch; nextFetch = null; return result; } if (withLegacyStartup && !url.includes('?')) return new Promise((resolve, reject) => { rejectLegacy = reject; }); if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
+    setInterval(fn) { events.minute = fn; },
+    setTimeout(fn) { queueMicrotask(fn); }
   });
   vm.runInContext(fs.readFileSync('calendar-management.js', 'utf8'), context);
   // Only replace the remote hidden-events lookup, keeping the actual filters and renderers.
@@ -60,6 +61,7 @@ function app(time, withLegacyStartup = false, initialOffline = false) {
   vm.runInContext(fs.readFileSync('calendar-bridge.js', 'utf8'), context);
   return {
     home, calendar, calendarPage, window, events, documentEvents, context,
+    requestCount() { return requests; },
     failLegacy() { if (rejectLegacy) rejectLegacy(new Error("late legacy failure")); },
     setTime(value) { now = new Date(value).getTime(); },
     goOffline() { offline = true; },
@@ -187,4 +189,39 @@ test('Home recovery still excludes hidden activities from the shared feed', asyn
   await a.settle();
   assert.doesNotMatch(a.home.innerHTML, /Fredagsträning/);
   assert.match(a.home.innerHTML, /Söndagsmatch/);
+});
+
+
+test('Home automatically recovers from temporary startup fetch failures', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, false, 2);
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.doesNotMatch(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  assert.equal(a.requestCount(), 3);
+});
+
+test('simultaneous startup lifecycle events share the retrying calendar request', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, false, 2);
+  a.events.pageshow();
+  a.events.focus();
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.equal(a.requestCount(), 3);
+});
+
+test('startup retries stop and show an error when the connection stays unavailable', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, true);
+  await a.settle();
+  assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  assert.equal(a.requestCount(), 3);
+});
+
+
+test('startup lifecycle events do not start duplicate successful feed requests', async () => {
+  const a = app('2026-10-02T19:00:00+02:00');
+  a.events.pageshow();
+  a.events.focus();
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.equal(a.requestCount(), 1);
 });
