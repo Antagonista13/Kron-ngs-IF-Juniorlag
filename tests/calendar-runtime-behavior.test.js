@@ -38,6 +38,7 @@ function app(time, withLegacyStartup = false, initialOffline = false, initialFai
     localStorage: { getItem: key => saved.get(key) || null, setItem: (key, value) => saved.set(key, value) },
     document: {
       visibilityState: 'visible',
+      readyState: 'loading',
       getElementById: id => id === 'nextActivityHome' ? home : id === 'calendarList' ? calendar : id === 'calendarPage' ? calendarPage : null,
       querySelector: () => null,
       addEventListener(name, fn) { documentEvents[name] = fn; },
@@ -48,6 +49,8 @@ function app(time, withLegacyStartup = false, initialOffline = false, initialFai
     setInterval(fn) { events.minute = fn; },
     setTimeout(fn) { queueMicrotask(fn); }
   });
+  // These classic scripts share one browser scope in the real app.
+  vm.runInContext(fs.readFileSync('leader-tools-profile.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('calendar-management.js', 'utf8'), context);
   // Only replace the remote hidden-events lookup, keeping the actual filters and renderers.
   window.KronangCalendarManagement.loadHiddenCalendarKeys = async () => [];
