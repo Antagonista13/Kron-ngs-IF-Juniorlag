@@ -1,3 +1,4 @@
+(function(){
 function stableExternalEventKey(activity){
   const uid=String(activity&&activity.uid||'').trim();
   if(uid)return'uid:'+uid;
@@ -64,3 +65,5 @@ async function restoreCalendarActivity(id){
 const api={stableExternalEventKey,filterHiddenActivities,filterCurrentOrFutureActivities,escapeCalendarHtml,getCalendarProfile,loadHiddenCalendarKeys,hideCalendarActivity,listHiddenCalendarActivities,restoreCalendarActivity,canHideCalendarForProfile,canRestoreCalendarForProfile};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 if(typeof window!=='undefined')window.KronangCalendarManagement=api;
+
+})();

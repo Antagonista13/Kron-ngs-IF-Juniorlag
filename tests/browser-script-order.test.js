@@ -31,3 +31,17 @@ test('Profile keeps roster management in leader tools', () => {
   assert.match(leader, /ensureRosterButton\(panel,d\)/);
   assert.match(leader, /function leaderToolsHostPageId\(\)\{return'profilePage';\}/);
 });
+
+test('calendar helpers load after leader tools in the shared classic-script scope', () => {
+  const html = fs.readFileSync('index.html', 'utf8');
+  const order = [...html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^\"]*)?"/g)]
+    .map(match => match[1])
+    .filter(file => ['leader-tools-profile.js', 'calendar-management.js'].includes(file));
+  assert.deepEqual(order, ['leader-tools-profile.js', 'calendar-management.js']);
+  const context = vm.createContext({window: {}});
+  for (const file of order) {
+    vm.runInContext(fs.readFileSync(file, 'utf8'), context, {filename: file});
+  }
+  assert.equal(typeof context.window.KronangCalendarManagement.stableExternalEventKey, 'function');
+  assert.equal(context.window.KronangCalendarManagement.stableExternalEventKey({uid: 'sportadmin-123'}), 'uid:sportadmin-123');
+});
