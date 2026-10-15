@@ -21,8 +21,8 @@ SUMMARY:Söndagsmatch
 END:VEVENT
 END:VCALENDAR`;
 
-function app(time, withLegacyStartup = false) {
-  let now = new Date(time).getTime(), offline = false;
+function app(time, withLegacyStartup = false, initialOffline = false) {
+  let now = new Date(time).getTime(), offline = initialOffline, nextFetch;
   const home = { innerHTML: '' }, calendar = { innerHTML: '' };
   const calendarPage = { classList: { contains: () => false } };
   const events = {}, documentEvents = {}, saved = new Map();
@@ -44,7 +44,7 @@ function app(time, withLegacyStartup = false) {
       dispatchEvent() {}
     },
     CustomEvent: class {},
-    fetch: async url => { if (withLegacyStartup && !url.includes('?')) return new Promise((resolve, reject) => { rejectLegacy = reject; }); if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
+    fetch: async url => { if (nextFetch) { const result = nextFetch; nextFetch = null; return result; } if (withLegacyStartup && !url.includes('?')) return new Promise((resolve, reject) => { rejectLegacy = reject; }); if (offline) throw new Error('offline'); return { ok: true, text: async () => feed }; },
     setInterval(fn) { events.minute = fn; }
   });
   vm.runInContext(fs.readFileSync('calendar-management.js', 'utf8'), context);
@@ -63,6 +63,8 @@ function app(time, withLegacyStartup = false) {
     failLegacy() { if (rejectLegacy) rejectLegacy(new Error("late legacy failure")); },
     setTime(value) { now = new Date(value).getTime(); },
     goOffline() { offline = true; },
+    goOnline() { offline = false; },
+    holdNextFetch(promise) { nextFetch = promise; },
     clearCache() { saved.clear(); },
     async settle() { await new Promise(resolve => setImmediate(resolve)); }
   };
@@ -131,4 +133,58 @@ test('a late legacy startup failure cannot overwrite a successful Home calendar'
   await a.settle();
   assert.match(a.home.innerHTML, /Fredagsträning/);
   assert.doesNotMatch(a.home.innerHTML, /Kalendern kunde inte laddas/);
+});
+
+
+test('opening Calendar repairs a failed Home using the successful calendar feed', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, true);
+  await a.settle();
+  assert.match(a.home.innerHTML, /Kalendern kunde inte laddas/);
+  a.goOnline();
+  await a.window.testSportAdminCalendar();
+  await a.settle();
+  assert.match(a.calendar.innerHTML, /Fredagsträning/);
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  // The recovered feed must also be saved for the next offline refresh.
+  a.goOffline();
+  a.events.focus();
+  await a.settle();
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+});
+
+test('a pending Home failure cannot replace the feed recovered by Calendar', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, true);
+  await a.settle();
+  a.goOnline();
+  let reject;
+  a.holdNextFetch(new Promise((resolve, fail) => { reject = fail; }));
+  const pendingHome = a.window.loadNextActivityHome();
+  await a.window.testSportAdminCalendar();
+  await a.settle();
+  a.clearCache();
+  reject(new Error('delayed startup failure'));
+  await pendingHome;
+  assert.match(a.home.innerHTML, /Fredagsträning/);
+  assert.doesNotMatch(a.home.innerHTML, /Kalendern kunde inte laddas/);
+});
+
+
+test('Calendar remains readable if the optional Home update fails', async () => {
+  const a = app('2026-10-02T19:00:00+02:00');
+  await a.settle();
+  a.window.acceptCalendarFeed = async () => { throw new Error('Home unavailable'); };
+  await a.window.testSportAdminCalendar();
+  await a.settle();
+  assert.match(a.calendar.innerHTML, /Fredagsträning/);
+});
+
+test('Home recovery still excludes hidden activities from the shared feed', async () => {
+  const a = app('2026-10-02T19:00:00+02:00', false, true);
+  await a.settle();
+  a.window.KronangCalendarManagement.loadHiddenCalendarKeys = async () => ['uid:friday'];
+  a.goOnline();
+  await a.window.testSportAdminCalendar();
+  await a.settle();
+  assert.doesNotMatch(a.home.innerHTML, /Fredagsträning/);
+  assert.match(a.home.innerHTML, /Söndagsmatch/);
 });
