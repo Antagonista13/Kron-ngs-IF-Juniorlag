@@ -1,6 +1,7 @@
 (function(){
 const FEED='https://kronangs-kalender.h-bergqvist.workers.dev/';
 let cachedFeedActivities=[];
+let feedRequest=null;
 let homeRenderVersion=0;
 const LAST_GOOD_FEED_KEY='kronang:last-good-calendar-feed:v1';
 function loadLastGoodFeed(){try{const raw=localStorage.getItem(LAST_GOOD_FEED_KEY);if(!raw)return[];const saved=JSON.parse(raw);if(!Array.isArray(saved))return[];return saved.map(a=>{const item={...a,date:a.date?new Date(a.date):parseDate(a.startRaw),endDate:a.endDate?new Date(a.endDate):parseDate(a.endRaw)};return item.date&&!Number.isNaN(item.date.getTime())?item:null;}).filter(Boolean);}catch(e){console.warn('Sparad kalendercache kunde inte läsas.',e);return[];}}
@@ -15,7 +16,28 @@ function card(activity,isNext,canHide){const cm=window.KronangCalendarManagement
 async function safeCalendarProfile(){const cm=window.KronangCalendarManagement;try{return await cm.getCalendarProfile();}catch(e){console.warn('Kalenderprofil kunde inte läsas, visar kalendern utan ledarkontroller.',e);return null;}}
 function invalidateCalendarFeedCache(){cachedFeedActivities=[];}
 window.addEventListener('kronang:pull-refresh',invalidateCalendarFeedCache);
-async function fetchFeed(){if(cachedFeedActivities.length)return cachedFeedActivities.slice();const url=FEED+'?_='+Date.now();const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('calendar fetch failed: '+r.status);const parsed=parseActivities(await r.text());cachedFeedActivities=parsed;saveLastGoodFeed(parsed);return parsed.slice();}
+async function fetchFeed(){
+ if(cachedFeedActivities.length)return cachedFeedActivities.slice();
+ if(feedRequest)return feedRequest;
+ feedRequest=(async()=>{
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    const url=FEED+'?_='+Date.now();
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok)throw new Error('calendar fetch failed: '+r.status);
+    const parsed=parseActivities(await r.text());
+    cachedFeedActivities=parsed;saveLastGoodFeed(parsed);return parsed.slice();
+   }catch(error){
+    // A Calendar-page recovery may have completed while this request failed.
+    if(cachedFeedActivities.length)return cachedFeedActivities.slice();
+    // Existing saved data can be rendered immediately by fetchVisible.
+    if(attempt===2||loadLastGoodFeed().length)throw error;
+    await new Promise(resolve=>setTimeout(resolve,attempt===0?500:1500));
+   }
+  }
+ })();
+ try{return await feedRequest;}finally{feedRequest=null;}
+}
 async function fetchVisible(){let all;try{all=await fetchFeed();}catch(e){const fallback=loadLastGoodFeed();if(!fallback.length)throw e;console.warn('Använder senast sparade kalenderdata efter hämtningsfel.',e);all=fallback;}const cm=window.KronangCalendarManagement;let hidden=new Set();try{hidden=await cm.loadHiddenCalendarKeys();}catch(e){console.warn('Dolda kalenderaktiviteter kunde inte läsas, visar hela kalendern.',e);}return cm.filterCurrentOrFutureActivities(cm.filterHiddenActivities(all,hidden),new Date()).sort((a,b)=>a.date-b.date);}
 async function renderBasicCalendarFallback(host){try{const cm=window.KronangCalendarManagement;const items=cm.filterCurrentOrFutureActivities(await fetchFeed(),new Date()).sort((a,b)=>a.date-b.date).slice(0,10);if(!items.length){host.innerHTML='<div class="calendar-loading">Inga kommande aktiviteter hittades.</div>';return;}let html=card(items[0],true,false);if(items.length>1)html+='<div class="calendar-section-title">KOMMANDE AKTIVITETER</div>'+items.slice(1).map(a=>card(a,false,false)).join('');host.innerHTML=html;}catch(fallbackError){console.error('Direkt kalenderfallback misslyckades.',fallbackError);host.innerHTML='<div class="calendar-loading error">Kunde inte läsa kalendern från SportAdmin.</div>';}}
 async function renderHiddenAdmin(host){try{const cm=window.KronangCalendarManagement,esc=cm.escapeCalendarHtml;const profile=await safeCalendarProfile();if(!cm.canRestoreCalendarForProfile(profile))return;const wrap=document.createElement('section');wrap.className='calendar-hidden-admin';wrap.innerHTML='<button type="button" class="calendar-show-hidden">VISA DOLDA AKTIVITETER</button><div class="calendar-hidden-list" hidden></div>';host.appendChild(wrap);wrap.querySelector('.calendar-show-hidden').addEventListener('click',async()=>{const list=wrap.querySelector('.calendar-hidden-list');const rows=await cm.listHiddenCalendarActivities();list.hidden=false;list.innerHTML=rows.length?rows.map(r=>`<div class="calendar-hidden-row"><div><strong>${esc(r.title||'Aktivitet')}</strong><small>${esc(r.start_at?new Date(r.start_at).toLocaleString('sv-SE'):'')}</small></div><button type="button" data-restore-id="${esc(r.id)}">ÅTERSTÄLL</button></div>`).join(''):'<p>Inga dolda aktiviteter.</p>';list.querySelectorAll('[data-restore-id]').forEach(btn=>btn.addEventListener('click',async()=>{if(await cm.restoreCalendarActivity(btn.dataset.restoreId)){await window.testSportAdminCalendar();await window.loadNextActivityHome();}}));});}catch(e){console.warn('Administrativa kalenderkontroller kunde inte visas.',e);}}
