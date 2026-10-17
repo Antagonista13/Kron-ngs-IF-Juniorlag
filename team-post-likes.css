@@ -1,0 +1,12 @@
+/* One clean, accessible thumbs-up under each team post. */
+.team-post-reactions{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:13px;padding-top:10px;border-top:1px solid #ececec}
+.team-post-like-button,.team-post-like-count{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:#555;font:inherit;font-size:13px;cursor:pointer;padding:7px 3px;min-height:38px}
+.team-post-like-button svg{transition:fill .15s ease;color:#222;flex:none}
+.team-post-like-button.is-liked{color:#111;font-weight:700}
+.team-post-like-button.is-liked svg{fill:#111;color:#111}
+.team-post-like-button:disabled{opacity:.55;cursor:wait}
+.team-post-like-count{color:#666;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.team-post-like-button:focus-visible,.team-post-like-count:focus-visible{outline:2px solid #111;outline-offset:2px;border-radius:5px}
+.team-post-like-names{flex:0 0 100%;background:#f5f5f5;border-radius:10px;padding:11px 12px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.team-post-like-names[hidden]{display:none}
+.team-post-like-names strong{display:block;margin-bottom:3px}
