@@ -1,0 +1,22 @@
+{
+  "name": "Kronängs IF Kiosk",
+  "short_name": "Kronängs Kiosk",
+  "start_url": "./online.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "./kronangs_kiosk_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./kronangs_kiosk_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
