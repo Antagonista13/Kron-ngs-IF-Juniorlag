@@ -66,25 +66,37 @@ Deno.serve(async (req) => {
   const phone = String(contact?.mobile_phone || '').trim();
   if (!phone) return json({ error: 'Player has no mobile number' }, 400);
 
-  const { data: existingInvites, error: existingInviteError } = await serviceClient
-    .from('user_invitations')
-    .select('id,email,status')
-    .ilike('email', email)
-    .in('status', ['pending', 'accepted'])
-    .limit(1);
-  if (existingInviteError) return json({ error: 'Could not verify invitation status' }, 500);
-  if (existingInvites && existingInvites.length) return json({ error: 'Already invited or registered' }, 409);
-
   const { data: usersPage, error: listUsersError } = await serviceClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (listUsersError) return json({ error: 'Could not verify user status' }, 500);
   const alreadyRegistered = (usersPage.users || []).some((user) => String(user.email || '').trim().toLowerCase() === email);
   if (alreadyRegistered) return json({ error: 'Already invited or registered' }, 409);
 
+  const { data: existingInvites, error: existingInviteError } = await serviceClient
+    .from('user_invitations')
+    .select('id,email,status')
+    .ilike('email', email)
+    .in('status', ['pending', 'accepted']);
+  if (existingInviteError) return json({ error: 'Could not verify invitation status' }, 500);
+
+  const staleAcceptedIds = (existingInvites || [])
+    .filter((invite) => invite.status === 'accepted')
+    .map((invite) => invite.id);
+  if (staleAcceptedIds.length) {
+    const { error: cleanupError } = await serviceClient
+      .from('user_invitations')
+      .update({ status: 'rejected', updated_at: new Date().toISOString() })
+      .in('id', staleAcceptedIds)
+      .eq('status', 'accepted');
+    if (cleanupError) return json({ error: 'Could not retire stale invitation' }, 500);
+  }
+
+  const stillPending = (existingInvites || []).some((invite) => invite.status === 'pending');
+  if (stillPending) return json({ error: 'Already invited or registered' }, 409);
+
   const { data: invitation, error: metadataError } = await serviceClient.from('user_invitations').insert({
     email,
     display_name: fullName || player.full_name,
     expected_role: 'player',
-    team_function: null,
     status: 'pending',
     invited_by: caller.id,
     updated_at: new Date().toISOString()
